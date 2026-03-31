@@ -1,90 +1,87 @@
-# Betatrace - T1D Management App
+# Betatrace - Auth Fix Session
 
-## Project Overview
-A Type 1 Diabetes management app that tracks meals, insulin, builds predictive models, optimizes insulin-to-carb ratios, and surfaces patterns.
+## Branch: `feature/auth-fix`
+## Priority: HIGH - Auth is broken, must fix first
 
-## Tech Stack
-- **Frontend**: React 19, Vite, React Router, Framer Motion, Recharts
-- **Backend**: Supabase (Auth + PostgreSQL)
-- **Deployment**: Vercel (frontend configured)
+---
 
-## Supabase Configuration
-- **Project ID**: `xteeeszbfvwjulpjudzo`
-- **Project URL**: `https://xteeeszbfvwjulpjudzo.supabase.co`
-- **Region**: us-east-1
-- **Status**: Active
+## The Problem
 
-### Database Tables (all have RLS enabled)
-1. `profiles` - User profiles (auto-created on signup via trigger)
-2. `meals` - Meal logs (carbs, protein, fat, fiber, notes)
-3. `insulin_doses` - Insulin records (type, units, brand, site)
-4. `glucose_readings` - Blood glucose data (value, unit, source)
-5. `user_settings` - ICR ratios, targets, preferences (auto-created via trigger)
+**Sign In button does nothing.** No validation errors, no console output, nothing happens when clicked.
 
-### Auth Providers
-- Email/password: Enabled (default)
-- Google OAuth: Needs configuration in Supabase dashboard
+---
 
-## Bug Fixed (2026-03-31)
-**Issue**: `fetchProfile` was being called before it was declared in AuthContext.jsx
-**Fix**: Moved `fetchProfile` to a `useCallback` hook before the `useEffect` that uses it.
+## Project Info
 
-## Current Issues (NEEDS TESTING)
+- **Repo**: https://github.com/Davey2Waveyy/t1d
+- **Stack**: React 19, Vite, Supabase
+- **Supabase Project**: `xteeeszbfvwjulpjudzo`
+- **Run locally**: `cd C:\Users\dodgi\betatrace && npm run dev`
 
-### Issue 1: Sign In Button - RETRY AFTER FIX
-**Status**: Fixed the hoisting bug. Need to test again.
+---
 
-**To test**:
-1. Stop dev server (Ctrl+C in terminal)
-2. Run `npm run dev`
-3. Open http://localhost:5173
-4. Open browser DevTools (F12) → Console tab
-5. Click Sign In with empty fields → should see "Form submitted" in console
-6. Should show validation error in the modal
+## Files to Debug
 
-If still not working, check console for errors.
+1. `src/components/auth/LoginModal.jsx` - The login form
+2. `src/contexts/AuthContext.jsx` - Auth state and methods
+3. `src/lib/supabase.js` - Supabase client
+4. `src/App.jsx` - ProtectedRoute logic
 
-### Issue 2: Google OAuth Not Redirecting
-**Symptom**: Clicking "Continue with Google" does nothing.
+---
 
-**To fix**:
-1. Ensure Google is enabled in Supabase: https://supabase.com/dashboard/project/xteeeszbfvwjulpjudzo/auth/providers
-2. Add Google OAuth credentials from Google Cloud Console
-3. Add localhost redirect URI in Google Console:
-   - `http://localhost:5173` (JavaScript origins)
-   - `https://xteeeszbfvwjulpjudzo.supabase.co/auth/v1/callback` (redirect URI)
+## Debug Steps
 
-## File Structure (Auth-related)
-
-```
-src/
-├── lib/
-│   └── supabase.js          # Supabase client init
-├── contexts/
-│   └── AuthContext.jsx      # Auth state & methods (signIn, signUp, signInWithGoogle, signOut)
-├── components/
-│   └── auth/
-│       ├── LoginModal.jsx   # Login/signup form
-│       └── LoginModal.css   # Styles including error/success states
-├── pages/
-│   ├── Landing.jsx          # Public landing page
-│   └── Dashboard.jsx        # Protected dashboard
-└── App.jsx                  # Routes with ProtectedRoute wrapper
+### Step 1: Check if Supabase initializes
+Add to `src/lib/supabase.js`:
+```javascript
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase client created:', !!supabase)
 ```
 
-## Environment Variables
-File: `.env.local` (gitignored)
+### Step 2: Check if form submits
+In `src/components/auth/LoginModal.jsx`, verify `handleSubmit` has:
+```javascript
+console.log('Form submitted', formData)
+```
+
+### Step 3: Check browser console
+- Open http://localhost:5173
+- Press F12 → Console tab
+- Click Sign In
+- Look for errors or logs
+
+### Step 4: Check if button is inside form
+Make sure the submit button has `type="submit"` and is inside the `<form>` tag.
+
+---
+
+## Expected Behavior When Fixed
+
+1. **Empty fields** → Red error: "Please enter a valid email address"
+2. **Invalid login** → Red error: "Invalid login credentials"
+3. **Valid login** → Redirect to /dashboard
+4. **Google button** → Redirect to Google OAuth (if configured)
+
+---
+
+## Environment
+
+File `.env.local` must exist with:
 ```
 VITE_SUPABASE_URL=https://xteeeszbfvwjulpjudzo.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZWVlc3piZnZ3anVscGp1ZHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MjgyMzQsImV4cCI6MjA5MDUwNDIzNH0.2xSC5UG7FLCBcshdlWTQou_VGpd3aNELjQRawxcFXS8
 ```
 
-## Next Steps
-1. **Debug auth**: Stop dev server, restart, check browser console for errors
-2. **Verify Supabase client**: Add console.log in supabase.js to confirm it initializes
-3. **Test form submission**: Add console.log in handleSubmit to verify it's being called
-4. **Complete Google OAuth**: Configure in Google Cloud Console + Supabase dashboard
-5. **Wire up data forms**: Connect MealLog, InsulinLog components to save to database
+---
 
-## GitHub Repo
-https://github.com/Davey2Waveyy/t1d
+## When Fixed
+
+1. Test signup with real email
+2. Test login works
+3. Test logout works
+4. Commit and merge to main:
+```bash
+git add -A && git commit -m "fix: Auth system working"
+git checkout main && git merge feature/auth-fix
+git push origin main
+```
