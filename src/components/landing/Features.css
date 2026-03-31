@@ -1,0 +1,87 @@
+.features {
+  padding: var(--space-5xl) 0;
+  background: var(--bg-primary);
+}
+
+.features-label {
+  margin-bottom: var(--space-md);
+  color: var(--accent-teal);
+}
+
+.features-title {
+  color: var(--text-primary);
+  margin-bottom: var(--space-3xl);
+}
+
+.features-title em {
+  font-style: italic;
+  color: var(--accent-emerald);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.feature-card {
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature-card--teal:hover { border-color: rgba(45, 212, 168, 0.3); }
+.feature-card--sky:hover { border-color: rgba(56, 189, 248, 0.3); }
+.feature-card--violet:hover { border-color: rgba(167, 139, 250, 0.3); }
+.feature-card--emerald:hover { border-color: rgba(16, 185, 129, 0.3); }
+.feature-card--amber:hover { border-color: rgba(251, 191, 36, 0.3); }
+.feature-card--rose:hover { border-color: rgba(251, 113, 133, 0.3); }
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+
+.feature-icon--teal { background: var(--accent-teal-dim); color: var(--accent-teal); }
+.feature-icon--sky { background: var(--accent-sky-dim); color: var(--accent-sky); }
+.feature-icon--violet { background: var(--accent-violet-dim); color: var(--accent-violet); }
+.feature-icon--emerald { background: var(--accent-emerald-dim); color: var(--accent-emerald); }
+.feature-icon--amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
+.feature-icon--rose { background: var(--accent-rose-dim); color: var(--accent-rose); }
+
+.feature-card-title {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.feature-card-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .features {
+    padding: var(--space-3xl) 0;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}

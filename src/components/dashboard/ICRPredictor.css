@@ -1,0 +1,22 @@
+.icr-predictor { display: flex; flex-direction: column; gap: var(--space-xl); }
+
+.icr-hero { text-align: center; padding: var(--space-2xl); }
+.icr-hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: var(--accent-violet-dim); color: var(--accent-violet); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; margin-bottom: var(--space-lg); }
+.icr-hero-ratio { margin-bottom: var(--space-lg); }
+.icr-ratio-label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--space-sm); }
+.icr-ratio-value { display: block; font-family: var(--font-mono); font-size: 3.5rem; font-weight: 700; color: var(--accent-teal); line-height: 1; margin-bottom: var(--space-sm); }
+.icr-ratio-sub { display: block; font-size: 0.9rem; color: var(--text-muted); }
+.icr-confidence { max-width: 300px; margin: 0 auto; }
+.icr-confidence-bar { height: 8px; background: var(--bg-input); border-radius: var(--radius-full); overflow: hidden; margin-bottom: var(--space-sm); }
+.icr-confidence-fill { height: 100%; background: linear-gradient(90deg, var(--accent-teal), var(--accent-emerald)); border-radius: var(--radius-full); transition: width 1.5s ease; }
+.icr-confidence-label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+.icr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); }
+.icr-meal-card { text-align: center; padding: var(--space-xl); }
+.icr-meal-type { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: var(--space-sm); }
+.icr-meal-ratio { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--accent-teal); margin-bottom: var(--space-md); }
+.icr-meal-meta { display: flex; flex-direction: column; gap: var(--space-sm); }
+.icr-confidence-mini { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
+.icr-confidence-bar-mini { flex: 1; height: 4px; background: var(--bg-input); border-radius: var(--radius-full); overflow: hidden; }
+.icr-confidence-fill-mini { height: 100%; background: var(--accent-teal); border-radius: var(--radius-full); }
+.icr-meals-count { font-size: 0.75rem; color: var(--text-muted); }
