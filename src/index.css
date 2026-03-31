@@ -447,6 +447,47 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--accent-emerald);
 }
 
+.badge-ghost {
+  background: var(--bg-input);
+  color: var(--text-muted);
+}
+
+/* ============================================
+   Alerts
+   ============================================ */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-lg);
+}
+
+.alert-error {
+  background: var(--accent-rose-dim);
+  color: var(--accent-rose);
+  border: 1px solid rgba(251, 113, 133, 0.3);
+}
+
+.alert-success {
+  background: var(--accent-teal-dim);
+  color: var(--accent-teal);
+  border: 1px solid rgba(45, 212, 168, 0.3);
+}
+
+.alert-warning {
+  background: var(--accent-amber-dim);
+  color: var(--accent-amber);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+/* Spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
 /* ============================================
    Animations
    ============================================ */
@@ -595,5 +636,20 @@ h1, h2, h3, h4, h5, h6 {
   
   :root {
     --sidebar-width: 0px;
-  }
+}
+}
+
+/* ============================================
+   Number Inputs
+   ============================================ */
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield;
+}
+
+/* Only hide default spinners for our specific NumberInput component's internal field */
+.number-field::-webkit-inner-spin-button,
+.number-field::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

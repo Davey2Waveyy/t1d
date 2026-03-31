@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Menu } from 'lucide-react';
 import Sidebar from '../components/dashboard/Sidebar';
 import Overview from '../components/dashboard/Overview';
@@ -30,11 +30,16 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState('overview');
   const [mobileMenu, setMobileMenu] = useState(false);
 
+  const handleViewChange = useCallback((v) => {
+    setActiveView(v);
+    setMobileMenu(false);
+  }, []);
+
   const ActiveComponent = viewComponents[activeView] || Overview;
 
   return (
     <div className="dashboard">
-      <Sidebar activeView={activeView} onViewChange={(v) => { setActiveView(v); setMobileMenu(false); }} />
+      <Sidebar activeView={activeView} onViewChange={handleViewChange} />
       
       <main className="dashboard-main">
         <div className="dashboard-mobile-header">
@@ -44,7 +49,7 @@ export default function Dashboard() {
           <span className="dashboard-mobile-title">Betatrace</span>
         </div>
         <div className="dashboard-content">
-          <ActiveComponent onViewChange={setActiveView} />
+          <ActiveComponent key={activeView} onViewChange={handleViewChange} />
         </div>
       </main>
     </div>

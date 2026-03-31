@@ -5,13 +5,93 @@
 .settings-section-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg); }
 .settings-form { display: flex; flex-direction: column; gap: var(--space-md); }
 
+/* Toggle row with description */
 .settings-toggles { display: flex; flex-direction: column; gap: 2px; }
 .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; }
-.toggle-label { font-size: 0.9rem; color: var(--text-light); }
+.toggle-info { display: flex; flex-direction: column; gap: 2px; }
+.toggle-label { font-size: 0.9rem; color: var(--text-light); font-weight: 500; }
+.toggle-desc { font-size: 0.75rem; color: var(--text-muted); }
 
-.toggle-switch { width: 44px; height: 24px; border-radius: var(--radius-full); background: var(--bg-input); border: 1px solid var(--border-light); position: relative; transition: all var(--transition-base); cursor: pointer; }
-.toggle-switch--on { background: var(--accent-teal); border-color: var(--accent-teal); }
-.toggle-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--text-light); position: absolute; top: 2px; left: 2px; transition: transform var(--transition-base); }
-.toggle-switch--on .toggle-thumb { transform: translateX(20px); }
+/* Premium toggle switch */
+.toggle-switch {
+  width: 48px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--bg-input);
+  border: 1px solid var(--border-medium);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-switch:hover {
+  border-color: var(--border-strong);
+}
+.toggle-switch--on {
+  background: var(--accent-teal);
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 12px rgba(45, 212, 168, 0.3);
+}
+.toggle-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-light);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.toggle-switch--on .toggle-thumb {
+  transform: translateX(22px);
+  background: #fff;
+}
+
+/* Glucose unit segmented toggle */
+.unit-toggle {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  gap: 0;
+}
+.unit-toggle-btn {
+  flex: 1;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.unit-toggle-btn:hover:not(.unit-toggle-btn--active) {
+  color: var(--text-light);
+  background: rgba(45, 212, 168, 0.05);
+}
+.unit-toggle-btn--active {
+  color: var(--bg-dark);
+  background: var(--accent-teal);
+  box-shadow: 0 0 16px rgba(45, 212, 168, 0.25);
+}
+.unit-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+  font-style: italic;
+}
+
+/* Save button success state */
+.btn-save-success {
+  background: var(--accent-emerald) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
 
 @media (max-width: 768px) { .settings-grid { grid-template-columns: 1fr; } }
