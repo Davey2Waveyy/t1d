@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import {
   Activity, LayoutDashboard, Utensils, Syringe, TrendingUp,
   Brain, Upload, Target, Gauge, AlertTriangle, Settings,
-  ChevronLeft, ChevronRight, LogOut
+  ChevronLeft, ChevronRight, LogOut, User
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import './Sidebar.css';
 
 const navItems = [
@@ -23,6 +24,15 @@ const navItems = [
 export default function Sidebar({ activeView, onViewChange }) {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { user, profile, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
+  const avatarUrl = profile?.avatar_url;
 
   return (
     <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
@@ -56,7 +66,19 @@ export default function Sidebar({ activeView, onViewChange }) {
       </nav>
 
       <div className="sidebar-footer">
-        <button className="sidebar-item sidebar-logout" onClick={() => navigate('/')} title={collapsed ? 'Sign Out' : undefined}>
+        {!collapsed && (
+          <div className="sidebar-user">
+            <div className="sidebar-user-avatar">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} />
+              ) : (
+                <User size={16} />
+              )}
+            </div>
+            <span className="sidebar-user-name">{displayName}</span>
+          </div>
+        )}
+        <button className="sidebar-item sidebar-logout" onClick={handleSignOut} title={collapsed ? 'Sign Out' : undefined}>
           <LogOut size={18} className="sidebar-item-icon" />
           {!collapsed && <span className="sidebar-item-label">Sign Out</span>}
         </button>
