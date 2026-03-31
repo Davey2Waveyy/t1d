@@ -1,90 +1,181 @@
-# Betatrace - T1D Management App
+# Betatrace - Core Functionality Session
 
-## Project Overview
-A Type 1 Diabetes management app that tracks meals, insulin, builds predictive models, optimizes insulin-to-carb ratios, and surfaces patterns.
+## Branch: `feature/core-functionality`
+## Goal: Make the app actually work - real data, no mocks, empty states when no data
 
-## Tech Stack
-- **Frontend**: React 19, Vite, React Router, Framer Motion, Recharts
-- **Backend**: Supabase (Auth + PostgreSQL)
-- **Deployment**: Vercel (frontend configured)
+---
 
-## Supabase Configuration
-- **Project ID**: `xteeeszbfvwjulpjudzo`
-- **Project URL**: `https://xteeeszbfvwjulpjudzo.supabase.co`
-- **Region**: us-east-1
-- **Status**: Active
+## Project Info
 
-### Database Tables (all have RLS enabled)
-1. `profiles` - User profiles (auto-created on signup via trigger)
-2. `meals` - Meal logs (carbs, protein, fat, fiber, notes)
-3. `insulin_doses` - Insulin records (type, units, brand, site)
-4. `glucose_readings` - Blood glucose data (value, unit, source)
-5. `user_settings` - ICR ratios, targets, preferences (auto-created via trigger)
+- **Repo**: https://github.com/Davey2Waveyy/t1d
+- **Stack**: React 19, Vite, Supabase
+- **Supabase Project**: `xteeeszbfvwjulpjudzo`
+- **Run locally**: `cd C:\Users\dodgi\betatrace && npm run dev`
 
-### Auth Providers
-- Email/password: Enabled (default)
-- Google OAuth: Needs configuration in Supabase dashboard
+---
 
-## Bug Fixed (2026-03-31)
-**Issue**: `fetchProfile` was being called before it was declared in AuthContext.jsx
-**Fix**: Moved `fetchProfile` to a `useCallback` hook before the `useEffect` that uses it.
+## Current State
 
-## Current Issues (NEEDS TESTING)
+- Dashboard shows **fake mock data** everywhere
+- Forms exist but **don't save anything**
+- Charts display **hardcoded values**
 
-### Issue 1: Sign In Button - RETRY AFTER FIX
-**Status**: Fixed the hoisting bug. Need to test again.
+## Target State
 
-**To test**:
-1. Stop dev server (Ctrl+C in terminal)
-2. Run `npm run dev`
-3. Open http://localhost:5173
-4. Open browser DevTools (F12) → Console tab
-5. Click Sign In with empty fields → should see "Form submitted" in console
-6. Should show validation error in the modal
+- Dashboard shows **empty states** until user adds data
+- Forms **save to Supabase** database
+- Charts display **real user data**
+- Everything **actually works**
 
-If still not working, check console for errors.
+---
 
-### Issue 2: Google OAuth Not Redirecting
-**Symptom**: Clicking "Continue with Google" does nothing.
-
-**To fix**:
-1. Ensure Google is enabled in Supabase: https://supabase.com/dashboard/project/xteeeszbfvwjulpjudzo/auth/providers
-2. Add Google OAuth credentials from Google Cloud Console
-3. Add localhost redirect URI in Google Console:
-   - `http://localhost:5173` (JavaScript origins)
-   - `https://xteeeszbfvwjulpjudzo.supabase.co/auth/v1/callback` (redirect URI)
-
-## File Structure (Auth-related)
+## Database Tables (Already Created in Supabase)
 
 ```
-src/
-├── lib/
-│   └── supabase.js          # Supabase client init
-├── contexts/
-│   └── AuthContext.jsx      # Auth state & methods (signIn, signUp, signInWithGoogle, signOut)
-├── components/
-│   └── auth/
-│       ├── LoginModal.jsx   # Login/signup form
-│       └── LoginModal.css   # Styles including error/success states
-├── pages/
-│   ├── Landing.jsx          # Public landing page
-│   └── Dashboard.jsx        # Protected dashboard
-└── App.jsx                  # Routes with ProtectedRoute wrapper
+profiles        - User info (auto-created on signup)
+meals           - user_id, meal_type, food_name, carbs, protein, fat, fiber, notes, logged_at
+insulin_doses   - user_id, insulin_type, brand, units, injection_site, notes, logged_at
+glucose_readings - user_id, value, unit, source, notes, recorded_at
+user_settings   - user_id, target_low, target_high, icr values, correction_factor, preferences
 ```
 
-## Environment Variables
-File: `.env.local` (gitignored)
-```
-VITE_SUPABASE_URL=https://xteeeszbfvwjulpjudzo.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZWVlc3piZnZ3anVscGp1ZHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MjgyMzQsImV4cCI6MjA5MDUwNDIzNH0.2xSC5UG7FLCBcshdlWTQou_VGpd3aNELjQRawxcFXS8
+All tables have Row Level Security - users only see their own data.
+
+---
+
+## Tasks
+
+### 1. Create Data Service
+**Create file**: `src/lib/dataService.js`
+
+```javascript
+import { supabase } from './supabase'
+
+// MEALS
+export async function getMeals(limit = 50) {
+  const { data, error } = await supabase
+    .from('meals')
+    .select('*')
+    .order('logged_at', { ascending: false })
+    .limit(limit)
+  return { data, error }
+}
+
+export async function addMeal(meal) {
+  const { data, error } = await supabase
+    .from('meals')
+    .insert(meal)
+    .select()
+    .single()
+  return { data, error }
+}
+
+// INSULIN
+export async function getInsulinDoses(limit = 50) { ... }
+export async function addInsulinDose(dose) { ... }
+
+// GLUCOSE
+export async function getGlucoseReadings(hours = 24) { ... }
+export async function addGlucoseReading(reading) { ... }
+
+// SETTINGS
+export async function getUserSettings() { ... }
+export async function updateUserSettings(settings) { ... }
 ```
 
-## Next Steps
-1. **Debug auth**: Stop dev server, restart, check browser console for errors
-2. **Verify Supabase client**: Add console.log in supabase.js to confirm it initializes
-3. **Test form submission**: Add console.log in handleSubmit to verify it's being called
-4. **Complete Google OAuth**: Configure in Google Cloud Console + Supabase dashboard
-5. **Wire up data forms**: Connect MealLog, InsulinLog components to save to database
+### 2. Remove Mock Data Dependency
+**File**: `src/data/mockData.js`
+- Don't delete yet, but stop importing it in components
+- Replace with real data fetching
 
-## GitHub Repo
-https://github.com/Davey2Waveyy/t1d
+### 3. Update Components with Empty States
+
+**Pattern for each component:**
+```javascript
+function MealLog() {
+  const [meals, setMeals] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadMeals()
+  }, [])
+
+  if (loading) return <LoadingSpinner />
+
+  if (meals.length === 0) {
+    return (
+      <EmptyState
+        title="No meals logged yet"
+        description="Log your first meal to start tracking"
+        action="Log Meal"
+      />
+    )
+  }
+
+  return <MealList meals={meals} />
+}
+```
+
+### 4. Components to Update
+
+| Component | File | Changes Needed |
+|-----------|------|----------------|
+| Overview | `src/components/dashboard/Overview.jsx` | Fetch real stats, empty state |
+| MealLog | `src/components/dashboard/MealLog.jsx` | Save meals, load meals, empty state |
+| InsulinLog | `src/components/dashboard/InsulinLog.jsx` | Save doses, load doses, empty state |
+| GlucoseTrends | `src/components/dashboard/GlucoseTrends.jsx` | Load readings, empty chart state |
+| ICRPredictor | `src/components/dashboard/ICRPredictor.jsx` | Calculate from real data or show "need more data" |
+| A1CEstimator | `src/components/dashboard/A1CEstimator.jsx` | Calculate from readings or show empty |
+| Settings | `src/components/dashboard/Settings.jsx` | Load/save user_settings |
+
+### 5. Create EmptyState Component
+**Create file**: `src/components/ui/EmptyState.jsx`
+
+```javascript
+export default function EmptyState({ icon, title, description, action, onAction }) {
+  return (
+    <div className="empty-state">
+      {icon}
+      <h3>{title}</h3>
+      <p>{description}</p>
+      {action && <button onClick={onAction}>{action}</button>}
+    </div>
+  )
+}
+```
+
+---
+
+## Implementation Order
+
+1. Create `dataService.js` with all CRUD functions
+2. Create `EmptyState.jsx` component
+3. Update `MealLog.jsx` (simplest form)
+4. Update `InsulinLog.jsx`
+5. Update `GlucoseTrends.jsx`
+6. Update `Overview.jsx` (aggregates data)
+7. Update `Settings.jsx` (save preferences)
+8. Update analytics components (ICR, A1C, Patterns)
+
+---
+
+## Testing
+
+After each component:
+1. Check empty state shows when no data
+2. Add some data via form
+3. Verify data appears in list/chart
+4. Refresh page - data should persist
+5. Check Supabase dashboard to confirm data saved
+
+---
+
+## When Done
+
+```bash
+git add -A
+git commit -m "feat: Core functionality - real data, empty states, working forms"
+git checkout main
+git merge feature/core-functionality
+git push origin main
+```
