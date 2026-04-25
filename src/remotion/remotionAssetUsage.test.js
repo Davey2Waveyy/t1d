@@ -21,7 +21,7 @@ test('ad composition uses Remotion Audio with staticFile for soundtrack', () => 
   const source = readCompositionSource('BetaTraceAd.jsx');
 
   assert.match(source, /import\s+\{[^}]*\bAudio\b[^}]*\}\s+from\s+['"]@remotion\/media['"]/);
-  assert.match(source, /<Audio\b[^>]*src=\{staticFile\(['"]remotion\/betatrace-pulse\.wav['"]\)\}/s);
+  assert.match(source, /<Audio\b[^>]*src=\{staticFile\(['"]remotion\/betatrace-pulse\.mp3['"]\)\}/s);
   assert.doesNotMatch(source, /<audio\b/);
 });
 

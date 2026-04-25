@@ -1133,7 +1133,7 @@ export default function BetaTraceAd() {
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg }}>
       <Audio
-        src={staticFile('remotion/betatrace-pulse.wav')}
+        src={staticFile('remotion/betatrace-pulse.mp3')}
         volume={(audioFrame) =>
           interpolate(
             audioFrame,
