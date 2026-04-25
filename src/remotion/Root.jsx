@@ -6,8 +6,8 @@ export default function RemotionRoot() {
     <Composition
       id="BetaTraceAd"
       component={BetaTraceAd}
-      durationInFrames={900}
-      fps={30}
+      durationInFrames={1260}
+      fps={42}
       width={1080}
       height={1920}
     />

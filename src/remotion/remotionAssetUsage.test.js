@@ -34,7 +34,7 @@ test('ad composition includes LoggingScene after command center', () => {
   assert.match(source, /Everything logged in seconds\./);
 });
 
-test('ad composition fills the remaining timeline with planned product scenes', () => {
+test('ad composition fills full 1260-frame timeline at 42fps', () => {
   const source = readCompositionSource('BetaTraceAd.jsx');
 
   const sceneOrder = [
@@ -42,8 +42,11 @@ test('ad composition fills the remaining timeline with planned product scenes', 
     ['400', '100', 'PatternAlertsScene', 'Pattern Alerts'],
     ['500', '100', 'AIChatbotScene', 'Ask Betatrace AI'],
     ['600', '100', 'NightscoutSyncScene', 'Nightscout Sync'],
-    ['700', '100', 'BrandStatementScene', 'Built for T1D decisions'],
-    ['800', '100', 'EndCardScene', 'Betatrace'],
+    ['700', '100', 'A1CEstimatorScene', 'A1C Estimate'],
+    ['800', '100', 'CorrectionFactorScene', 'Correction Factor'],
+    ['900', '100', 'DexcomImportScene', 'Dexcom Import'],
+    ['1000', '100', 'BrandStatementScene', 'Built for T1D decisions'],
+    ['1100', '160', 'EndCardScene', 'Betatrace'],
   ];
 
   for (const [from, duration, component, copy] of sceneOrder) {
@@ -51,4 +54,18 @@ test('ad composition fills the remaining timeline with planned product scenes', 
     assert.match(source, new RegExp(`<Sequence\\s+from=\\{${from}\\}\\s+durationInFrames=\\{${duration}\\}>[\\s\\S]*<${component}\\s+\\/>[\\s\\S]*<\\/Sequence>`));
     assert.match(source, new RegExp(copy));
   }
+});
+
+test('Root composition is 42fps and 1260 frames', () => {
+  const source = readCompositionSource('Root.jsx');
+
+  assert.match(source, /fps=\{42\}/);
+  assert.match(source, /durationInFrames=\{1260\}/);
+});
+
+test('EndCardScene includes GitHub and LinkedIn URLs', () => {
+  const source = readCompositionSource('BetaTraceAd.jsx');
+
+  assert.match(source, /github\.com\/Davey2Waveyy\/t1d/);
+  assert.match(source, /linkedin\.com\/in\/david-cilliers/);
 });

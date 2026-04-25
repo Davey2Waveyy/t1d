@@ -653,6 +653,303 @@ function NightscoutSyncScene() {
   );
 }
 
+function A1CEstimatorScene() {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const a1cValue = interpolate(frame, [12, 60], [0, 6.8], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const ringProgress = interpolate(frame, [8, 65], [0, 0.78], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const labelAppear = spring({
+    frame: frame - 40,
+    fps,
+    config: { damping: 18, stiffness: 90 },
+  });
+
+  const circumference = 2 * Math.PI * 140;
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: colors.bg, padding: 80 }}>
+      <SceneLabel frame={frame} text="A1C Estimate" />
+      <AccentBlob
+        frame={frame}
+        color="emerald"
+        size={220}
+        top={-80}
+        left={-80}
+        shape="blob"
+      />
+      <div
+        style={{
+          marginTop: 240,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <div style={{ position: 'relative', width: 340, height: 340 }}>
+          <svg viewBox="0 0 320 320" style={{ width: 340, height: 340 }}>
+            <circle
+              cx="160"
+              cy="160"
+              r="140"
+              fill="none"
+              stroke="#10251f"
+              strokeWidth="22"
+            />
+            <circle
+              cx="160"
+              cy="160"
+              r="140"
+              fill="none"
+              stroke="url(#a1cGrad)"
+              strokeWidth="22"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - ringProgress)}
+              transform="rotate(-90 160 160)"
+            />
+            <defs>
+              <linearGradient id="a1cGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#2dd4a8" />
+                <stop offset="100%" stopColor="#10b981" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div
+              style={{
+                color: colors.text,
+                fontFamily: fonts.mono,
+                fontSize: 80,
+                fontWeight: 800,
+              }}
+            >
+              {a1cValue.toFixed(1)}%
+            </div>
+            <div
+              style={{
+                color: colors.muted,
+                fontFamily: fonts.sans,
+                fontSize: 22,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: 2,
+              }}
+            >
+              Estimated A1C
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        style={{
+          marginTop: 52,
+          borderRadius: 24,
+          background: colors.card,
+          border: '2px solid #10b98144',
+          padding: '28px 32px',
+          opacity: labelAppear,
+          transform: `translateY(${24 * (1 - labelAppear)}px)`,
+        }}
+      >
+        <div
+          style={{
+            color: colors.text,
+            fontFamily: fonts.serif,
+            fontSize: 52,
+            lineHeight: 1.1,
+          }}
+        >
+          Calculated from your last 90 days of readings.
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+function CorrectionFactorScene() {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const steps = [
+    { label: 'Current BG', value: '218', unit: 'mg/dL', color: '#fb7185' },
+    { label: 'Target BG', value: '110', unit: 'mg/dL', color: '#2dd4a8' },
+    { label: 'Correction', value: '2.2', unit: 'u', color: '#38bdf8' },
+  ];
+
+  const arrowProgress = interpolate(frame, [40, 60], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: colors.bgDeep, padding: 80 }}>
+      <SceneLabel frame={frame} text="Correction Factor" />
+      <AccentBlob
+        frame={frame}
+        color="rose"
+        size={200}
+        bottom={-70}
+        right={-70}
+      />
+      <div style={{ marginTop: 290 }}>
+        {steps.map((s, i) => (
+          <div key={s.label}>
+            <StatCard
+              frame={frame}
+              fps={fps}
+              label={s.label}
+              value={s.value}
+              unit={` ${s.unit}`}
+              color={s.color}
+              delay={i * 14}
+            />
+            {i < steps.length - 1 && (
+              <div
+                style={{
+                  textAlign: 'center',
+                  color: colors.muted,
+                  fontSize: 36,
+                  padding: '8px 0',
+                  opacity: arrowProgress,
+                }}
+              >
+                {'>>>'}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          left: 80,
+          right: 80,
+          bottom: 150,
+          color: colors.text,
+          fontFamily: fonts.serif,
+          fontSize: 62,
+          lineHeight: 1.05,
+        }}
+      >
+        Know exactly how much to correct.
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+function DexcomImportScene() {
+  const frame = useCurrentFrame();
+
+  const readings = [132, 128, 119, 124, 138, 145, 151, 142, 136, 127, 118, 112];
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: colors.bg,
+        padding: 80,
+        overflow: 'hidden',
+      }}
+    >
+      <SceneLabel frame={frame} text="Dexcom Import" />
+      <AccentBlob
+        frame={frame}
+        color="sky"
+        size={240}
+        top={-100}
+        right={-100}
+        shape="blob"
+      />
+      <div
+        style={{
+          marginTop: 280,
+          borderRadius: 28,
+          background: colors.card,
+          border: '2px solid #38bdf844',
+          padding: 34,
+        }}
+      >
+        <div
+          style={{
+            color: colors.muted,
+            fontFamily: fonts.sans,
+            fontSize: 22,
+            fontWeight: 800,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+            marginBottom: 24,
+          }}
+        >
+          Live CGM Feed
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', height: 260 }}>
+          {readings.map((val, i) => {
+            const barProgress = interpolate(frame - i * 5, [8, 28], [0, 1], {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+            });
+            const height = ((val - 90) / 80) * 220;
+            return (
+              <div
+                key={i}
+                style={{
+                  flex: 1,
+                  borderRadius: 8,
+                  background: val < 120 ? '#10b981' : val > 140 ? '#fbbf24' : '#2dd4a8',
+                  height: height * barProgress,
+                  opacity: barProgress,
+                }}
+              />
+            );
+          })}
+        </div>
+        <div
+          style={{
+            marginTop: 20,
+            display: 'flex',
+            justifyContent: 'space-between',
+            color: colors.muted,
+            fontFamily: fonts.mono,
+            fontSize: 18,
+          }}
+        >
+          <span>12h ago</span>
+          <span>Now</span>
+        </div>
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          left: 80,
+          right: 80,
+          bottom: 180,
+          color: colors.text,
+          fontFamily: fonts.serif,
+          fontSize: 68,
+          lineHeight: 1.05,
+        }}
+      >
+        Pull CGM data in, automatically.
+      </div>
+    </AbsoluteFill>
+  );
+}
+
 function BrandStatementScene() {
   const frame = useCurrentFrame();
   const words = ['Log', 'Learn', 'Adjust'];
@@ -740,6 +1037,10 @@ function EndCardScene() {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
+  const linksProgress = interpolate(frame, [56, 78], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
   return (
     <AbsoluteFill
@@ -787,6 +1088,41 @@ function EndCardScene() {
       >
         Diabetes data that finally talks back.
       </div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 200,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 22,
+          opacity: linksProgress,
+          transform: `translateY(${14 * (1 - linksProgress)}px)`,
+        }}
+      >
+        <div
+          style={{
+            color: colors.teal,
+            fontFamily: fonts.mono,
+            fontSize: 28,
+            fontWeight: 700,
+          }}
+        >
+          github.com/Davey2Waveyy/t1d
+        </div>
+        <div
+          style={{
+            color: colors.muted,
+            fontFamily: fonts.sans,
+            fontSize: 26,
+            fontWeight: 700,
+          }}
+        >
+          linkedin.com/in/david-cilliers
+        </div>
+      </div>
     </AbsoluteFill>
   );
 }
@@ -832,9 +1168,18 @@ export default function BetaTraceAd() {
         <NightscoutSyncScene />
       </Sequence>
       <Sequence from={700} durationInFrames={100}>
-        <BrandStatementScene />
+        <A1CEstimatorScene />
       </Sequence>
       <Sequence from={800} durationInFrames={100}>
+        <CorrectionFactorScene />
+      </Sequence>
+      <Sequence from={900} durationInFrames={100}>
+        <DexcomImportScene />
+      </Sequence>
+      <Sequence from={1000} durationInFrames={100}>
+        <BrandStatementScene />
+      </Sequence>
+      <Sequence from={1100} durationInFrames={160}>
         <EndCardScene />
       </Sequence>
     </AbsoluteFill>
