@@ -13,7 +13,8 @@
 
 .dashboard-content {
   padding: var(--space-2xl);
-  max-width: 1200px;
+  max-width: 1520px;
+  width: 100%;
 }
 
 .dashboard-mobile-header {

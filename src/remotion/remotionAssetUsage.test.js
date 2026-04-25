@@ -24,3 +24,31 @@ test('ad composition uses Remotion Audio with staticFile for soundtrack', () => 
   assert.match(source, /<Audio\b[^>]*src=\{staticFile\(['"]remotion\/betatrace-pulse\.wav['"]\)\}/s);
   assert.doesNotMatch(source, /<audio\b/);
 });
+
+test('ad composition includes LoggingScene after command center', () => {
+  const source = readCompositionSource('BetaTraceAd.jsx');
+
+  assert.match(source, /function\s+LoggingScene\(/);
+  assert.match(source, /<Sequence\s+from=\{180\}\s+durationInFrames=\{120\}>[\s\S]*<LoggingScene\s+\/>[\s\S]*<\/Sequence>/);
+  assert.match(source, /Meals\.\s+Insulin\.\s+Glucose\./);
+  assert.match(source, /Everything logged in seconds\./);
+});
+
+test('ad composition fills the remaining timeline with planned product scenes', () => {
+  const source = readCompositionSource('BetaTraceAd.jsx');
+
+  const sceneOrder = [
+    ['300', '100', 'ICRPredictorScene', 'ICR Predictor'],
+    ['400', '100', 'PatternAlertsScene', 'Pattern Alerts'],
+    ['500', '100', 'AIChatbotScene', 'Ask Betatrace AI'],
+    ['600', '100', 'NightscoutSyncScene', 'Nightscout Sync'],
+    ['700', '100', 'BrandStatementScene', 'Built for T1D decisions'],
+    ['800', '100', 'EndCardScene', 'Betatrace'],
+  ];
+
+  for (const [from, duration, component, copy] of sceneOrder) {
+    assert.match(source, new RegExp(`function\\s+${component}\\(`));
+    assert.match(source, new RegExp(`<Sequence\\s+from=\\{${from}\\}\\s+durationInFrames=\\{${duration}\\}>[\\s\\S]*<${component}\\s+\\/>[\\s\\S]*<\\/Sequence>`));
+    assert.match(source, new RegExp(copy));
+  }
+});

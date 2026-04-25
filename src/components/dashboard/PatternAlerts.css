@@ -20,8 +20,9 @@
 .alert-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--space-sm); }
 .alert-meta { display: flex; gap: var(--space-lg); font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
 
-.alert-dismiss { position: absolute; top: var(--space-lg); right: var(--space-lg); color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: all var(--transition-fast); }
+.alert-dismiss { position: absolute; top: var(--space-lg); right: var(--space-lg); color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: transform 160ms var(--ease-out), color 150ms var(--ease-out), background 150ms var(--ease-out); }
 .alert-dismiss:hover { color: var(--text-light); background: rgba(255,255,255,0.05); }
+.alert-dismiss:active { transform: scale(0.9); }
 
 .alert-action { display: flex; align-items: center; gap: var(--space-sm); margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--border-light); color: var(--accent-teal); font-size: 0.85rem; font-weight: 500; }
 

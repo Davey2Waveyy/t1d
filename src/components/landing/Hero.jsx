@@ -1,9 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Activity } from 'lucide-react';
+import ParticleBackground from './ParticleBackground';
 import './Hero.css';
 
-export default function Hero({ onGetStarted }) {
+// Animated counter hook - counts up when element becomes visible
+function useAnimatedCounter(end, duration = 2000, decimals = 0) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+
+          const startTime = performance.now();
+          const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Easing function (ease-out cubic)
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = eased * end;
+
+            setCount(current);
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [end, duration, hasAnimated]);
+
+  const formatted = decimals > 0
+    ? count.toFixed(decimals)
+    : Math.round(count).toString();
+
+  return { ref, value: formatted };
+}
+
+export default function Hero({ onGetStarted, onContinueAsGuest }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Animated counters for stats
+  const tirCounter = useAnimatedCounter(72, 2000, 0);
+  const a1cCounter = useAnimatedCounter(6.4, 2000, 1);
+  const icrCounter = useAnimatedCounter(10, 2000, 0);
 
   useEffect(() => {
     const handleMouse = (e) => {
@@ -17,6 +71,7 @@ export default function Hero({ onGetStarted }) {
     <section className="hero" id="hero">
       {/* Animated glucose curve background */}
       <div className="hero-bg">
+        <ParticleBackground />
         <svg className="hero-glucose-curve" viewBox="0 0 1440 400" preserveAspectRatio="none"
           style={{ transform: `translate(${mousePos.x * -15}px, ${mousePos.y * -10}px)` }}>
           <defs>
@@ -69,8 +124,8 @@ export default function Hero({ onGetStarted }) {
         </h1>
         
         <p className="hero-subtitle animate-fade-in-up stagger-2">
-          Betatrace uses your meal and insulin data to build predictive models,
-          optimize your insulin-to-carb ratio, and surface patterns you'd never spot alone.
+          Betatrace brings meals, insulin, and glucose trends into one calmer workspace
+          so you can spot patterns faster and make better-informed day-to-day decisions.
         </p>
 
         <div className="hero-actions animate-fade-in-up stagger-3">
@@ -78,24 +133,24 @@ export default function Hero({ onGetStarted }) {
             Get Started
             <ArrowRight size={18} />
           </button>
-          <button className="btn btn-secondary btn-lg" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>
-            See Features
+          <button className="btn btn-glass btn-lg" onClick={onContinueAsGuest}>
+            Continue as Guest
           </button>
         </div>
 
         <div className="hero-stats animate-fade-in-up stagger-4">
-          <div className="hero-stat">
-            <span className="hero-stat-value">72%</span>
+          <div className="hero-stat" ref={tirCounter.ref}>
+            <span className="hero-stat-value">{tirCounter.value}%</span>
             <span className="hero-stat-label">Avg Time in Range</span>
           </div>
           <div className="hero-stat-divider" />
-          <div className="hero-stat">
-            <span className="hero-stat-value">6.4</span>
+          <div className="hero-stat" ref={a1cCounter.ref}>
+            <span className="hero-stat-value">{a1cCounter.value}</span>
             <span className="hero-stat-label">Est. A1C</span>
           </div>
           <div className="hero-stat-divider" />
-          <div className="hero-stat">
-            <span className="hero-stat-value">1:10</span>
+          <div className="hero-stat" ref={icrCounter.ref}>
+            <span className="hero-stat-value">1:{icrCounter.value}</span>
             <span className="hero-stat-label">Predicted ICR</span>
           </div>
         </div>

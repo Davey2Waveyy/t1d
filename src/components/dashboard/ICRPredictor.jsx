@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Brain, Info, Loader2, Calculator } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { getMeals, getInsulinDoses, getGlucoseReadings, getUserSettings } from '../../lib/dataService';
+import { getMeals, getInsulinDoses, getUserSettings } from '../../lib/dataService';
 import EmptyState from '../ui/EmptyState';
 import './ICRPredictor.css';
 
@@ -9,7 +8,6 @@ export default function ICRPredictor() {
   const [loading, setLoading] = useState(true);
   const [meals, setMeals] = useState([]);
   const [doses, setDoses] = useState([]);
-  const [readings, setReadings] = useState([]);
   const [userSettings, setUserSettings] = useState(null);
 
   useEffect(() => {
@@ -18,15 +16,13 @@ export default function ICRPredictor() {
 
   async function loadData() {
     setLoading(true);
-    const [mealsRes, dosesRes, readingsRes, settingsRes] = await Promise.all([
+    const [mealsRes, dosesRes, settingsRes] = await Promise.all([
       getMeals(100),
       getInsulinDoses(100),
-      getGlucoseReadings(168), // 7 days
       getUserSettings(),
     ]);
     setMeals(mealsRes.data || []);
     setDoses(dosesRes.data || []);
-    setReadings(readingsRes.data || []);
     setUserSettings(settingsRes.data);
     setLoading(false);
   }

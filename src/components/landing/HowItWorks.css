@@ -44,13 +44,16 @@
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
-  transition: all var(--transition-base);
+  transition: transform 200ms var(--ease-out), border-color 200ms var(--ease-out),
+              box-shadow 200ms var(--ease-out);
 }
 
-.hiw-step:hover {
-  border-color: var(--border-medium);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-glow);
+@media (hover: hover) and (pointer: fine) {
+  .hiw-step:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+  }
 }
 
 .hiw-step-number {

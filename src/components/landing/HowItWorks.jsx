@@ -7,19 +7,19 @@ const steps = [
     number: '01',
     icon: ClipboardList,
     title: 'Log',
-    description: 'Enter your meals, insulin doses, and import your CGM data. The more data, the smarter your predictions.',
+    description: 'Log meals, insulin doses, and glucose readings in one place so your day is easy to review later.',
   },
   {
     number: '02',
     icon: BarChart3,
     title: 'Analyze',
-    description: 'Betatrace crunches your data to find patterns, calculate ratios, and identify trends across days and weeks.',
+    description: 'Betatrace organizes your entries into trend views, summaries, and ratio calculators that are easier to interpret.',
   },
   {
     number: '03',
     icon: Zap,
     title: 'Optimize',
-    description: 'Get personalized insulin-to-carb ratios, correction factors, and alerts that help you stay in range.',
+    description: 'Use those patterns to refine your routines, prepare better questions for your care team, and track progress over time.',
   },
 ];
 

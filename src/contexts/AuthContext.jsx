@@ -11,6 +11,9 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isGuest, setIsGuest] = useState(() => {
+    return localStorage.getItem('betatrace_is_guest') === 'true';
+  })
 
   const fetchProfile = useCallback(async (userId) => {
     try {
@@ -44,7 +47,6 @@ export function AuthProvider({ children }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email)
         setUser(session?.user ?? null)
         if (session?.user) {
           await fetchProfile(session.user.id)
@@ -59,7 +61,6 @@ export function AuthProvider({ children }) {
   }, [fetchProfile])
 
   async function signUp({ email, password, fullName }) {
-    console.log('Signing up:', email)
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -69,29 +70,24 @@ export function AuthProvider({ children }) {
         }
       }
     })
-    console.log('Sign up result:', { data, error })
     return { data, error }
   }
 
   async function signIn({ email, password }) {
-    console.log('Signing in:', email)
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     })
-    console.log('Sign in result:', { data, error })
     return { data, error }
   }
 
   async function signInWithGoogle() {
-    console.log('Starting Google sign in...')
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/dashboard`
       }
     })
-    console.log('Google sign in result:', { data, error })
     return { data, error }
   }
 
@@ -100,8 +96,18 @@ export function AuthProvider({ children }) {
     if (!error) {
       setUser(null)
       setProfile(null)
+      setIsGuest(false)
+      localStorage.removeItem('betatrace_is_guest')
     }
     return { error }
+  }
+
+  function continueAsGuest() {
+    setIsGuest(true)
+    localStorage.setItem('betatrace_is_guest', 'true')
+    // Provide a minimal mock user object for consistency
+    setUser({ id: 'guest-uid', email: 'guest@example.com' })
+    setProfile({ full_name: 'Guest', avatar_url: null })
   }
 
   async function resetPassword(email) {
@@ -129,10 +135,12 @@ export function AuthProvider({ children }) {
     user,
     profile,
     loading,
+    isGuest,
     signUp,
     signIn,
     signInWithGoogle,
     signOut,
+    continueAsGuest,
     resetPassword,
     updateProfile
   }

@@ -6,7 +6,7 @@ import './LoginModal.css';
 
 export default function LoginModal({ isOpen, onClose }) {
   const navigate = useNavigate();
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle, continueAsGuest } = useAuth();
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,16 +35,13 @@ export default function LoginModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted', formData);
     setError('');
     setMessage('');
 
     // Validate before proceeding
     if (!validateForm()) {
-      console.log('Validation failed');
       return;
     }
-    console.log('Validation passed, proceeding...');
 
     setLoading(true);
 
@@ -87,7 +84,6 @@ export default function LoginModal({ isOpen, onClose }) {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log('Google sign in clicked');
     setError('');
     setLoading(true);
 
@@ -95,7 +91,6 @@ export default function LoginModal({ isOpen, onClose }) {
       const { error: googleError } = await signInWithGoogle();
 
       if (googleError) {
-        console.error('Google sign in error:', googleError);
         setError(googleError.message);
         setLoading(false);
       }
@@ -237,6 +232,21 @@ export default function LoginModal({ isOpen, onClose }) {
           ) : (
             <p>Don't have an account? <button type="button" onClick={toggleMode} disabled={loading}>Sign Up</button></p>
           )}
+        </div>
+
+        <div className="modal-guest-option" style={{ marginTop: 'var(--space-md)', textAlign: 'center', borderTop: '1px solid var(--border-light)', paddingTop: 'var(--space-md)' }}>
+          <button 
+            type="button" 
+            className="btn btn-ghost btn-sm" 
+            style={{ color: 'var(--accent-teal)', fontWeight: '600' }}
+            onClick={() => {
+              continueAsGuest();
+              onClose();
+              navigate('/dashboard');
+            }}
+          >
+            Just want to look around? Continue as Guest
+          </button>
         </div>
       </div>
     </div>

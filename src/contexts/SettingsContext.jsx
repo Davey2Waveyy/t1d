@@ -1,28 +1,65 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import {
+  DEFAULT_SESSION_SETTINGS,
+  mergeSettings,
+  sanitizeSessionSettings,
+  sanitizeStoredSettings,
+} from '../lib/publishConfig';
 
 const SettingsContext = createContext({});
+const SETTINGS_STORAGE_KEY = 'betatrace_settings';
 
 export function useSettings() {
   return useContext(SettingsContext);
 }
 
 export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem('betatrace_settings');
-    return saved ? JSON.parse(saved) : {
-      timezone: 'America/New_York',
-      glucoseUnit: 'mg/dL',
-      darkMode: true,
-    };
+  const { user, isGuest } = useAuth();
+  const [storedSettings, setStoredSettings] = useState(() => {
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+
+    if (!saved) {
+      return sanitizeStoredSettings(null);
+    }
+
+    try {
+      return sanitizeStoredSettings(JSON.parse(saved));
+    } catch {
+      return sanitizeStoredSettings(null);
+    }
   });
+  const [sessionSettings, setSessionSettings] = useState(() => sanitizeSessionSettings(null));
+
+  const settings = mergeSettings(storedSettings, sessionSettings);
 
   useEffect(() => {
-    localStorage.setItem('betatrace_settings', JSON.stringify(settings));
-  }, [settings]);
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(storedSettings));
+  }, [storedSettings]);
 
   const updateSettings = (newSettings) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    setStoredSettings((prev) => sanitizeStoredSettings({ ...prev, ...newSettings }));
+    setSessionSettings((prev) => sanitizeSessionSettings({ ...prev, ...newSettings }));
   };
+
+  const updateSessionSettings = (newSettings) => {
+    setSessionSettings((prev) => sanitizeSessionSettings({ ...prev, ...newSettings }));
+  };
+
+  const clearSessionSettings = () => {
+    setSessionSettings({ ...DEFAULT_SESSION_SETTINGS });
+  };
+
+  useEffect(() => {
+    if (!user || isGuest) {
+      setSessionSettings((prev) => {
+        const sanitized = sanitizeSessionSettings(prev);
+        const hasSessionValues = Object.values(sanitized).some(Boolean);
+
+        return hasSessionValues ? { ...DEFAULT_SESSION_SETTINGS } : sanitized;
+      });
+    }
+  }, [isGuest, user]);
 
   /**
    * Formats a date string into a localized time string based on the user's selected timezone.
@@ -68,6 +105,8 @@ export function SettingsProvider({ children }) {
   const value = {
     settings,
     updateSettings,
+    updateSessionSettings,
+    clearSessionSettings,
     formatTime,
     getLocalDatetimeValue
   };

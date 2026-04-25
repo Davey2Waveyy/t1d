@@ -29,18 +29,22 @@
   border-radius: var(--radius-lg);
   background: var(--bg-secondary);
   border: 1px solid transparent;
-  transition: all var(--transition-base);
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out),
+              border-color 200ms var(--ease-out);
   height: 100%;
 }
 
-.feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) and (pointer: fine) {
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .feature-card--teal:hover { border-color: rgba(45, 212, 168, 0.3); }
 .feature-card--sky:hover { border-color: rgba(56, 189, 248, 0.3); }
 .feature-card--violet:hover { border-color: rgba(167, 139, 250, 0.3); }
+.feature-card--fuchsia:hover { border-color: rgba(232, 121, 249, 0.3); }
 .feature-card--emerald:hover { border-color: rgba(16, 185, 129, 0.3); }
 .feature-card--amber:hover { border-color: rgba(251, 191, 36, 0.3); }
 .feature-card--rose:hover { border-color: rgba(251, 113, 133, 0.3); }
@@ -58,6 +62,7 @@
 .feature-icon--teal { background: var(--accent-teal-dim); color: var(--accent-teal); }
 .feature-icon--sky { background: var(--accent-sky-dim); color: var(--accent-sky); }
 .feature-icon--violet { background: var(--accent-violet-dim); color: var(--accent-violet); }
+.feature-icon--fuchsia { background: var(--accent-fuchsia-dim); color: var(--accent-fuchsia); }
 .feature-icon--emerald { background: var(--accent-emerald-dim); color: var(--accent-emerald); }
 .feature-icon--amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
 .feature-icon--rose { background: var(--accent-rose-dim); color: var(--accent-rose); }

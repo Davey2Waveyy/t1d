@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity, LayoutDashboard, Utensils, Syringe, TrendingUp,
-  Brain, Upload, Target, Gauge, AlertTriangle, Settings,
+  Brain, Target, Gauge, AlertTriangle, Settings,
   ChevronLeft, ChevronRight, LogOut, User
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,7 +14,6 @@ const navItems = [
   { id: 'insulin', label: 'Insulin Log', icon: Syringe },
   { id: 'glucose', label: 'Glucose Trends', icon: TrendingUp },
   { id: 'icr', label: 'ICR Predictor', icon: Brain },
-  { id: 'dexcom', label: 'Dexcom Import', icon: Upload },
   { id: 'a1c', label: 'A1C Estimator', icon: Target },
   { id: 'correction', label: 'Correction Factor', icon: Gauge },
   { id: 'patterns', label: 'Pattern Alerts', icon: AlertTriangle },

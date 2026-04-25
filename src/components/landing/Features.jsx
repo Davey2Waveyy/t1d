@@ -1,4 +1,4 @@
-import { TrendingUp, Utensils, Syringe, BarChart3, Upload, Brain, AlertTriangle, Target, Gauge, Settings } from 'lucide-react';
+import { Utensils, Syringe, BarChart3, Shield, AlertTriangle, Target, Activity, Calculator } from 'lucide-react';
 import ScrollReveal from '../ui/ScrollReveal';
 import './Features.css';
 
@@ -16,21 +16,27 @@ const features = [
     color: 'sky',
   },
   {
-    icon: Brain,
-    title: 'ICR Predictor',
-    description: 'AI-powered insulin-to-carb ratio predictions based on your personal meal and dosing history.',
-    color: 'violet',
-  },
-  {
     icon: BarChart3,
     title: 'Glucose Trends',
     description: 'Interactive charts with zoomable time ranges. See your time-in-range, standard deviation, and more.',
     color: 'emerald',
   },
   {
-    icon: Upload,
-    title: 'Dexcom Import',
-    description: 'Import your CGM data directly from Dexcom Clarity. Seamless integration with your continuous monitor.',
+    icon: Calculator,
+    title: 'Ratio Tools',
+    description: 'Review insulin-to-carb and correction guidance using the data you already log in the app.',
+    color: 'violet',
+  },
+  {
+    icon: Activity,
+    title: 'Daily Overview',
+    description: 'See today’s glucose, insulin, carb totals, and recent activity in a single dashboard snapshot.',
+    color: 'fuchsia',
+  },
+  {
+    icon: Shield,
+    title: 'Private Workspace',
+    description: 'Authentication and user-scoped data keep each account focused on its own records and preferences.',
     color: 'amber',
   },
   {
@@ -44,12 +50,6 @@ const features = [
     title: 'A1C Estimator',
     description: 'Real-time estimated A1C based on your glucose data. Track your progress over months.',
     color: 'teal',
-  },
-  {
-    icon: Gauge,
-    title: 'Correction Factor',
-    description: 'Calculate and track your insulin sensitivity factor by time of day for precision dosing.',
-    color: 'sky',
   },
 ];
 

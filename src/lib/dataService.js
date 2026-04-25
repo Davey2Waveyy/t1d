@@ -1,10 +1,14 @@
 import { supabase } from './supabase'
+import { mockGlucoseReadings, mockMeals, mockDoses, mockSettings } from './mockData'
 
 // ============================================
 // MEALS
 // ============================================
 
 export async function getMeals(limit = 50) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { data: mockMeals.slice(0, limit), error: null }
+
   const { data, error } = await supabase
     .from('meals')
     .select('*')
@@ -38,6 +42,9 @@ export async function deleteMeal(id) {
 // ============================================
 
 export async function getInsulinDoses(limit = 50) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { data: mockDoses.slice(0, limit), error: null }
+
   const { data, error } = await supabase
     .from('insulin_doses')
     .select('*')
@@ -71,6 +78,13 @@ export async function deleteInsulinDose(id) {
 // ============================================
 
 export async function getGlucoseReadings(hours = 24) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000)
+    const filtered = mockGlucoseReadings.filter(r => new Date(r.recorded_at) >= cutoff)
+    return { data: filtered, error: null }
+  }
+
   const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString()
 
   const { data, error } = await supabase
@@ -82,6 +96,9 @@ export async function getGlucoseReadings(hours = 24) {
 }
 
 export async function getAllGlucoseReadings(limit = 500) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { data: mockGlucoseReadings.slice(0, limit), error: null }
+
   const { data, error } = await supabase
     .from('glucose_readings')
     .select('*')
@@ -108,7 +125,7 @@ export async function addGlucoseReading(reading) {
 
 export async function getUserSettings() {
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: null, error: { message: 'Not authenticated' } }
+  if (!user) return { data: mockSettings, error: null }
 
   const { data, error } = await supabase
     .from('user_settings')

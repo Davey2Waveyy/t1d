@@ -42,7 +42,7 @@ export default function CorrectionFactor() {
           <span className="cf-hero-explain">
             {correctionFactorData.overall
               ? `1 unit of insulin lowers glucose by ~${correctionFactorData.overall} ${settings.glucoseUnit}`
-              : 'Connect Dexcom or log data to calculate your ISF'}
+              : 'Log glucose and insulin data to calculate your ISF'}
           </span>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,15 +11,18 @@ import './Landing.css';
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, continueAsGuest, isGuest } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // If user is already logged in, redirect to dashboard
-  if (user) {
-    navigate('/dashboard');
-    return null;
-  }
+  // If user is already logged in or in guest mode, redirect to dashboard
+  useEffect(() => {
+    if (user || isGuest) {
+      navigate('/dashboard');
+    }
+  }, [user, isGuest, navigate]);
+
+  if (user || isGuest) return null;
 
   return (
     <div className="landing">
@@ -45,7 +48,10 @@ export default function Landing() {
         </div>
       </nav>
 
-      <Hero onGetStarted={() => setShowLogin(true)} />
+      <Hero 
+        onGetStarted={() => setShowLogin(true)} 
+        onContinueAsGuest={() => continueAsGuest()} 
+      />
       <Features />
       <HowItWorks />
       <Footer />

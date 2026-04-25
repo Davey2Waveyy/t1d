@@ -1,92 +1,195 @@
-import { useState } from 'react';
-import { Upload, FileText, CheckCircle, AlertCircle, CloudUpload } from 'lucide-react';
-import './DexcomImport.css';
+import { useState } from 'react'
+import {
+  CheckCircle,
+  Clock,
+  CloudUpload,
+  FileUp,
+  Lock,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+} from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
+import { useSettings } from '../../contexts/SettingsContext'
+import { getIntegrationAccess } from '../../lib/dashboardAccess'
+import { syncNightscoutToSupabase } from '../../lib/nightscoutService'
+import './DexcomImport.css'
 
-export default function DexcomImport() {
-  const [dragOver, setDragOver] = useState(false);
-  const [uploadState, setUploadState] = useState('idle'); // idle, uploading, success
+export default function DexcomImport({ onOpenSettings }) {
+  const { settings } = useSettings()
+  const { user, isGuest } = useAuth()
+  const access = getIntegrationAccess({ user, isGuest })
+  const [dragOver, setDragOver] = useState(false)
+  const [uploadState, setUploadState] = useState('idle')
+  const [syncState, setSyncState] = useState('idle')
+  const [syncMsg, setSyncMsg] = useState('')
+  const [lastSync, setLastSync] = useState(null)
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    setUploadState('uploading');
-    setTimeout(() => setUploadState('success'), 2000);
-  };
+  const hasNightscout = Boolean(settings.nightscoutUrl?.trim() && settings.nightscoutToken?.trim())
+
+  const handleSync = async () => {
+    if (!hasNightscout) {
+      return
+    }
+
+    setSyncState('syncing')
+    setSyncMsg('')
+
+    try {
+      const result = await syncNightscoutToSupabase(
+        settings.nightscoutUrl,
+        settings.nightscoutToken,
+        24
+      )
+
+      const now = new Date().toLocaleString()
+      setLastSync(now)
+      setSyncState('success')
+      setSyncMsg(`Synced ${result.inserted} new reading${result.inserted === 1 ? '' : 's'} from ${result.total} fetched entries.`)
+    } catch (err) {
+      setSyncState('error')
+      setSyncMsg(err.message || 'Sync failed')
+    }
+  }
+
+  const handleDrop = (event) => {
+    event.preventDefault()
+    setDragOver(false)
+    setUploadState('uploading')
+    setTimeout(() => setUploadState('success'), 1800)
+  }
+
+  if (access.showLockedPreview) {
+    return (
+      <section className="sync-panel sync-panel--locked">
+        <div className="sync-panel-header">
+          <div>
+            <span className="sync-eyebrow">Nightscout + Dexcom</span>
+            <h3>Preview only in guest mode</h3>
+          </div>
+          <span className="sync-status sync-status--locked">
+            <Lock size={12} /> Locked
+          </span>
+        </div>
+        <p className="sync-copy">
+          Signed-in users can enter Nightscout credentials for the current session, trigger sync, and keep the Dexcom CSV import workflow visible in the dashboard.
+        </p>
+        <div className="sync-preview-list">
+          <div className="sync-preview-item">
+            <Wifi size={14} />
+            <span>Live Nightscout sync status and manual refresh</span>
+          </div>
+          <div className="sync-preview-item">
+            <FileUp size={14} />
+            <span>Dexcom Clarity CSV drag-and-drop import surface</span>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
-    <div className="dexcom-import">
-      <div className="module-header">
+    <section className="sync-panel">
+      <div className="sync-panel-header">
         <div>
-          <h1 className="module-title">Dexcom Import</h1>
-          <p className="module-subtitle">Import your CGM data from Dexcom Clarity</p>
+          <span className="sync-eyebrow">Nightscout + Dexcom</span>
+          <h3>Import and live sync</h3>
+        </div>
+        <span className="sync-status">
+          {hasNightscout ? <Wifi size={12} /> : <WifiOff size={12} />}
+          {hasNightscout ? 'Connected' : 'Needs setup'}
+        </span>
+      </div>
+
+      <div className="sync-status-card">
+        <div className="sync-status-card__top">
+          <div>
+            <h4>Nightscout connection</h4>
+            <p>
+              {hasNightscout
+                ? settings.nightscoutUrl
+                : 'Add your Nightscout URL and API secret in Settings. They stay in session memory only.'}
+            </p>
+          </div>
+          {hasNightscout ? (
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={handleSync}
+              disabled={syncState === 'syncing'}
+              type="button"
+            >
+              <RefreshCw size={14} className={syncState === 'syncing' ? 'ns-spin' : ''} />
+              {syncState === 'syncing' ? 'Syncing...' : 'Sync Now'}
+            </button>
+          ) : onOpenSettings ? (
+            <button className="btn btn-secondary btn-sm" type="button" onClick={onOpenSettings}>
+              Open Settings
+            </button>
+          ) : null}
+        </div>
+
+        <div className="sync-meta-row">
+          {lastSync ? (
+            <span className="sync-meta-chip">
+              <Clock size={12} /> Last sync {lastSync}
+            </span>
+          ) : (
+            <span className="sync-meta-chip">No sync in this session yet</span>
+          )}
+          {syncState === 'success' && (
+            <span className="sync-meta-chip sync-meta-chip--success">
+              <CheckCircle size={12} /> {syncMsg}
+            </span>
+          )}
+          {syncState === 'error' && (
+            <span className="sync-meta-chip sync-meta-chip--error">{syncMsg}</span>
+          )}
         </div>
       </div>
 
-      <div className="dexcom-grid">
-        <div
-          className={`card dexcom-dropzone ${dragOver ? 'dexcom-dropzone--active' : ''} ${uploadState === 'success' ? 'dexcom-dropzone--success' : ''}`}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={handleDrop}
-        >
-          {uploadState === 'idle' && (
-            <>
-              <div className="dropzone-icon"><CloudUpload size={48} /></div>
-              <h3 className="dropzone-title">Drop your Clarity export here</h3>
-              <p className="dropzone-desc">Supports .csv files from Dexcom Clarity</p>
-              <button className="btn btn-primary" onClick={() => { setUploadState('uploading'); setTimeout(() => setUploadState('success'), 2000); }}>
-                <Upload size={16} /> Browse Files
-              </button>
-            </>
-          )}
-          {uploadState === 'uploading' && (
-            <div className="upload-progress">
-              <div className="upload-spinner" />
-              <p className="dropzone-title">Processing CGM data...</p>
-              <div className="upload-bar"><div className="upload-bar-fill" /></div>
+      <div
+        className={`sync-dropzone ${dragOver ? 'sync-dropzone--active' : ''} ${uploadState === 'success' ? 'sync-dropzone--success' : ''}`}
+        onDragOver={(event) => {
+          event.preventDefault()
+          setDragOver(true)
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+      >
+        {uploadState === 'idle' && (
+          <>
+            <div className="sync-dropzone-icon"><CloudUpload size={26} /></div>
+            <div className="sync-dropzone-copy">
+              <h4>Dexcom Clarity CSV</h4>
+              <p>Drop a Clarity export here to keep the manual import path visible while direct sync is optional.</p>
             </div>
-          )}
-          {uploadState === 'success' && (
-            <div className="upload-success">
-              <CheckCircle size={48} />
-              <h3 className="dropzone-title">Import Successful!</h3>
-              <p className="dropzone-desc">1,247 glucose readings imported</p>
-              <button className="btn btn-secondary" onClick={() => setUploadState('idle')}>Import Another</button>
-            </div>
-          )}
-        </div>
+            <button
+              className="btn btn-primary btn-sm"
+              type="button"
+              onClick={() => {
+                setUploadState('uploading')
+                setTimeout(() => setUploadState('success'), 1800)
+              }}
+            >
+              <FileUp size={14} /> Simulate Import
+            </button>
+          </>
+        )}
 
-        <div className="dexcom-info">
-          <div className="card dexcom-guide">
-            <h3 className="card-title">How to Export from Clarity</h3>
-            <ol className="guide-steps">
-              <li><span className="guide-step-num">1</span> Log in to <strong>clarity.dexcom.com</strong></li>
-              <li><span className="guide-step-num">2</span> Navigate to <strong>Reports</strong></li>
-              <li><span className="guide-step-num">3</span> Select date range and click <strong>Export</strong></li>
-              <li><span className="guide-step-num">4</span> Choose <strong>CSV format</strong></li>
-              <li><span className="guide-step-num">5</span> Upload the file here</li>
-            </ol>
+        {uploadState === 'uploading' && (
+          <div className="sync-upload-state">
+            <RefreshCw size={18} className="ns-spin" />
+            <span>Processing Dexcom CSV...</span>
           </div>
+        )}
 
-          <div className="card dexcom-status">
-            <h3 className="card-title">Connection Status</h3>
-            <div className="status-item">
-              <div className="status-dot status-dot--connected" />
-              <div>
-                <span className="status-label">Dexcom G7</span>
-                <span className="status-detail">Last sync: 2 hours ago</span>
-              </div>
-            </div>
-            <div className="status-item">
-              <div className="status-dot status-dot--pending" />
-              <div>
-                <span className="status-label">Dexcom Clarity API</span>
-                <span className="status-detail">Connection available</span>
-              </div>
-            </div>
+        {uploadState === 'success' && (
+          <div className="sync-upload-state sync-upload-state--success">
+            <CheckCircle size={18} />
+            <span>Sample import completed. Replace this stub with the real parser when ready.</span>
           </div>
-        </div>
+        )}
       </div>
-    </div>
-  );
+    </section>
+  )
 }

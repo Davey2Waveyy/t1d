@@ -6,7 +6,6 @@ import MealLog from '../components/dashboard/MealLog';
 import InsulinLog from '../components/dashboard/InsulinLog';
 import GlucoseTrends from '../components/dashboard/GlucoseTrends';
 import ICRPredictor from '../components/dashboard/ICRPredictor';
-import DexcomImport from '../components/dashboard/DexcomImport';
 import A1CEstimator from '../components/dashboard/A1CEstimator';
 import CorrectionFactor from '../components/dashboard/CorrectionFactor';
 import PatternAlerts from '../components/dashboard/PatternAlerts';
@@ -19,7 +18,6 @@ const viewComponents = {
   insulin: InsulinLog,
   glucose: GlucoseTrends,
   icr: ICRPredictor,
-  dexcom: DexcomImport,
   a1c: A1CEstimator,
   correction: CorrectionFactor,
   patterns: PatternAlerts,

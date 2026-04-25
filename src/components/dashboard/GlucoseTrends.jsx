@@ -121,7 +121,7 @@ export default function GlucoseTrends() {
           <EmptyState
             icon={Droplet}
             title="No glucose data yet"
-            description="Import glucose readings from your CGM or log them manually to see trends"
+            description="Log glucose readings to unlock trend charts, time-in-range breakdowns, and daily summaries"
           />
         ) : data.length === 0 ? (
           <EmptyState
