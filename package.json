@@ -7,9 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "test": "node --test",
+    "preview": "vite preview",
+    "remotion:studio": "remotion studio src/remotion/index.jsx",
+    "remotion:still": "remotion still src/remotion/index.jsx BetaTraceAd out/betatrace-ad-frame-210.png --frame=210",
+    "remotion:render": "remotion render src/remotion/index.jsx BetaTraceAd out/betatrace-ad.mp4"
   },
   "dependencies": {
+    "@remotion/google-fonts": "^4.0.451",
     "@supabase/supabase-js": "^2.101.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
@@ -20,6 +25,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@remotion/cli": "^4.0.451",
+    "@remotion/media": "^4.0.451",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -27,6 +34,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "remotion": "^4.0.451",
     "vite": "^8.0.1"
   }
 }
