@@ -5,6 +5,15 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import PublicPage from './pages/PublicPage';
 import { SettingsProvider } from './contexts/SettingsContext';
+import OverviewLegacy from './components/dashboard/Overview';
+import GlucoseTrendsLegacy from './components/dashboard/GlucoseTrends';
+import MealLogLegacy from './components/dashboard/MealLog';
+import SettingsLegacy from './components/dashboard/Settings';
+import Home from './components/v2/screens/Home';
+import PlaceholderScreen from './components/v2/screens/PlaceholderScreen';
+import GlucoseLogSheet from './components/v2/sheets/GlucoseLogSheet';
+import MealLogSheet from './components/v2/sheets/MealLogSheet';
+import InsulinLogSheet from './components/v2/sheets/InsulinLogSheet';
 
 function ProtectedRoute({ children }) {
   const { user, loading, isGuest } = useAuth();
@@ -57,13 +66,24 @@ function AppRoutes() {
         <Route path="/terms-of-service" element={<PublicPage pageKey="termsOfService" />} />
         <Route path="/contact" element={<PublicPage pageKey="contact" />} />
         <Route
-          path="/dashboard/*"
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Home />} />
+          <Route path="legacy" element={<OverviewLegacy />} />
+          <Route path="glucose" element={<GlucoseTrendsLegacy />} />
+          <Route path="meals" element={<MealLogLegacy />} />
+          <Route path="more" element={<PlaceholderScreen title="More" />} />
+          <Route path="more/insulin" element={<PlaceholderScreen title="Insulin history" />} />
+          <Route path="more/settings" element={<SettingsLegacy />} />
+          <Route path="glucose/log" element={<GlucoseLogSheet />} />
+          <Route path="meals/log" element={<MealLogSheet />} />
+          <Route path="insulin/log" element={<InsulinLogSheet />} />
+        </Route>
       </Routes>
     </>
   );

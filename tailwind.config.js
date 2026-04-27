@@ -2,6 +2,14 @@
 export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  safelist: [
+    'bg-glucose-normal/10', 'bg-glucose-normal/20', 'bg-glucose-normal/30', 'text-glucose-normal', 'border-glucose-normal/30',
+    'bg-glucose-high/10', 'bg-glucose-high/20', 'bg-glucose-high/30', 'text-glucose-high', 'border-glucose-high/30',
+    'bg-glucose-low/10', 'bg-glucose-low/20', 'bg-glucose-low/30', 'text-glucose-low', 'border-glucose-low/30',
+    'bg-chart-carbs/10', 'bg-chart-carbs/20', 'text-chart-carbs', 'border-chart-carbs/30',
+    'bg-chart-insulin/10', 'bg-chart-insulin/20', 'text-chart-insulin', 'border-chart-insulin/30',
+    'bg-text-secondary/20', 'text-text-secondary',
+  ],
   theme: {
     extend: {
       colors: {
