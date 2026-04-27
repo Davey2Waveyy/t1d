@@ -25,28 +25,25 @@ test('ad composition uses Remotion Audio with staticFile for soundtrack', () => 
   assert.doesNotMatch(source, /<audio\b/);
 });
 
-test('ad composition includes LoggingScene after command center', () => {
+test('ad composition includes Morning Logs after cold open', () => {
   const source = readCompositionSource('BetaTraceAd.jsx');
 
   assert.match(source, /function\s+LoggingScene\(/);
-  assert.match(source, /<Sequence\s+from=\{180\}\s+durationInFrames=\{120\}>[\s\S]*<LoggingScene\s+\/>[\s\S]*<\/Sequence>/);
-  assert.match(source, /Meals\.\s+Insulin\.\s+Glucose\./);
-  assert.match(source, /Everything logged in seconds\./);
+  assert.match(source, /<Sequence\s+from=\{55\}\s+durationInFrames=\{95\}>[\s\S]*<LoggingScene\s+\/>[\s\S]*<\/Sequence>/);
+  assert.match(source, /Morning Logs/);
+  assert.match(source, /Meal, dose, glucose in seconds\./);
 });
 
-test('ad composition fills full 1260-frame timeline at 42fps', () => {
+test('ad composition fills the approved day-in-life timeline with a longer closing sequence', () => {
   const source = readCompositionSource('BetaTraceAd.jsx');
 
   const sceneOrder = [
-    ['300', '100', 'ICRPredictorScene', 'ICR Predictor'],
-    ['400', '100', 'PatternAlertsScene', 'Pattern Alerts'],
-    ['500', '100', 'AIChatbotScene', 'Ask Betatrace AI'],
-    ['600', '100', 'NightscoutSyncScene', 'Nightscout Sync'],
-    ['700', '100', 'A1CEstimatorScene', 'A1C Estimate'],
-    ['800', '100', 'CorrectionFactorScene', 'Correction Factor'],
-    ['900', '100', 'DexcomImportScene', 'Dexcom Import'],
-    ['1000', '100', 'BrandStatementScene', 'Built for T1D decisions'],
-    ['1100', '160', 'EndCardScene', 'Betatrace'],
+    ['55', '95', 'LoggingScene', 'Morning Logs'],
+    ['150', '100', 'ICRPredictorScene', 'Breakfast ICR'],
+    ['250', '100', 'CorrectionFactorScene', 'Lunch Correction'],
+    ['350', '110', 'AIChatbotScene', 'Ask Betatrace AI'],
+    ['460', '120', 'PatternAlertsScene', 'Night Patterns'],
+    ['580', '320', 'A1CEstimatorScene', 'A1C over time'],
   ];
 
   for (const [from, duration, component, copy] of sceneOrder) {
@@ -54,18 +51,24 @@ test('ad composition fills full 1260-frame timeline at 42fps', () => {
     assert.match(source, new RegExp(`<Sequence\\s+from=\\{${from}\\}\\s+durationInFrames=\\{${duration}\\}>[\\s\\S]*<${component}\\s+\\/>[\\s\\S]*<\\/Sequence>`));
     assert.match(source, new RegExp(copy));
   }
+
+  assert.doesNotMatch(source, /<NightscoutSyncScene\s+\/>/);
+  assert.doesNotMatch(source, /<DexcomImportScene\s+\/>/);
+  assert.doesNotMatch(source, /<EndCardScene\s+\/>/);
 });
 
-test('Root composition is 42fps and 1260 frames', () => {
+test('Root composition is 30fps and 900 frames', () => {
   const source = readCompositionSource('Root.jsx');
 
-  assert.match(source, /fps=\{42\}/);
-  assert.match(source, /durationInFrames=\{1260\}/);
+  assert.match(source, /fps=\{30\}/);
+  assert.match(source, /durationInFrames=\{900\}/);
 });
 
-test('EndCardScene includes GitHub and LinkedIn URLs', () => {
+test('A1C closing sequence includes GitHub and LinkedIn URLs with a playful bounce', () => {
   const source = readCompositionSource('BetaTraceAd.jsx');
 
   assert.match(source, /github\.com\/Davey2Waveyy\/t1d/);
   assert.match(source, /linkedin\.com\/in\/david-cilliers/);
+  assert.match(source, /impactSquash/);
+  assert.match(source, /ringToOrb/);
 });

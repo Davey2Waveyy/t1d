@@ -266,11 +266,11 @@ function LogRow({ frame, delay, type, detail, value, color }) {
 function LoggingScene() {
   const frame = useCurrentFrame();
 
-  const headlineProgress = interpolate(frame, [54, 74], [0, 1], {
+  const headlineProgress = interpolate(frame, [46, 68], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const scanY = interpolate(frame, [18, 92], [330, 690], {
+  const sunProgress = interpolate(frame, [8, 34], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -278,30 +278,31 @@ function LoggingScene() {
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: colors.bgDeep,
+        background: 'linear-gradient(180deg, #163127 0%, #0D1B16 62%, #07110e 100%)',
         padding: 80,
         overflow: 'hidden',
       }}
     >
-      <SceneLabel frame={frame} text="Meals. Insulin. Glucose." />
+      <SceneLabel frame={frame} text="Morning Logs" />
       <AccentBlob
         frame={frame}
-        color="sky"
-        size={260}
-        bottom={-90}
-        left={-90}
+        color="amber"
+        size={280}
+        top={190}
+        right={-80}
         shape="blob"
       />
       <div
         style={{
           position: 'absolute',
-          top: scanY,
-          left: 86,
-          right: 86,
-          height: 3,
-          background: 'linear-gradient(90deg, transparent, #2dd4a8, transparent)',
-          boxShadow: '0 0 28px rgba(45,212,168,0.7)',
-          opacity: 0.9,
+          top: 250,
+          right: 108,
+          width: 150,
+          height: 150,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, #fbbf24 0%, #2dd4a8 58%, transparent 70%)',
+          opacity: sunProgress * 0.45,
+          transform: `scale(${0.7 + sunProgress * 0.3})`,
         }}
       />
       <div style={{ marginTop: 300 }}>
@@ -345,7 +346,7 @@ function LoggingScene() {
           transform: `translateY(${24 * (1 - headlineProgress)}px)`,
         }}
       >
-        Everything logged in seconds.
+        Meal, dose, glucose in seconds.
       </div>
     </AbsoluteFill>
   );
@@ -368,14 +369,38 @@ function ICRPredictorScene() {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg, padding: 80 }}>
-      <SceneLabel frame={frame} text="ICR Predictor" />
+      <SceneLabel frame={frame} text="Breakfast ICR" />
       <AccentBlob
         frame={frame}
-        color="teal"
+        color="amber"
         size={320}
         top={260}
         right={-150}
         shape="blob"
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: 310,
+          right: 120,
+          width: 210,
+          height: 210,
+          borderRadius: '50%',
+          border: '18px solid #fbbf2444',
+          background: '#10251f',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: 390,
+          right: 198,
+          width: 54,
+          height: 54,
+          borderRadius: '50%',
+          background: '#2dd4a8',
+          boxShadow: '0 0 28px rgba(45,212,168,0.5)',
+        }}
       />
       <div style={{ marginTop: 290 }}>
         <StatCard
@@ -407,7 +432,7 @@ function ICRPredictorScene() {
             textTransform: 'uppercase',
           }}
         >
-          Learned from your real logs
+          Learned from breakfast logs
         </div>
         <div
           style={{
@@ -437,7 +462,7 @@ function ICRPredictorScene() {
             lineHeight: 1.05,
           }}
         >
-          Predict ratios by meal, time, and response.
+          Learn what works by meal and time.
         </div>
         <div
           style={{
@@ -460,39 +485,83 @@ function PatternAlertsScene() {
   const { fps } = useVideoConfig();
 
   return (
-    <AbsoluteFill style={{ backgroundColor: colors.bgDeep, padding: 80 }}>
-      <SceneLabel frame={frame} text="Pattern Alerts" />
+    <AbsoluteFill
+      style={{
+        background: 'linear-gradient(180deg, #07111f 0%, #07110e 66%, #0D1B16 100%)',
+        padding: 80,
+        overflow: 'hidden',
+      }}
+    >
+      <SceneLabel frame={frame} text="Night Patterns" />
       <AccentBlob
         frame={frame}
-        color="amber"
-        size={260}
-        top={-90}
-        right={-70}
+        color="sky"
+        size={280}
+        top={-100}
+        right={-80}
         shape="blob"
       />
+      <div
+        style={{
+          position: 'absolute',
+          top: 245,
+          right: 120,
+          width: 140,
+          height: 140,
+          borderRadius: '50%',
+          background: '#e8f5f0',
+          boxShadow: '0 0 44px rgba(232,245,240,0.3)',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: 220,
+          right: 80,
+          width: 140,
+          height: 140,
+          borderRadius: '50%',
+          background: '#07111f',
+        }}
+      />
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            top: 250 + i * 55,
+            left: 130 + i * 82,
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: '#38bdf8',
+            opacity: 0.45,
+          }}
+        />
+      ))}
       <div style={{ marginTop: 285 }}>
-        <AlertBadge
-          frame={frame}
-          fps={fps}
-          severity="warning"
-          title="Breakfast spike detected"
-          description="Glucose rises 52 mg/dL after cereal on weekdays."
-          delay={10}
-        />
-        <AlertBadge
-          frame={frame}
-          fps={fps}
-          severity="info"
-          title="Evening correction improving"
-          description="Last 6 corrections returned to range 24 minutes faster."
-          delay={28}
-        />
         <AlertBadge
           frame={frame}
           fps={fps}
           severity="critical"
           title="Low risk before sleep"
           description="Active insulin and trend suggest a snack check tonight."
+          delay={10}
+        />
+        <AlertBadge
+          frame={frame}
+          fps={fps}
+          severity="info"
+          title="Overnight pattern found"
+          description="Three late workouts ended with a 2 a.m. dip."
+          delay={28}
+        />
+        <AlertBadge
+          frame={frame}
+          fps={fps}
+          severity="warning"
+          title="Morning spike link"
+          description="Late lows often rebound after breakfast."
           delay={46}
         />
       </div>
@@ -508,7 +577,7 @@ function PatternAlertsScene() {
           lineHeight: 1.05,
         }}
       >
-        Betatrace finds the patterns hiding in routine.
+        Spot the risks before sleep.
       </div>
     </AbsoluteFill>
   );
@@ -657,43 +726,97 @@ function A1CEstimatorScene() {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const a1cValue = interpolate(frame, [12, 60], [0, 6.8], {
+  const a1cValue = interpolate(frame, [18, 96], [0, 6.8], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const ringProgress = interpolate(frame, [8, 65], [0, 0.78], {
+  const ringProgress = interpolate(frame, [18, 110], [0, 0.78], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const labelAppear = spring({
-    frame: frame - 40,
+  const textOpacity = interpolate(frame, [0, 22, 128, 150], [0, 1, 1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const ringToOrb = interpolate(frame, [142, 172], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const dropProgress = spring({
+    frame: frame - 166,
     fps,
-    config: { damping: 18, stiffness: 90 },
+    config: { damping: 9, stiffness: 82, mass: 0.9 },
+  });
+  const impactSquash = interpolate(frame, [204, 214, 230], [0, 1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const wordmarkProgress = interpolate(frame, [218, 246], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const linksProgress = interpolate(frame, [250, 282], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
   });
 
   const circumference = 2 * Math.PI * 140;
+  const orbSize = interpolate(ringToOrb, [0, 1], [340, 150]);
+  const orbTop = interpolate(dropProgress, [0, 1], [240, 500]);
+  const orbLeft = interpolate(ringToOrb, [0, 1], [370, 465]);
+  const orbScaleX = 1 + impactSquash * 0.1;
+  const orbScaleY = 1 - impactSquash * 0.13;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: colors.bg, padding: 80 }}>
-      <SceneLabel frame={frame} text="A1C Estimate" />
+    <AbsoluteFill
+      style={{
+        backgroundColor: colors.bgDeep,
+        padding: 80,
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ opacity: textOpacity }}>
+        <SceneLabel frame={frame} text="A1C over time" />
+      </div>
       <AccentBlob
         frame={frame}
         color="emerald"
-        size={220}
-        top={-80}
-        left={-80}
+        size={260}
+        top={-95}
+        left={-95}
         shape="blob"
       />
       <div
         style={{
-          marginTop: 240,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          position: 'absolute',
+          top: orbTop,
+          left: orbLeft,
+          width: orbSize,
+          height: orbSize,
+          transform: `scale(${orbScaleX}, ${orbScaleY})`,
+          transformOrigin: 'center bottom',
         }}
       >
-        <div style={{ position: 'relative', width: 340, height: 340 }}>
-          <svg viewBox="0 0 320 320" style={{ width: 340, height: 340 }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle at 35% 35%, #4eedc4, #2dd4a8)',
+              boxShadow: '0 0 72px rgba(45,212,168,0.55)',
+              opacity: ringToOrb,
+            }}
+          />
+          <svg
+            viewBox="0 0 320 320"
+            style={{
+              width: '100%',
+              height: '100%',
+              opacity: 1 - ringToOrb,
+            }}
+          >
             <circle
               cx="160"
               cy="160"
@@ -729,6 +852,7 @@ function A1CEstimatorScene() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
+              opacity: textOpacity * (1 - ringToOrb),
             }}
           >
             <div
@@ -758,13 +882,16 @@ function A1CEstimatorScene() {
       </div>
       <div
         style={{
-          marginTop: 52,
+          position: 'absolute',
+          top: 680,
+          left: 80,
+          right: 80,
           borderRadius: 24,
           background: colors.card,
           border: '2px solid #10b98144',
           padding: '28px 32px',
-          opacity: labelAppear,
-          transform: `translateY(${24 * (1 - labelAppear)}px)`,
+          opacity: textOpacity,
+          transform: `translateY(${24 * (1 - textOpacity)}px)`,
         }}
       >
         <div
@@ -775,7 +902,78 @@ function A1CEstimatorScene() {
             lineHeight: 1.1,
           }}
         >
-          Calculated from your last 90 days of readings.
+          A 90-day signal from your readings.
+        </div>
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          top: 685,
+          left: 80,
+          right: 80,
+          textAlign: 'center',
+          color: colors.text,
+          fontFamily: fonts.serif,
+          fontSize: 112,
+          fontWeight: 500,
+          letterSpacing: -2,
+          opacity: wordmarkProgress,
+          transform: `translateY(${26 * (1 - wordmarkProgress)}px)`,
+        }}
+      >
+        Betatrace
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          top: 815,
+          left: 80,
+          right: 80,
+          color: colors.muted,
+          fontFamily: fonts.sans,
+          fontSize: 34,
+          fontWeight: 800,
+          lineHeight: 1.2,
+          textAlign: 'center',
+          opacity: wordmarkProgress,
+          transform: `translateY(${18 * (1 - wordmarkProgress)}px)`,
+        }}
+      >
+        Diabetes data that finally talks back.
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 130,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 22,
+          opacity: linksProgress,
+          transform: `translateY(${14 * (1 - linksProgress)}px)`,
+        }}
+      >
+        <div
+          style={{
+            color: colors.teal,
+            fontFamily: fonts.mono,
+            fontSize: 28,
+            fontWeight: 700,
+          }}
+        >
+          github.com/Davey2Waveyy/t1d
+        </div>
+        <div
+          style={{
+            color: colors.muted,
+            fontFamily: fonts.sans,
+            fontSize: 26,
+            fontWeight: 700,
+          }}
+        >
+          linkedin.com/in/david-cilliers
         </div>
       </div>
     </AbsoluteFill>
@@ -799,7 +997,7 @@ function CorrectionFactorScene() {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bgDeep, padding: 80 }}>
-      <SceneLabel frame={frame} text="Correction Factor" />
+      <SceneLabel frame={frame} text="Lunch Correction" />
       <AccentBlob
         frame={frame}
         color="rose"
@@ -847,7 +1045,7 @@ function CorrectionFactorScene() {
           lineHeight: 1.05,
         }}
       >
-        Know exactly how much to correct.
+        From high to target with less math.
       </div>
     </AbsoluteFill>
   );
@@ -1146,41 +1344,26 @@ export default function BetaTraceAd() {
           )
         }
       />
-      <Sequence from={0} durationInFrames={60}>
+      <Sequence from={0} durationInFrames={55}>
         <ColdOpen />
       </Sequence>
-      <Sequence from={60} durationInFrames={120}>
-        <CommandCenter />
-      </Sequence>
-      <Sequence from={180} durationInFrames={120}>
+      <Sequence from={55} durationInFrames={95}>
         <LoggingScene />
       </Sequence>
-      <Sequence from={300} durationInFrames={100}>
+      <Sequence from={150} durationInFrames={100}>
         <ICRPredictorScene />
       </Sequence>
-      <Sequence from={400} durationInFrames={100}>
-        <PatternAlertsScene />
-      </Sequence>
-      <Sequence from={500} durationInFrames={100}>
-        <AIChatbotScene />
-      </Sequence>
-      <Sequence from={600} durationInFrames={100}>
-        <NightscoutSyncScene />
-      </Sequence>
-      <Sequence from={700} durationInFrames={100}>
-        <A1CEstimatorScene />
-      </Sequence>
-      <Sequence from={800} durationInFrames={100}>
+      <Sequence from={250} durationInFrames={100}>
         <CorrectionFactorScene />
       </Sequence>
-      <Sequence from={900} durationInFrames={100}>
-        <DexcomImportScene />
+      <Sequence from={350} durationInFrames={110}>
+        <AIChatbotScene />
       </Sequence>
-      <Sequence from={1000} durationInFrames={100}>
-        <BrandStatementScene />
+      <Sequence from={460} durationInFrames={120}>
+        <PatternAlertsScene />
       </Sequence>
-      <Sequence from={1100} durationInFrames={160}>
-        <EndCardScene />
+      <Sequence from={580} durationInFrames={320}>
+        <A1CEstimatorScene />
       </Sequence>
     </AbsoluteFill>
   );
