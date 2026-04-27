@@ -1,0 +1,29 @@
+:root {
+  --surface-base: #0D1B16;
+  --surface-raised: #132B23;
+  --surface-overlay: #1A3D32;
+  --surface-input: #0A1410;
+  --primary: #56f1c3;
+  --glucose-normal: #2DD4A8;
+  --glucose-high: #FBBF24;
+  --glucose-low: #FB7185;
+  --chart-carbs: #38BDF8;
+  --chart-insulin: #A78BFA;
+  --text-primary: #E8F5F0;
+  --text-secondary: #8BA89F;
+  --text-muted: #4A6B60;
+  --border-subtle: rgba(45, 212, 168, 0.08);
+  --border-default: rgba(45, 212, 168, 0.15);
+  --border-strong: rgba(45, 212, 168, 0.30);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe-nav { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
