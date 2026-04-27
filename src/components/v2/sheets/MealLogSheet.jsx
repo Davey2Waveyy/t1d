@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sheet from '../ui/Sheet';
 import Field, { inputCls } from '../ui/Field';
 import { addMeal } from '../../../lib/dataService';
+import { useOnline } from '../../../hooks/useOnline';
 
 const TYPES = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -12,12 +13,14 @@ export default function MealLogSheet() {
   const [form, setForm] = useState({ meal_type: 'breakfast', food_name: '', carbs: '', protein: '', fat: '', notes: '' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const online = useOnline();
 
   const close = () => navigate(state?.background ?? '/dashboard');
   const set = (key) => (event) => setForm({ ...form, [key]: event.target.value });
 
   async function submit(event) {
     event.preventDefault();
+    if (!online) return;
     setSaving(true);
     setError(null);
     const { error: saveError } = await addMeal({
@@ -60,9 +63,10 @@ export default function MealLogSheet() {
         <Field label="Carbs" unit="g">
           <input type="number" inputMode="decimal" autoFocus value={form.carbs} onChange={set('carbs')} className={inputCls} />
         </Field>
+        {!online && <p className="text-glucose-high text-body-base">You're offline - reconnect to save this meal.</p>}
         {error && <p className="text-glucose-low text-body-base">{error}</p>}
-        <button type="submit" disabled={saving} className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">
-          {saving ? 'Saving...' : 'Save meal'}
+        <button type="submit" disabled={!online || saving} className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">
+          {!online ? 'Offline - try later' : (saving ? 'Saving...' : 'Save meal')}
         </button>
       </form>
     </Sheet>

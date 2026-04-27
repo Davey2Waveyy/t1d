@@ -92,6 +92,10 @@ export function AuthProvider({ children }) {
   }
 
   async function signOut() {
+    if (typeof window !== 'undefined' && 'caches' in window) {
+      await caches.delete('data-reads-v1')
+    }
+
     const { error } = await supabase.auth.signOut()
     if (!error) {
       setUser(null)

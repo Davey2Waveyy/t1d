@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sheet from '../ui/Sheet';
 import Field, { inputCls } from '../ui/Field';
 import { addInsulinDose } from '../../../lib/dataService';
+import { useOnline } from '../../../hooks/useOnline';
 
 const TYPES = ['bolus', 'basal', 'correction'];
 
@@ -12,12 +13,14 @@ export default function InsulinLogSheet() {
   const [form, setForm] = useState({ insulin_type: 'bolus', brand: '', units: '', injection_site: '', notes: '' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const online = useOnline();
 
   const close = () => navigate(state?.background ?? '/dashboard');
   const set = (key) => (event) => setForm({ ...form, [key]: event.target.value });
 
   async function submit(event) {
     event.preventDefault();
+    if (!online) return;
     setSaving(true);
     setError(null);
     const { error: saveError } = await addInsulinDose({
@@ -58,9 +61,10 @@ export default function InsulinLogSheet() {
         <Field label="Brand (optional)">
           <input type="text" value={form.brand} onChange={set('brand')} placeholder="e.g. Humalog" className={inputCls} />
         </Field>
+        {!online && <p className="text-glucose-high text-body-base">You're offline - reconnect to save this dose.</p>}
         {error && <p className="text-glucose-low text-body-base">{error}</p>}
-        <button type="submit" disabled={saving} className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">
-          {saving ? 'Saving...' : 'Save dose'}
+        <button type="submit" disabled={!online || saving} className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">
+          {!online ? 'Offline - try later' : (saving ? 'Saving...' : 'Save dose')}
         </button>
       </form>
     </Sheet>

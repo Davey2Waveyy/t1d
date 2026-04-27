@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sheet from '../ui/Sheet';
 import Field, { inputCls } from '../ui/Field';
 import { addGlucoseReading } from '../../../lib/dataService';
+import { useOnline } from '../../../hooks/useOnline';
 
 export default function GlucoseLogSheet() {
   const navigate = useNavigate();
@@ -11,12 +12,13 @@ export default function GlucoseLogSheet() {
   const [unit, setUnit] = useState('mg/dL');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const online = useOnline();
 
   const close = () => navigate(state?.background ?? '/dashboard');
 
   async function submit(event) {
     event.preventDefault();
-    if (!value) return;
+    if (!value || !online) return;
 
     setSaving(true);
     setError(null);
@@ -63,13 +65,14 @@ export default function GlucoseLogSheet() {
             ))}
           </div>
         </Field>
+        {!online && <p className="text-glucose-high text-body-base">You're offline - reconnect to save this reading.</p>}
         {error && <p className="text-glucose-low text-body-base">{error}</p>}
         <button
           type="submit"
-          disabled={!value || saving}
+          disabled={!online || !value || saving}
           className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform"
         >
-          {saving ? 'Saving...' : 'Save reading'}
+          {!online ? 'Offline - try later' : (saving ? 'Saving...' : 'Save reading')}
         </button>
       </form>
     </Sheet>
