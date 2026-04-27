@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ============================================
    BETATRACE — Design System & Global Styles
    ============================================ */
@@ -769,4 +773,12 @@ input[type="number"] {
     transform: none;
     box-shadow: none;
   }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.icon-fill {
+  font-variation-settings: 'FILL' 1;
 }
