@@ -57,7 +57,7 @@ function AppRoutes() {
         <Route path="/terms-of-service" element={<PublicPage pageKey="termsOfService" />} />
         <Route path="/contact" element={<PublicPage pageKey="contact" />} />
         <Route
-          path="/dashboard"
+          path="/dashboard/*"
           element={
             <ProtectedRoute>
               <Dashboard />

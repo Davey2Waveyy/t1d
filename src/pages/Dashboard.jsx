@@ -1,55 +1,48 @@
-import { useState, useCallback } from 'react';
-import { Menu } from 'lucide-react';
-import Sidebar from '../components/dashboard/Sidebar';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import Overview from '../components/dashboard/Overview';
 import MealLog from '../components/dashboard/MealLog';
-import InsulinLog from '../components/dashboard/InsulinLog';
 import GlucoseTrends from '../components/dashboard/GlucoseTrends';
-import ICRPredictor from '../components/dashboard/ICRPredictor';
-import A1CEstimator from '../components/dashboard/A1CEstimator';
-import CorrectionFactor from '../components/dashboard/CorrectionFactor';
-import PatternAlerts from '../components/dashboard/PatternAlerts';
 import Settings from '../components/dashboard/Settings';
-import './Dashboard.css';
+import AppContainer from '../components/v2/shell/AppContainer';
+import TopBar from '../components/v2/shell/TopBar';
+import BottomNav from '../components/v2/shell/BottomNav';
+import LogActionSheet from '../components/v2/sheets/LogActionSheet';
+import PlaceholderScreen from '../components/v2/screens/PlaceholderScreen';
 
-const viewComponents = {
-  overview: Overview,
-  meals: MealLog,
-  insulin: InsulinLog,
-  glucose: GlucoseTrends,
-  icr: ICRPredictor,
-  a1c: A1CEstimator,
-  correction: CorrectionFactor,
-  patterns: PatternAlerts,
-  settings: Settings,
+const legacyByPath = {
+  '/dashboard': Overview,
+  '/dashboard/glucose': GlucoseTrends,
+  '/dashboard/meals': MealLog,
+  '/dashboard/more/settings': Settings,
+};
+
+const placeholders = {
+  '/dashboard/more': 'More',
+  '/dashboard/more/insulin': 'Insulin history',
+  '/dashboard/glucose/log': 'Glucose log sheet',
+  '/dashboard/meals/log': 'Meal log sheet',
+  '/dashboard/insulin/log': 'Insulin log sheet',
 };
 
 export default function Dashboard() {
-  const [activeView, setActiveView] = useState('overview');
-  const [mobileMenu, setMobileMenu] = useState(false);
-
-  const handleViewChange = useCallback((v) => {
-    setActiveView(v);
-    setMobileMenu(false);
-  }, []);
-
-  const ActiveComponent = viewComponents[activeView] || Overview;
+  const [logOpen, setLogOpen] = useState(false);
+  const { user } = useAuth();
+  const location = useLocation();
+  const ActiveComponent = legacyByPath[location.pathname];
+  const title = placeholders[location.pathname] ?? 'Dashboard';
 
   return (
-    <div className="dashboard">
-      <Sidebar activeView={activeView} onViewChange={handleViewChange} />
-      
-      <main className="dashboard-main">
-        <div className="dashboard-mobile-header">
-          <button className="btn btn-icon" onClick={() => setMobileMenu(!mobileMenu)}>
-            <Menu size={20} />
-          </button>
-          <span className="dashboard-mobile-title">Betatrace</span>
-        </div>
-        <div className="dashboard-content">
-          <ActiveComponent key={activeView} onViewChange={handleViewChange} />
+    <AppContainer>
+      <TopBar user={user} />
+      <main className="pt-16 lg:pt-0 lg:col-span-2">
+        <div className="px-md py-md lg:px-0">
+          {ActiveComponent ? <ActiveComponent /> : <PlaceholderScreen title={title} />}
         </div>
       </main>
-    </div>
+      <BottomNav onPressLog={() => setLogOpen(true)} />
+      <LogActionSheet open={logOpen} onOpenChange={setLogOpen} />
+    </AppContainer>
   );
 }
