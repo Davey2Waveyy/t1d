@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Betatrace - Overview</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#56f1c3",
+                        "surface-tint": "#3edeb2",
+                        "glucose-normal": "#2DD4A8",
+                        "surface-bright": "#333b37",
+                        "border-default": "rgba(45, 212, 168, 0.15)",
+                        "inverse-primary": "#006c53",
+                        "border-strong": "rgba(45, 212, 168, 0.30)",
+                        "secondary-fixed": "#cde9dc",
+                        "on-surface-variant": "#bbcac2",
+                        "surface-container-lowest": "#09100d",
+                        "on-tertiary": "#4e2600",
+                        "on-secondary-fixed-variant": "#334c43",
+                        "surface-container-high": "#242c28",
+                        "on-primary-fixed-variant": "#00513e",
+                        "surface-raised": "#132B23",
+                        "chart-carbs": "#38BDF8",
+                        "border-subtle": "rgba(45, 212, 168, 0.08)",
+                        "surface-container-highest": "#2f3633",
+                        "primary-fixed-dim": "#3edeb2",
+                        "surface-base": "#0D1B16",
+                        "background": "#0e1512",
+                        "surface-input": "#0A1410",
+                        "tertiary": "#ffcfad",
+                        "surface-dim": "#0e1512",
+                        "on-tertiary-fixed": "#2f1400",
+                        "on-secondary-container": "#a0bbaf",
+                        "error-container": "#93000a",
+                        "chart-insulin": "#A78BFA",
+                        "on-primary-fixed": "#002117",
+                        "tertiary-fixed-dim": "#ffb781",
+                        "tertiary-fixed": "#ffdcc4",
+                        "outline": "#85948d",
+                        "surface-overlay": "#1A3D32",
+                        "tertiary-container": "#ffa965",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed": "#072018",
+                        "on-background": "#dde4df",
+                        "on-primary": "#00382a",
+                        "glucose-high": "#FBBF24",
+                        "on-surface": "#dde4df",
+                        "on-tertiary-fixed-variant": "#6f3800",
+                        "surface-container-low": "#161d1a",
+                        "text-primary": "#E8F5F0",
+                        "primary-container": "#2dd4a8",
+                        "text-secondary": "#8BA89F",
+                        "secondary-container": "#334c43",
+                        "surface-variant": "#2f3633",
+                        "text-muted": "#4A6B60",
+                        "on-tertiary-container": "#773c00",
+                        "secondary": "#b2cdc0",
+                        "primary-fixed": "#63fbcd",
+                        "on-secondary": "#1d352d",
+                        "glucose-low": "#FB7185",
+                        "outline-variant": "#3c4a44",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#005742",
+                        "surface": "#0e1512",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#2b322f",
+                        "inverse-surface": "#dde4df",
+                        "secondary-fixed-dim": "#b2cdc0",
+                        "surface-container": "#1a211e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "lg": "1.5rem",
+                        "xl": "3rem",
+                        "base": "4px",
+                        "md": "1rem",
+                        "sm": "0.5rem",
+                        "xs": "0.25rem"
+                    },
+                    fontFamily: {
+                        "body-base": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "stat-lg": ["JetBrains Mono"],
+                        "headline-hero": ["JetBrains Mono"]
+                    },
+                    fontSize: {
+                        "body-base": ["15px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "label-caps": ["11px", { lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "600" }],
+                        "title-lg": ["22px", { lineHeight: "1.2", fontWeight: "600" }],
+                        "data-mono": ["13px", { lineHeight: "1", fontWeight: "500" }],
+                        "stat-lg": ["28px", { lineHeight: "1.2", letterSpacing: "-0.03em", fontWeight: "600" }],
+                        "headline-hero": ["56px", { lineHeight: "1", letterSpacing: "-0.02em", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+        
+        /* Chart specific styles for static display */
+        .chart-grid {
+            background-size: 100% 25%;
+            background-image: linear-gradient(to bottom, rgba(45, 212, 168, 0.05) 1px, transparent 1px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-base text-text-primary antialiased pt-safe selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col items-center">
+<!-- App Container for Mobile Constraint -->
+<div class="w-full max-w-[480px] min-h-screen relative flex flex-col pb-24 md:pb-0">
+<!-- TopAppBar Shared Component -->
+<header class="fixed top-0 w-full max-w-[480px] z-50 bg-slate-950/80 backdrop-blur-xl font-['Inter'] tracking-tight flex items-center justify-between px-4 h-16 pt-safe">
+<div class="flex items-center gap-sm">
+<img alt="User Profile Avatar" class="w-8 h-8 rounded-full border border-border-default" data-alt="Small circular profile picture of a young man with dark hair smiling gently, studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTvn_mQMds3h56WsjgpLu1s-65n-QN7OrYZiMjFdNIKNG4PeQrPf3OXtnI9RU28bRUxXdpnUhYwogFnkr6Qbgac-NsT7mfgv4mDQnkCi6x-kwnvVMaHxPSOizlowJCIlkrnmNKHzS0_B2oiID5_XxKqMmV5Nwm0QO9ltRpLt_juSydKvT8I4UKUxJpto6YKRNTDOGjoC8s7n7rQjKNjLHKr1OH24rWr_pD0YlOjzRwGb8lfuv22AqRf8EaVs8ON1BFUhMkvUQYvQtL"/>
+</div>
+<div class="text-lg font-bold tracking-widest text-slate-50">GLUCOSE</div>
+<button class="w-10 h-10 flex items-center justify-center text-teal-400 hover:bg-slate-800 rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-16 px-md py-lg flex flex-col gap-lg overflow-y-auto">
+<!-- Greeting -->
+<div class="flex flex-col gap-xs">
+<h1 class="font-title-lg text-title-lg text-text-primary">Good morning, David</h1>
+<p class="font-body-base text-body-base text-text-secondary">Here is your daily snapshot.</p>
+</div>
+<!-- Current Glucose Card (Hero) -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col gap-md relative overflow-hidden group hover:border-border-default transition-colors">
+<!-- Decorative background glow based on status -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-glucose-normal/10 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase">Current</span>
+<div class="bg-glucose-normal/20 text-glucose-normal px-2 py-1 rounded border border-glucose-normal/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="font-label-caps text-label-caps">IN RANGE</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-hero text-headline-hero text-text-primary">7.8</span>
+<span class="font-data-mono text-data-mono text-text-secondary">mmol/L</span>
+</div>
+<div class="flex items-center gap-2 text-text-muted mt-auto pt-sm border-t border-border-subtle">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+<span class="font-data-mono text-data-mono">Updated 2m ago</span>
+<span class="material-symbols-outlined text-[16px] text-glucose-normal ml-auto" data-weight="fill">trending_flat</span>
+</div>
+</div>
+<!-- 2x2 Stats Grid -->
+<div class="grid grid-cols-2 gap-sm">
+<!-- Carbs -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col justify-between hover:border-border-default transition-colors h-[100px]">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase">Today's Carbs</span>
+<div class="flex items-baseline gap-1">
+<span class="font-stat-lg text-stat-lg text-text-primary">84</span>
+<span class="font-data-mono text-data-mono text-chart-carbs">g</span>
+</div>
+</div>
+<!-- Insulin -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col justify-between hover:border-border-default transition-colors h-[100px]">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase">Last Insulin</span>
+<div class="flex items-baseline gap-1">
+<span class="font-stat-lg text-stat-lg text-text-primary">6</span>
+<span class="font-data-mono text-data-mono text-chart-insulin">u</span>
+</div>
+</div>
+<!-- TIR -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col justify-between hover:border-border-default transition-colors h-[100px]">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase">Time in Range</span>
+<div class="flex items-baseline gap-1">
+<span class="font-stat-lg text-stat-lg text-text-primary">71</span>
+<span class="font-data-mono text-data-mono text-text-secondary">%</span>
+</div>
+</div>
+<!-- A1C -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col justify-between hover:border-border-default transition-colors h-[100px]">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase">A1C Est.</span>
+<div class="flex items-baseline gap-1">
+<span class="font-stat-lg text-stat-lg text-text-primary">7.2</span>
+<span class="font-data-mono text-data-mono text-text-secondary">%</span>
+</div>
+</div>
+</div>
+<!-- Glucose Chart Section -->
+<div class="flex flex-col gap-sm">
+<div class="flex justify-between items-end">
+<h2 class="font-title-lg text-[18px] font-semibold text-text-primary">24h Trend</h2>
+<button class="font-data-mono text-data-mono text-primary flex items-center gap-1">
+                        Details <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] h-[160px] relative flex flex-col">
+<!-- Static Chart Representation -->
+<div class="absolute top-8 left-0 right-0 h-[80px] bg-glucose-normal/5 border-y border-glucose-normal/10"></div>
+<div class="flex-1 chart-grid relative w-full h-full flex items-end px-2">
+<!-- Simulated SVG Line -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-glucose-normal drop-shadow-[0_2px_4px_rgba(45,212,168,0.3)]" d="M0,60 Q10,50 20,55 T40,40 T60,70 T80,30 T100,45" fill="none" stroke="currentColor" stroke-width="2"></path>
+<circle class="fill-glucose-normal" cx="100" cy="45" r="3"></circle>
+</svg>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between text-text-muted font-data-mono text-[10px] mt-2 pt-2 border-t border-border-subtle">
+<span>12 PM</span>
+<span>6 PM</span>
+<span>12 AM</span>
+<span>6 AM</span>
+<span>Now</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity List -->
+<div class="flex flex-col gap-sm">
+<h2 class="font-title-lg text-[18px] font-semibold text-text-primary">Recent Activity</h2>
+<div class="flex flex-col gap-2">
+<!-- Log Item 1: Meal -->
+<div class="bg-surface-overlay border border-border-subtle rounded-lg p-3 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-chart-carbs/20 flex items-center justify-center text-chart-carbs">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-base text-body-base text-text-primary font-medium">Breakfast</span>
+<span class="font-data-mono text-[11px] text-text-secondary">Oatmeal &amp; Berries</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-data-mono text-data-mono text-chart-carbs">45g</span>
+<span class="font-data-mono text-[11px] text-text-muted">08:30</span>
+</div>
+</div>
+<!-- Log Item 2: Insulin -->
+<div class="bg-surface-overlay border border-border-subtle rounded-lg p-3 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-chart-insulin/20 flex items-center justify-center text-chart-insulin">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-base text-body-base text-text-primary font-medium">Bolus</span>
+<span class="font-data-mono text-[11px] text-text-secondary">Rapid-acting</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-data-mono text-data-mono text-chart-insulin">6u</span>
+<span class="font-data-mono text-[11px] text-text-muted">08:25</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shared Component -->
+<!-- Mobile only nav -->
+<nav class="md:hidden fixed bottom-0 w-full max-w-[480px] z-50 pb-safe bg-slate-950/80 backdrop-blur-xl border-t border-slate-800 text-[10px] font-medium font-['Inter'] uppercase tracking-wider flex justify-around items-center h-20 px-2">
+<button class="flex flex-col items-center justify-center text-teal-400 active:scale-90 transition-all duration-200 w-16 h-full gap-1">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span>Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full gap-1">
+<span class="material-symbols-outlined text-[24px]">insights</span>
+<span>Glucose</span>
+</button>
+<!-- Log Primary FAB-style Button in Nav -->
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full -mt-6">
+<div class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[28px]" data-weight="fill">add_circle</span>
+</div>
+<span class="mt-1">Log</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full gap-1">
+<span class="material-symbols-outlined text-[24px]">restaurant</span>
+<span>Meals</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full gap-1">
+<span class="material-symbols-outlined text-[24px]">more_horiz</span>
+<span>More</span>
+</button>
+</nav>
+</div>
+</body></html>

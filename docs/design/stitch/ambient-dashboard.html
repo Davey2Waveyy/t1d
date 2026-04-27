@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Abstract Ambient - Glucose OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "outline": "#85948d",
+                        "glucose-normal": "#2DD4A8",
+                        "secondary-fixed-dim": "#b2cdc0",
+                        "text-primary": "#E8F5F0",
+                        "secondary-fixed": "#cde9dc",
+                        "tertiary": "#ffcfad",
+                        "surface-raised": "#132B23",
+                        "error-container": "#93000a",
+                        "surface-tint": "#3edeb2",
+                        "border-default": "rgba(45, 212, 168, 0.15)",
+                        "outline-variant": "#3c4a44",
+                        "on-tertiary-fixed": "#2f1400",
+                        "on-background": "#dde4df",
+                        "tertiary-fixed-dim": "#ffb781",
+                        "primary": "#56f1c3",
+                        "surface-bright": "#333b37",
+                        "border-subtle": "rgba(45, 212, 168, 0.08)",
+                        "on-surface": "#dde4df",
+                        "on-surface-variant": "#bbcac2",
+                        "border-strong": "rgba(45, 212, 168, 0.30)",
+                        "surface-container-high": "#242c28",
+                        "surface-container-lowest": "#09100d",
+                        "on-secondary-fixed": "#072018",
+                        "on-secondary": "#1d352d",
+                        "secondary-container": "#334c43",
+                        "text-muted": "#4A6B60",
+                        "surface-dim": "#0e1512",
+                        "tertiary-container": "#ffa965",
+                        "surface-variant": "#2f3633",
+                        "surface-container-low": "#161d1a",
+                        "primary-fixed": "#63fbcd",
+                        "surface-container": "#1a211e",
+                        "on-secondary-fixed-variant": "#334c43",
+                        "chart-insulin": "#A78BFA",
+                        "inverse-surface": "#dde4df",
+                        "inverse-on-surface": "#2b322f",
+                        "glucose-high": "#FBBF24",
+                        "tertiary-fixed": "#ffdcc4",
+                        "surface": "#0e1512",
+                        "background": "#0e1512",
+                        "on-tertiary-container": "#773c00",
+                        "on-primary": "#00382a",
+                        "chart-carbs": "#38BDF8",
+                        "inverse-primary": "#006c53",
+                        "secondary": "#b2cdc0",
+                        "surface-overlay": "#1A3D32",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#002117",
+                        "on-tertiary": "#4e2600",
+                        "primary-container": "#2dd4a8",
+                        "glucose-low": "#FB7185",
+                        "surface-input": "#0A1410",
+                        "surface-container-highest": "#2f3633",
+                        "on-tertiary-fixed-variant": "#6f3800",
+                        "surface-base": "#0D1B16",
+                        "on-error": "#690005",
+                        "on-primary-container": "#005742",
+                        "on-primary-fixed-variant": "#00513e",
+                        "on-secondary-container": "#a0bbaf",
+                        "primary-fixed-dim": "#3edeb2",
+                        "text-secondary": "#8BA89F"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "0.25rem",
+                        "xl": "3rem",
+                        "sm": "0.5rem",
+                        "md": "1rem",
+                        "base": "4px",
+                        "lg": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Inter"],
+                        "headline-hero": ["JetBrains Mono"],
+                        "title-lg": ["Inter"],
+                        "stat-lg": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-base": ["15px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-hero": ["56px", { "lineHeight": "1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-lg": ["22px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "stat-lg": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "data-mono": ["13px", { "lineHeight": "1", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0D1B16; /* surface-base */
+            overflow-x: hidden;
+        }
+        .organic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 30%, rgba(45, 212, 168, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, rgba(26, 61, 50, 0.4) 0%, transparent 100%);
+            filter: blur(40px);
+        }
+        .glass-bubble {
+            background: rgba(26, 61, 50, 0.2); /* surface-overlay low opacity */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(232, 245, 240, 0.05);
+        }
+        .glow-text {
+            text-shadow: 0 0 40px rgba(45, 212, 168, 0.6);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-text-primary font-body-base antialiased min-h-screen flex flex-col selection:bg-primary selection:text-on-primary pb-safe">
+<!-- Abstract Fluid Background -->
+<div class="organic-bg"></div>
+<!-- TopAppBar JSON Component -->
+<nav class="bg-zinc-950/80 backdrop-blur-xl fixed top-0 w-full border-b-2 border-zinc-800 flex justify-between items-center px-6 h-16 w-full z-50">
+<button class="scale-95 active:duration-75 text-teal-400 hover:bg-zinc-800/50 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-black italic text-teal-400 tracking-tighter text-xl">GLUCOSE_OS</h1>
+<button class="scale-95 active:duration-75 text-teal-400 hover:bg-zinc-800/50 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</nav>
+<!-- Main Ambient Canvas -->
+<main class="flex-1 mt-16 mb-20 flex flex-col items-center justify-center relative px-6 py-12">
+<!-- Central Ethereal Glucose Reading -->
+<div class="relative flex flex-col items-center justify-center w-64 h-64 rounded-full mb-12">
+<!-- Inner Glow Aura -->
+<div class="absolute inset-0 bg-glucose-normal/20 rounded-full blur-[60px] animate-pulse"></div>
+<div class="relative z-10 flex flex-col items-center">
+<span class="font-headline-hero text-headline-hero text-primary glow-text tracking-tighter">108</span>
+<div class="flex items-center gap-2 mt-2 opacity-80">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+<span class="font-label-caps text-label-caps text-text-primary tracking-widest uppercase">Stable</span>
+</div>
+</div>
+</div>
+<!-- Floating Abstract Graph (No Axes) -->
+<div class="w-full h-32 relative mb-16 opacity-70">
+<svg class="w-full h-full overflow-visible preserve-3d" preserveaspectratio="none" viewbox="0 0 400 100">
+<defs>
+<lineargradient id="lineGrad" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="rgba(45, 212, 168, 0)"></stop>
+<stop offset="50%" stop-color="rgba(45, 212, 168, 1)"></stop>
+<stop offset="100%" stop-color="rgba(45, 212, 168, 0)"></stop>
+</lineargradient>
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="8"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Organic smooth curve -->
+<path d="M0,80 Q50,90 100,60 T200,50 T300,30 T400,40" fill="none" filter="url(#glow)" stroke="url(#lineGrad)" stroke-linecap="round" stroke-width="4"></path>
+<!-- Current point dot -->
+<circle cx="300" cy="30" fill="#2DD4A8" filter="url(#glow)" r="6"></circle>
+</svg>
+</div>
+<!-- Floating Data Bubbles -->
+<div class="flex gap-8 justify-center w-full max-w-sm relative z-10">
+<!-- Insulin Bubble -->
+<div class="glass-bubble w-24 h-24 rounded-full flex flex-col items-center justify-center transform hover:scale-105 transition-transform duration-300">
+<span class="font-data-mono text-data-mono text-chart-insulin mb-1">1.5<span class="text-[10px]">U</span></span>
+<span class="font-label-caps text-label-caps text-text-secondary opacity-60">Active</span>
+</div>
+<!-- Carbs Bubble -->
+<div class="glass-bubble w-24 h-24 rounded-full flex flex-col items-center justify-center transform hover:scale-105 transition-transform duration-300 mt-8">
+<span class="font-data-mono text-data-mono text-chart-carbs mb-1">45<span class="text-[10px]">g</span></span>
+<span class="font-label-caps text-label-caps text-text-secondary opacity-60">Carbs</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar JSON Component -->
+<!-- Applying exact structural and style rules from JSON, resolving intent to "TRENDS" as active for this dashboard view -->
+<nav class="bg-zinc-950/90 backdrop-blur-2xl fixed bottom-0 w-full pb-safe border-t-2 border-zinc-800 fixed bottom-0 left-0 w-full z-50 flex justify-around items-end h-20 px-2 shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+<!-- TRENDS (Active State based on Semantic Intent) -->
+<button class="active:translate-y-0 transition-transform duration-150 flex flex-col items-center justify-center bg-teal-400 text-black rounded-none px-4 py-1 translate-y-[-4px] shadow-[4px_4px_0px_0px_#14b8a6]">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">query_stats</span>
+<span class="font-mono font-bold text-[10px] uppercase">TRENDS</span>
+</button>
+<!-- INSULIN (Inactive) -->
+<button class="active:translate-y-0 transition-transform duration-150 hover:bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 hover:text-white transition-all pb-2 px-3">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">colorize</span>
+<span class="font-mono font-bold text-[10px] uppercase">INSULIN</span>
+</button>
+<!-- LOG (Inactive) -->
+<button class="active:translate-y-0 transition-transform duration-150 hover:bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 hover:text-white transition-all pb-2 px-3">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">add_box</span>
+<span class="font-mono font-bold text-[10px] uppercase">LOG</span>
+</button>
+<!-- FOOD (Inactive) -->
+<button class="active:translate-y-0 transition-transform duration-150 hover:bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 hover:text-white transition-all pb-2 px-3">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+<span class="font-mono font-bold text-[10px] uppercase">FOOD</span>
+</button>
+<!-- MESSAGES (Inactive) -->
+<button class="active:translate-y-0 transition-transform duration-150 hover:bg-zinc-900 flex flex-col items-center justify-center text-zinc-500 hover:text-white transition-all pb-2 px-3">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="font-mono font-bold text-[10px] uppercase">MESSAGES</span>
+</button>
+</nav>
+</body></html>
