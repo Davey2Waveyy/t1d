@@ -5,12 +5,12 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import PublicPage from './pages/PublicPage';
 import { SettingsProvider } from './contexts/SettingsContext';
-import OverviewLegacy from './components/dashboard/Overview';
-import GlucoseTrendsLegacy from './components/dashboard/GlucoseTrends';
-import MealLogLegacy from './components/dashboard/MealLog';
-import SettingsLegacy from './components/dashboard/Settings';
 import Home from './components/v2/screens/Home';
-import PlaceholderScreen from './components/v2/screens/PlaceholderScreen';
+import Glucose from './components/v2/screens/Glucose';
+import Meals from './components/v2/screens/Meals';
+import More from './components/v2/screens/More';
+import MoreInsulin from './components/v2/screens/MoreInsulin';
+import MoreSettings from './components/v2/screens/MoreSettings';
 import GlucoseLogSheet from './components/v2/sheets/GlucoseLogSheet';
 import MealLogSheet from './components/v2/sheets/MealLogSheet';
 import InsulinLogSheet from './components/v2/sheets/InsulinLogSheet';
@@ -74,12 +74,11 @@ function AppRoutes() {
           }
         >
           <Route index element={<Home />} />
-          <Route path="legacy" element={<OverviewLegacy />} />
-          <Route path="glucose" element={<GlucoseTrendsLegacy />} />
-          <Route path="meals" element={<MealLogLegacy />} />
-          <Route path="more" element={<PlaceholderScreen title="More" />} />
-          <Route path="more/insulin" element={<PlaceholderScreen title="Insulin history" />} />
-          <Route path="more/settings" element={<SettingsLegacy />} />
+          <Route path="glucose" element={<Glucose />} />
+          <Route path="meals" element={<Meals />} />
+          <Route path="more" element={<More />} />
+          <Route path="more/insulin" element={<MoreInsulin />} />
+          <Route path="more/settings" element={<MoreSettings />} />
           <Route path="glucose/log" element={<GlucoseLogSheet />} />
           <Route path="meals/log" element={<MealLogSheet />} />
           <Route path="insulin/log" element={<InsulinLogSheet />} />
