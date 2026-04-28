@@ -73,25 +73,31 @@ export default function Dashboard() {
       />
 
       <BottomSheet isOpen={moreOpen} onClose={() => setMoreOpen(false)} title="More">
-        {moreItems.map(({ id, label, icon: Icon }) => (
-          <button type="button" key={id} className="sheet-nav-item" onClick={() => handleViewChange(id)}>
-            <div className="sheet-nav-icon">
-              <Icon size={18} />
-            </div>
-            <span>{label}</span>
-          </button>
-        ))}
+        {moreItems.map(({ id, label, icon }) => {
+          const NavIcon = icon;
+          return (
+            <button type="button" key={id} className="sheet-nav-item" onClick={() => handleViewChange(id)}>
+              <div className="sheet-nav-icon">
+                <NavIcon size={18} />
+              </div>
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </BottomSheet>
 
       <BottomSheet isOpen={fabOpen} onClose={() => setFabOpen(false)} title="Quick Log">
-        {fabItems.map(({ id, label, icon: Icon }) => (
-          <button type="button" key={id} className="sheet-nav-item" onClick={() => handleViewChange(id)}>
-            <div className="sheet-nav-icon">
-              <Icon size={18} />
-            </div>
-            <span>{label}</span>
-          </button>
-        ))}
+        {fabItems.map(({ id, label, icon }) => {
+          const NavIcon = icon;
+          return (
+            <button type="button" key={id} className="sheet-nav-item" onClick={() => handleViewChange(id)}>
+              <div className="sheet-nav-icon">
+                <NavIcon size={18} />
+              </div>
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </BottomSheet>
     </div>
   );
