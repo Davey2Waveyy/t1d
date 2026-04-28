@@ -1,24 +1,41 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import './BottomSheet.css';
 
 export default function BottomSheet({ isOpen, onClose, title, children }) {
+  const sheetRef = useRef(null);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      sheetRef.current?.focus();
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <>
       <div className="sheet-overlay" onClick={onClose} />
-      <div className="sheet" role="dialog" aria-modal="true">
+      <div
+        ref={sheetRef}
+        className="sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'sheet-title' : undefined}
+        tabIndex={-1}
+      >
         <div className="sheet-handle" />
-        {title && <h3 className="sheet-title">{title}</h3>}
+        {title && <h3 id="sheet-title" className="sheet-title">{title}</h3>}
         <div className="sheet-content">{children}</div>
       </div>
     </>
