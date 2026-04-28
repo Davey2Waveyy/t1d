@@ -1,0 +1,49 @@
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-modal) - 1);
+  animation: fadeIn 0.2s ease;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: var(--z-modal);
+  padding: var(--space-md) var(--space-lg) calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
+  animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+  margin: 0 auto var(--space-md);
+}
+
+.sheet-title {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.sheet-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
