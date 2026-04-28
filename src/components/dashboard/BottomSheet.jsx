@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import './BottomSheet.css';
 
 export default function BottomSheet({ isOpen, onClose, title, children }) {
   const sheetRef = useRef(null);
+  const titleId = useId();
 
   useEffect(() => {
     if (isOpen) {
@@ -31,11 +32,11 @@ export default function BottomSheet({ isOpen, onClose, title, children }) {
         className="sheet"
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? 'sheet-title' : undefined}
+        aria-labelledby={title ? titleId : undefined}
         tabIndex={-1}
       >
         <div className="sheet-handle" />
-        {title && <h3 id="sheet-title" className="sheet-title">{title}</h3>}
+        {title && <h3 id={titleId} className="sheet-title">{title}</h3>}
         <div className="sheet-content">{children}</div>
       </div>
     </>
