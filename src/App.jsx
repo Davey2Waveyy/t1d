@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
+import PhoneFrame from './components/layout/PhoneFrame';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -30,7 +31,9 @@ function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <PhoneFrame>
+              <Dashboard />
+            </PhoneFrame>
           </ProtectedRoute>
         }
       />

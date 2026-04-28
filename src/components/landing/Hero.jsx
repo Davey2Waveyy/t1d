@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, Activity } from 'lucide-react';
+import heroImg from '../../assets/hero.png';
 import './Hero.css';
 
 export default function Hero({ onGetStarted }) {
@@ -58,45 +59,57 @@ export default function Hero({ onGetStarted }) {
       </div>
 
       <div className="hero-content container">
-        <div className="hero-badge animate-fade-in-up">
-          <Activity size={14} />
-          <span>Intelligent T1D Management</span>
-        </div>
-        
-        <h1 className="hero-title animate-fade-in-up stagger-1">
-          Take control of<br />
-          <span className="hero-title-accent">your Type 1.</span>
-        </h1>
-        
-        <p className="hero-subtitle animate-fade-in-up stagger-2">
-          Betatrace uses your meal and insulin data to build predictive models,
-          optimize your insulin-to-carb ratio, and surface patterns you'd never spot alone.
-        </p>
-
-        <div className="hero-actions animate-fade-in-up stagger-3">
-          <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
-            Get Started
-            <ArrowRight size={18} />
-          </button>
-          <button className="btn btn-secondary btn-lg" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>
-            See Features
-          </button>
-        </div>
-
-        <div className="hero-stats animate-fade-in-up stagger-4">
-          <div className="hero-stat">
-            <span className="hero-stat-value">72%</span>
-            <span className="hero-stat-label">Avg Time in Range</span>
+        <div className="hero-copy">
+          <div className="hero-badge animate-fade-in-up">
+            <Activity size={14} />
+            <span>Intelligent T1D Management</span>
           </div>
-          <div className="hero-stat-divider" />
-          <div className="hero-stat">
-            <span className="hero-stat-value">6.4</span>
-            <span className="hero-stat-label">Est. A1C</span>
+
+          <h1 className="hero-title animate-fade-in-up stagger-1">
+            Take control of<br />
+            <span className="hero-title-accent">your Type 1.</span>
+          </h1>
+
+          <p className="hero-subtitle animate-fade-in-up stagger-2">
+            Betatrace uses your meal and insulin data to build predictive models,
+            optimize your insulin-to-carb ratio, and surface patterns you'd never spot alone.
+          </p>
+
+          <div className="hero-actions animate-fade-in-up stagger-3">
+            <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
+              Get Started
+              <ArrowRight size={18} />
+            </button>
+            <button className="btn btn-secondary btn-lg" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>
+              See Features
+            </button>
           </div>
-          <div className="hero-stat-divider" />
-          <div className="hero-stat">
-            <span className="hero-stat-value">1:10</span>
-            <span className="hero-stat-label">Predicted ICR</span>
+
+          <div className="hero-stats animate-fade-in-up stagger-4">
+            <div className="hero-stat">
+              <span className="hero-stat-value">72%</span>
+              <span className="hero-stat-label">Avg Time in Range</span>
+            </div>
+            <div className="hero-stat-divider" />
+            <div className="hero-stat">
+              <span className="hero-stat-value">6.4</span>
+              <span className="hero-stat-label">Est. A1C</span>
+            </div>
+            <div className="hero-stat-divider" />
+            <div className="hero-stat">
+              <span className="hero-stat-value">1:10</span>
+              <span className="hero-stat-label">Predicted ICR</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="hero-mockup animate-fade-in-up stagger-3">
+          <div className="hero-phone">
+            <div className="hero-phone-notch" />
+            <div className="hero-phone-screen">
+              <img src={heroImg} alt="Betatrace app screenshot" />
+            </div>
+            <div className="hero-phone-home" />
           </div>
         </div>
       </div>
