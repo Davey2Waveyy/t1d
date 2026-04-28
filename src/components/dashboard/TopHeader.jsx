@@ -23,7 +23,7 @@ export default function TopHeader({ activeView, onSettingsOpen }) {
 
   return (
     <header className="top-header">
-      <button className="top-header-avatar" onClick={onSettingsOpen} aria-label="Profile">
+      <button type="button" className="top-header-avatar" onClick={onSettingsOpen} aria-label="Open settings">
         {avatarUrl ? (
           <img src={avatarUrl} alt={displayName} />
         ) : (
@@ -33,7 +33,7 @@ export default function TopHeader({ activeView, onSettingsOpen }) {
 
       <span className="top-header-title">{pageTitles[activeView] || 'Betatrace'}</span>
 
-      <button className="top-header-bell" aria-label="Notifications">
+      <button type="button" className="top-header-bell" aria-label="Notifications">
         <Bell size={20} />
       </button>
     </header>
