@@ -11,6 +11,13 @@ node_modules
 dist
 dist-ssr
 *.local
+.vercel
+.env
+.env.*
+!.env.example
+
+# Local Claude agent state
+.claude/
 
 # Editor directories and files
 .vscode/*

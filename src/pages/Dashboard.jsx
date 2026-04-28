@@ -11,6 +11,7 @@ import A1CEstimator from '../components/dashboard/A1CEstimator';
 import CorrectionFactor from '../components/dashboard/CorrectionFactor';
 import PatternAlerts from '../components/dashboard/PatternAlerts';
 import Settings from '../components/dashboard/Settings';
+import DemoChat from '../components/chat/DemoChat';
 import './Dashboard.css';
 
 const viewComponents = {
@@ -47,6 +48,7 @@ export default function Dashboard() {
           <ActiveComponent onViewChange={setActiveView} />
         </div>
       </main>
+      <DemoChat />
     </div>
   );
 }
