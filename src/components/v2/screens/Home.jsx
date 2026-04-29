@@ -6,6 +6,8 @@ import GlucoseChart from '../charts/GlucoseChart';
 import EmptyState from '../ui/EmptyState';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useSettings } from '../../../contexts/SettingsContext';
+import { getThresholds, toDisplayGlucose, toMgDl } from '../../../lib/glucoseUnits';
 
 function relTime(iso) {
   if (!iso) return null;
@@ -24,12 +26,18 @@ function formatClock(iso) {
 
 export default function Home() {
   const { user } = useAuth();
+  const { settings } = useSettings();
   const navigate = useNavigate();
   const { loading, error, stats, glucose, meals, insulin, recentActivity } = useDashboardData();
 
   if (loading) return <div className="p-md text-text-secondary">Loading...</div>;
 
   const lastReading = glucose[glucose.length - 1];
+  const thresholds = getThresholds(settings);
+  const target = toDisplayGlucose(
+    toMgDl(settings.targetGlucose, settings.glucoseUnit) ?? 110,
+    settings.glucoseUnit,
+  );
   const isEmpty = !lastReading && meals.length === 0 && insulin.length === 0;
 
   return (
@@ -52,9 +60,15 @@ export default function Home() {
       ) : (
         <>
           <GlucoseHero
-            value={stats?.currentGlucose}
+            value={toDisplayGlucose(stats?.currentGlucose, settings.glucoseUnit)}
             trend={stats?.glucoseTrend}
             updatedAt={relTime(lastReading?.recorded_at)}
+            unit={settings.glucoseUnit}
+            target={target}
+            thresholds={{
+              low: toDisplayGlucose(thresholds.low, settings.glucoseUnit),
+              high: toDisplayGlucose(thresholds.high, settings.glucoseUnit),
+            }}
           />
 
           <div className="grid grid-cols-2 gap-sm">
@@ -71,7 +85,7 @@ export default function Home() {
                 Details <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </button>
             </div>
-            <GlucoseChart readings={glucose} />
+            <GlucoseChart readings={glucose} unit={settings.glucoseUnit} thresholds={thresholds} />
           </div>
 
           {recentActivity.length > 0 && (

@@ -63,6 +63,15 @@ export default function MealLogSheet() {
         <Field label="Carbs" unit="g">
           <input type="number" inputMode="decimal" autoFocus value={form.carbs} onChange={set('carbs')} className={inputCls} />
         </Field>
+        <Field label="Note">
+          <textarea
+            value={form.notes}
+            onChange={set('notes')}
+            rows={3}
+            placeholder="Timing, symptoms, activity, or anything worth remembering"
+            className={`${inputCls} resize-none leading-relaxed`}
+          />
+        </Field>
         {!online && <p className="text-glucose-high text-body-base">You're offline - reconnect to save this meal.</p>}
         {error && <p className="text-glucose-low text-body-base">{error}</p>}
         <button type="submit" disabled={!online || saving} className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">

@@ -4,12 +4,16 @@ import Sheet from '../ui/Sheet';
 import Field, { inputCls } from '../ui/Field';
 import { addGlucoseReading } from '../../../lib/dataService';
 import { useOnline } from '../../../hooks/useOnline';
+import { useSettings } from '../../../contexts/SettingsContext';
+import { toMgDl } from '../../../lib/glucoseUnits';
 
 export default function GlucoseLogSheet() {
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { settings } = useSettings();
   const [value, setValue] = useState('');
-  const [unit, setUnit] = useState('mg/dL');
+  const [unit, setUnit] = useState(settings.glucoseUnit ?? 'mg/dL');
+  const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const online = useOnline();
@@ -23,8 +27,9 @@ export default function GlucoseLogSheet() {
     setSaving(true);
     setError(null);
     const { error: saveError } = await addGlucoseReading({
-      value: Number(value),
+      value: toMgDl(value, unit),
       unit,
+      notes,
       recorded_at: new Date().toISOString(),
     });
     setSaving(false);
@@ -64,6 +69,15 @@ export default function GlucoseLogSheet() {
               </button>
             ))}
           </div>
+        </Field>
+        <Field label="Note">
+          <textarea
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+            rows={3}
+            placeholder="Meal context, symptoms, activity, or sensor check"
+            className={`${inputCls} resize-none leading-relaxed`}
+          />
         </Field>
         {!online && <p className="text-glucose-high text-body-base">You're offline - reconnect to save this reading.</p>}
         {error && <p className="text-glucose-low text-body-base">{error}</p>}

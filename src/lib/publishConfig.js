@@ -5,6 +5,13 @@ export const DEFAULT_SETTINGS = {
   lowThreshold: '',
   highThreshold: '',
   targetGlucose: '',
+  icr_breakfast: '',
+  icr_lunch: '',
+  icr_dinner: '',
+  icr_snack: '',
+  isf: '',
+  nightscoutUrl: '',
+  nightscoutToken: '',
 };
 
 export const DEFAULT_SESSION_SETTINGS = {

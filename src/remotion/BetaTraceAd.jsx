@@ -47,6 +47,135 @@ const fonts = {
 
 export { fonts, colors };
 
+function CenterTextStack({
+  frame,
+  eyebrow,
+  title,
+  subtitle,
+  top = 170,
+  align = 'left',
+  width = 620,
+  delay = 0,
+}) {
+  const appear = interpolate(frame - delay, [0, 18], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top,
+        left: '50%',
+        width,
+        transform: `translateX(-50%) translateY(${18 * (1 - appear)}px)`,
+        opacity: appear,
+        textAlign: align,
+        zIndex: 3,
+      }}
+    >
+      {eyebrow ? (
+        <div
+          style={{
+            color: colors.muted,
+            fontFamily: fonts.sans,
+            fontSize: 22,
+            fontWeight: 800,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+          }}
+        >
+          {eyebrow}
+        </div>
+      ) : null}
+      <div
+        style={{
+          marginTop: eyebrow ? 10 : 0,
+          color: colors.text,
+          fontFamily: fonts.serif,
+          fontSize: 66,
+          fontWeight: 500,
+          lineHeight: 1.04,
+        }}
+      >
+        {title}
+      </div>
+      {subtitle ? (
+        <div
+          style={{
+            marginTop: 14,
+            color: '#b9d3ca',
+            fontFamily: fonts.sans,
+            fontSize: 28,
+            fontWeight: 700,
+            lineHeight: 1.25,
+          }}
+        >
+          {subtitle}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function BrandPulse({ frame, top = 102, left = 84 }) {
+  const pulse = interpolate(frame % 32, [0, 16, 32], [0.45, 1, 0.45], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top,
+        left,
+        width: 14,
+        height: 14,
+        borderRadius: '50%',
+        background: '#2dd4a8',
+        boxShadow: `0 0 ${18 + pulse * 12}px rgba(45,212,168,0.55)`,
+        opacity: 0.55 + pulse * 0.45,
+        zIndex: 4,
+      }}
+    />
+  );
+}
+
+function ConceptDisclaimer({
+  frame,
+  text = 'Concept demo - selected features shown as prototypes',
+  bottom = 58,
+}) {
+  const appear = interpolate(frame, [4, 18], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom,
+        textAlign: 'center',
+        color: '#8ea59d',
+        fontFamily: fonts.sans,
+        fontSize: 16,
+        fontWeight: 600,
+        letterSpacing: 0.6,
+        opacity: appear * 0.7,
+        transform: `translateY(${6 * (1 - appear)}px)`,
+        zIndex: 4,
+        pointerEvents: 'none',
+      }}
+    >
+      {text}
+    </div>
+  );
+}
+
 function GlucoseTrace({ progress = 1 }) {
   const dashLength = 1450;
   return (
@@ -283,7 +412,15 @@ function LoggingScene() {
         overflow: 'hidden',
       }}
     >
-      <SceneLabel frame={frame} text="Morning Logs" />
+      <BrandPulse frame={frame} />
+      <CenterTextStack
+        frame={frame}
+        eyebrow="Morning Logs"
+        title="Meal, dose, glucose."
+        subtitle="Logged in seconds."
+        top={150}
+        width={620}
+      />
       <AccentBlob
         frame={frame}
         color="amber"
@@ -305,7 +442,7 @@ function LoggingScene() {
           transform: `scale(${0.7 + sunProgress * 0.3})`,
         }}
       />
-      <div style={{ marginTop: 300 }}>
+      <div style={{ marginTop: 430 }}>
         <LogRow
           frame={frame}
           delay={10}
@@ -331,23 +468,6 @@ function LoggingScene() {
           color="#10b981"
         />
       </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          right: 80,
-          bottom: 180,
-          color: colors.text,
-          fontFamily: fonts.serif,
-          fontSize: 72,
-          fontWeight: 500,
-          lineHeight: 1.05,
-          opacity: headlineProgress,
-          transform: `translateY(${24 * (1 - headlineProgress)}px)`,
-        }}
-      >
-        Meal, dose, glucose in seconds.
-      </div>
     </AbsoluteFill>
   );
 }
@@ -369,7 +489,15 @@ function ICRPredictorScene() {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg, padding: 80 }}>
-      <SceneLabel frame={frame} text="Breakfast ICR" />
+      <BrandPulse frame={frame} />
+      <CenterTextStack
+        frame={frame}
+        eyebrow="Breakfast ICR"
+        title="Learn what works by meal and time."
+        subtitle="Your ratio updates from real logs."
+        top={148}
+        width={650}
+      />
       <AccentBlob
         frame={frame}
         color="amber"
@@ -402,7 +530,7 @@ function ICRPredictorScene() {
           boxShadow: '0 0 28px rgba(45,212,168,0.5)',
         }}
       />
-      <div style={{ marginTop: 290 }}>
+      <div style={{ marginTop: 410 }}>
         <StatCard
           frame={frame}
           fps={fps}
@@ -426,18 +554,18 @@ function ICRPredictorScene() {
           style={{
             color: colors.muted,
             fontFamily: fonts.sans,
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: 800,
             letterSpacing: 2,
             textTransform: 'uppercase',
           }}
         >
-          Learned from breakfast logs
+          Breakfast trend confidence
         </div>
         <div
           style={{
-            marginTop: 24,
-            height: 18,
+            marginTop: 22,
+            height: 16,
             borderRadius: 999,
             background: '#0a1713',
             overflow: 'hidden',
@@ -455,21 +583,10 @@ function ICRPredictorScene() {
         </div>
         <div
           style={{
-            marginTop: 28,
-            color: colors.text,
-            fontFamily: fonts.serif,
-            fontSize: 60,
-            lineHeight: 1.05,
-          }}
-        >
-          Learn what works by meal and time.
-        </div>
-        <div
-          style={{
-            marginTop: 30,
+            marginTop: 24,
             color: '#38bdf8',
             fontFamily: fonts.mono,
-            fontSize: 42,
+            fontSize: 34,
             fontWeight: 800,
           }}
         >
@@ -492,7 +609,16 @@ function PatternAlertsScene() {
         overflow: 'hidden',
       }}
     >
-      <SceneLabel frame={frame} text="Night Patterns" />
+      <BrandPulse frame={frame} />
+      <ConceptDisclaimer frame={frame} />
+      <CenterTextStack
+        frame={frame}
+        eyebrow="Night Patterns"
+        title="Spot the risks before sleep."
+        subtitle="Catch what repeats at night."
+        top={150}
+        width={620}
+      />
       <AccentBlob
         frame={frame}
         color="sky"
@@ -539,7 +665,7 @@ function PatternAlertsScene() {
           }}
         />
       ))}
-      <div style={{ marginTop: 285 }}>
+      <div style={{ marginTop: 420 }}>
         <AlertBadge
           frame={frame}
           fps={fps}
@@ -565,20 +691,6 @@ function PatternAlertsScene() {
           delay={46}
         />
       </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          right: 80,
-          bottom: 150,
-          color: colors.text,
-          fontFamily: fonts.serif,
-          fontSize: 70,
-          lineHeight: 1.05,
-        }}
-      >
-        Spot the risks before sleep.
-      </div>
     </AbsoluteFill>
   );
 }
@@ -588,10 +700,19 @@ function AIChatbotScene() {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg, padding: 80 }}>
-      <SceneLabel frame={frame} text="Ask Betatrace AI" />
+      <BrandPulse frame={frame} />
+      <ConceptDisclaimer frame={frame} />
+      <CenterTextStack
+        frame={frame}
+        eyebrow="Ask Betatrace AI"
+        title="Why did I run high?"
+        subtitle="Get a plain-language answer from your own data."
+        top={148}
+        width={650}
+      />
       <div
         style={{
-          marginTop: 285,
+          marginTop: 420,
           borderRadius: 34,
           background: '#07110ecc',
           border: '2px solid #2dd4a844',

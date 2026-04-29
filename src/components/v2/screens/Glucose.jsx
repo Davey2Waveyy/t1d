@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { calculateStats, getGlucoseReadings } from '../../../lib/dataService';
 import { useDashboardData } from '../../../hooks/useDashboardData';
+import { useSettings } from '../../../contexts/SettingsContext';
+import { getThresholds, toDisplayGlucose } from '../../../lib/glucoseUnits';
 import ActivityRow from '../cards/ActivityRow';
 import StatCard from '../cards/StatCard';
 import GlucoseChart from '../charts/GlucoseChart';
@@ -20,15 +22,16 @@ function formatClock(iso) {
   return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function formatSubtitle(reading) {
+function formatSubtitle(reading, thresholds) {
   const date = new Date(reading.recorded_at);
-  const label = Number(reading.value) > 180 ? 'Above range' : Number(reading.value) < 70 ? 'Below range' : 'In target';
+  const label = Number(reading.value) > thresholds.high ? 'Above range' : Number(reading.value) < thresholds.low ? 'Below range' : 'In target';
 
   return `${label} - ${date.toLocaleDateString([], { month: 'short', day: 'numeric' })}`;
 }
 
 export default function Glucose() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
   const dashboardData = useDashboardData();
   const [range, setRange] = useState(RANGES[0]);
   const [rangeReadings, setRangeReadings] = useState([]);
@@ -71,9 +74,10 @@ export default function Glucose() {
   const loading = range.hours === 24 ? dashboardData.loading : rangeLoading;
   const error = range.hours === 24 ? dashboardData.error : rangeError;
   const stats = useMemo(
-    () => (range.hours === 24 ? dashboardData.stats : calculateStats(readings, [], [])),
-    [dashboardData.stats, range.hours, readings],
+    () => (range.hours === 24 ? dashboardData.stats : calculateStats(readings, [], [], getThresholds(settings))),
+    [dashboardData.stats, range.hours, readings, settings],
   );
+  const thresholds = getThresholds(settings);
 
   if (loading) {
     return <div className="p-md text-text-secondary">Loading...</div>;
@@ -116,7 +120,7 @@ export default function Glucose() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-sm">
-            <StatCard label="Avg Glucose" value={stats?.avgGlucose} unit="mg/dL" />
+            <StatCard label="Avg Glucose" value={toDisplayGlucose(stats?.avgGlucose, settings.glucoseUnit)} unit={settings.glucoseUnit} />
             <StatCard label="GMI" value={stats?.estimatedA1C} unit="%" />
           </div>
 
@@ -125,10 +129,10 @@ export default function Glucose() {
               <h2 className="font-body text-[18px] font-semibold text-text-primary">Trend</h2>
               <span className="font-mono text-data-mono text-text-muted">Last {range.label}</span>
             </div>
-            <GlucoseChart readings={readings} height={220} />
+            <GlucoseChart readings={readings} height={220} unit={settings.glucoseUnit} thresholds={thresholds} />
           </div>
 
-          <TimeInRangeBar readings={readings} />
+          <TimeInRangeBar readings={readings} thresholds={thresholds} />
 
           <div className="flex flex-col gap-sm">
             <h2 className="font-body text-[18px] font-semibold text-text-primary">Recent Logs</h2>
@@ -138,9 +142,9 @@ export default function Glucose() {
                   key={reading.id ?? reading.recorded_at}
                   type="glucose"
                   title={reading.notes || 'Glucose reading'}
-                  subtitle={formatSubtitle(reading)}
-                  value={reading.value}
-                  unit={reading.unit ? ` ${reading.unit}` : ' mg/dL'}
+                  subtitle={formatSubtitle(reading, thresholds)}
+                  value={toDisplayGlucose(reading.value, settings.glucoseUnit)}
+                  unit={` ${settings.glucoseUnit}`}
                   time={formatClock(reading.recorded_at)}
                 />
               ))}

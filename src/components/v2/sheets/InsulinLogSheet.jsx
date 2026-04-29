@@ -61,6 +61,15 @@ export default function InsulinLogSheet() {
         <Field label="Brand (optional)">
           <input type="text" value={form.brand} onChange={set('brand')} placeholder="e.g. Humalog" className={inputCls} />
         </Field>
+        <Field label="Note">
+          <textarea
+            value={form.notes}
+            onChange={set('notes')}
+            rows={3}
+            placeholder="Dose reason, timing, site, or anything to review later"
+            className={`${inputCls} resize-none leading-relaxed`}
+          />
+        </Field>
         {!online && <p className="text-glucose-high text-body-base">You're offline - reconnect to save this dose.</p>}
         {error && <p className="text-glucose-low text-body-base">{error}</p>}
         <button type="submit" disabled={!online || saving} className="mt-sm bg-primary text-on-primary py-md rounded-full font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">

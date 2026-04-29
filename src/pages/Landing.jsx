@@ -15,14 +15,21 @@ export default function Landing() {
   const [showLogin, setShowLogin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // If user is already logged in or in guest mode, redirect to dashboard
+  const enterPhonePreview = () => {
+    continueAsGuest();
+    setShowLogin(false);
+    setMobileMenuOpen(false);
+    navigate('/dashboard');
+  };
+
+  // Keep the marketing page reachable in guest mode; only signed-in accounts skip it.
   useEffect(() => {
-    if (user || isGuest) {
+    if (user && !isGuest) {
       navigate('/dashboard');
     }
   }, [user, isGuest, navigate]);
 
-  if (user || isGuest) return null;
+  if (user && !isGuest) return null;
 
   return (
     <div className="landing">
@@ -49,8 +56,8 @@ export default function Landing() {
       </nav>
 
       <Hero 
-        onGetStarted={() => setShowLogin(true)} 
-        onContinueAsGuest={() => continueAsGuest()} 
+        onGetStarted={() => setShowLogin(true)}
+        onContinueAsGuest={enterPhonePreview}
       />
       <Features />
       <HowItWorks />
@@ -59,6 +66,7 @@ export default function Landing() {
       <LoginModal
         isOpen={showLogin}
         onClose={() => setShowLogin(false)}
+        onContinue={enterPhonePreview}
       />
     </div>
   );

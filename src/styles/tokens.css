@@ -21,9 +21,84 @@
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+:root.light-theme {
+  --surface-base: #f7faf7;
+  --surface-raised: #fffdf8;
+  --surface-overlay: #eef5ef;
+  --surface-input: #f3f8f4;
+  --primary: #27cda2;
+  --glucose-normal: #219b7e;
+  --glucose-high: #b37718;
+  --glucose-low: #bd5266;
+  --chart-carbs: #2a9fc7;
+  --chart-insulin: #8066d9;
+  --text-primary: #10241d;
+  --text-secondary: #5f7d71;
+  --text-muted: #91a69d;
+  --border-subtle: rgba(36, 62, 51, 0.11);
+  --border-default: rgba(36, 62, 51, 0.18);
+  --border-strong: rgba(36, 62, 51, 0.28);
+}
+
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 .pt-safe { padding-top: env(safe-area-inset-top); }
 .pb-safe-nav { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
+
+:root.light-theme body {
+  background: var(--surface-base);
+  color: var(--text-primary);
+}
+
+:root.light-theme .bg-surface-base,
+:root.light-theme .bg-background,
+:root.light-theme .bg-surface,
+:root.light-theme .bg-surface-base\/80,
+:root.light-theme .bg-surface-base\/85 {
+  background-color: var(--surface-base) !important;
+}
+
+:root.light-theme .backdrop-blur-xl,
+:root.light-theme .backdrop-blur-sm {
+  background-color: color-mix(in srgb, var(--surface-base) 88%, transparent) !important;
+}
+
+:root.light-theme .bg-surface-raised,
+:root.light-theme .bg-surface-raised\/40 {
+  background-color: var(--surface-raised) !important;
+}
+
+:root.light-theme .bg-surface-overlay,
+:root.light-theme .bg-surface-overlay\/40 {
+  background-color: var(--surface-overlay) !important;
+}
+
+:root.light-theme .bg-surface-input {
+  background-color: var(--surface-input) !important;
+}
+
+:root.light-theme .text-text-primary,
+:root.light-theme .text-on-surface,
+:root.light-theme .text-on-background {
+  color: var(--text-primary) !important;
+}
+
+:root.light-theme .text-text-secondary,
+:root.light-theme .text-outline {
+  color: var(--text-secondary) !important;
+}
+
+:root.light-theme .text-text-muted {
+  color: var(--text-muted) !important;
+}
+
+:root.light-theme .border-border-subtle,
+:root.light-theme .border-border-subtle\/50 {
+  border-color: var(--border-subtle) !important;
+}
+
+:root.light-theme .border-border-default {
+  border-color: var(--border-default) !important;
+}

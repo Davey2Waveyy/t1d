@@ -9,7 +9,7 @@ const items = [
 
 export default function BottomNav({ onPressLog }) {
   return (
-    <nav className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-40 pb-safe bg-surface-base/85 backdrop-blur-xl border-t border-border-subtle text-[10px] font-medium font-body uppercase tracking-wider flex justify-around items-center h-20 px-2">
+    <nav className="z-40 w-full flex-shrink-0 pb-safe bg-surface-base/85 backdrop-blur-xl border-t border-border-subtle text-[10px] font-medium font-body uppercase tracking-wider flex justify-around items-center h-20 px-2">
       {items.slice(0, 2).map((item) => (
         <NavItem key={item.to} {...item} />
       ))}

@@ -19,7 +19,7 @@ const ROWS = [
   },
 ];
 
-function calculatePercentages(readings) {
+function calculatePercentages(readings, thresholds) {
   const total = readings?.length ?? 0;
 
   if (total === 0) {
@@ -27,12 +27,12 @@ function calculatePercentages(readings) {
   }
 
   const counts = {
-    high: readings.filter((reading) => Number(reading.value) > 180).length,
+    high: readings.filter((reading) => Number(reading.value) > thresholds.high).length,
     inRange: readings.filter((reading) => {
       const value = Number(reading.value);
-      return value >= 70 && value <= 180;
+      return value >= thresholds.low && value <= thresholds.high;
     }).length,
-    low: readings.filter((reading) => Number(reading.value) < 70).length,
+    low: readings.filter((reading) => Number(reading.value) < thresholds.low).length,
   };
 
   const exact = ROWS.map((row) => ({
@@ -55,8 +55,8 @@ function calculatePercentages(readings) {
     }, {});
 }
 
-export default function TimeInRangeBar({ readings }) {
-  const percentages = calculatePercentages(readings);
+export default function TimeInRangeBar({ readings, thresholds = { low: 70, high: 180 } }) {
+  const percentages = calculatePercentages(readings, thresholds);
 
   return (
     <div className="bg-surface-raised border border-border-subtle rounded-xl p-5 flex flex-col gap-md">

@@ -1,7 +1,10 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { accountSyncUnavailable, isSupabaseConfigured, supabase } from '../lib/supabase'
 
 const AuthContext = createContext({})
+
+const guestUser = { id: 'guest-uid', email: 'guest@example.com' }
+const guestProfile = { full_name: 'Guest', avatar_url: null }
 
 export function useAuth() {
   return useContext(AuthContext)
@@ -16,6 +19,11 @@ export function AuthProvider({ children }) {
   })
 
   const fetchProfile = useCallback(async (userId) => {
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -34,15 +42,37 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      } else {
-        setLoading(false)
+    if (!supabase) {
+      if (localStorage.getItem('betatrace_is_guest') === 'true') {
+        setUser(guestUser)
+        setProfile(guestProfile)
       }
-    })
+      setLoading(false)
+      return undefined
+    }
+
+    // Get initial session
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          fetchProfile(session.user.id)
+        } else if (localStorage.getItem('betatrace_is_guest') === 'true') {
+          setUser(guestUser)
+          setProfile(guestProfile)
+          setLoading(false)
+        } else {
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Supabase session error:', err)
+        if (localStorage.getItem('betatrace_is_guest') === 'true') {
+          setUser(guestUser)
+          setProfile(guestProfile)
+        }
+        setLoading(false)
+      })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -61,6 +91,8 @@ export function AuthProvider({ children }) {
   }, [fetchProfile])
 
   async function signUp({ email, password, fullName }) {
+    if (!supabase) return { data: null, error: accountSyncUnavailable }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -74,6 +106,8 @@ export function AuthProvider({ children }) {
   }
 
   async function signIn({ email, password }) {
+    if (!supabase) return { data: null, error: accountSyncUnavailable }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -82,6 +116,8 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGoogle() {
+    if (!supabase) return { data: null, error: accountSyncUnavailable }
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -96,7 +132,7 @@ export function AuthProvider({ children }) {
       await caches.delete('data-reads-v1')
     }
 
-    const { error } = await supabase.auth.signOut()
+    const { error } = supabase ? await supabase.auth.signOut() : { error: null }
     if (!error) {
       setUser(null)
       setProfile(null)
@@ -109,12 +145,13 @@ export function AuthProvider({ children }) {
   function continueAsGuest() {
     setIsGuest(true)
     localStorage.setItem('betatrace_is_guest', 'true')
-    // Provide a minimal mock user object for consistency
-    setUser({ id: 'guest-uid', email: 'guest@example.com' })
-    setProfile({ full_name: 'Guest', avatar_url: null })
+    setUser(guestUser)
+    setProfile(guestProfile)
   }
 
   async function resetPassword(email) {
+    if (!supabase) return { data: null, error: accountSyncUnavailable }
+
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`
     })
@@ -122,6 +159,8 @@ export function AuthProvider({ children }) {
   }
 
   async function updateProfile(updates) {
+    if (!supabase || !user?.id) return { data: null, error: accountSyncUnavailable }
+
     const { data, error } = await supabase
       .from('profiles')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -140,6 +179,7 @@ export function AuthProvider({ children }) {
     profile,
     loading,
     isGuest,
+    isSupabaseConfigured,
     signUp,
     signIn,
     signInWithGoogle,

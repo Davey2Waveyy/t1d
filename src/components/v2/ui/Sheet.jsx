@@ -20,7 +20,7 @@ export default function Sheet({ open, onOpenChange, children, title }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="absolute inset-0 z-50">
       <div
         data-testid="sheet-backdrop"
         onClick={() => onOpenChange(false)}
@@ -30,7 +30,7 @@ export default function Sheet({ open, onOpenChange, children, title }) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-surface-base border-t border-border-subtle rounded-t-2xl pb-safe animate-[slideUp_280ms_var(--ease-drawer)]"
+        className="absolute bottom-0 left-1/2 flex max-h-[calc(100%-1rem)] w-full max-w-[480px] -translate-x-1/2 flex-col overflow-hidden bg-surface-base border-t border-border-subtle rounded-t-2xl pb-safe animate-[slideUp_280ms_var(--ease-drawer)]"
       >
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-10 h-1 rounded-full bg-text-muted/40" />
@@ -40,7 +40,7 @@ export default function Sheet({ open, onOpenChange, children, title }) {
             {title}
           </h2>
         )}
-        <div className="px-md pb-lg">{children}</div>
+        <div className="overflow-y-auto px-md pb-lg">{children}</div>
       </div>
     </div>
   );

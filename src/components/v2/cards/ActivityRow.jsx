@@ -1,11 +1,15 @@
 const TYPE_VISUALS = {
   meal: { icon: 'restaurant', tone: 'chart-carbs' },
+  breakfast: { icon: 'bakery_dining', tone: 'glucose-high' },
+  lunch: { icon: 'lunch_dining', tone: 'chart-carbs' },
+  dinner: { icon: 'dinner_dining', tone: 'chart-insulin' },
+  snack: { icon: 'cookie', tone: 'glucose-normal' },
   insulin: { icon: 'vaccines', tone: 'chart-insulin' },
   glucose: { icon: 'water_drop', tone: 'glucose-normal' },
 };
 
-export default function ActivityRow({ type, title, subtitle, value, unit, time }) {
-  const visual = TYPE_VISUALS[type] ?? TYPE_VISUALS.glucose;
+export default function ActivityRow({ type, title, subtitle, value, unit, time, tone }) {
+  const visual = TYPE_VISUALS[tone] ?? TYPE_VISUALS[type] ?? TYPE_VISUALS.glucose;
 
   return (
     <div className="bg-surface-overlay border border-border-subtle rounded-lg p-3 flex items-center gap-3">

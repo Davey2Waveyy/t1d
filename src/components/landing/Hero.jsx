@@ -55,9 +55,9 @@ export default function Hero({ onGetStarted, onContinueAsGuest }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // Animated counters for stats
-  const tirCounter = useAnimatedCounter(72, 2000, 0);
-  const a1cCounter = useAnimatedCounter(6.4, 2000, 1);
-  const icrCounter = useAnimatedCounter(10, 2000, 0);
+  const { ref: tirRef, value: tirValue } = useAnimatedCounter(72, 2000, 0);
+  const { ref: a1cRef, value: a1cValue } = useAnimatedCounter(6.4, 2000, 1);
+  const { ref: icrRef, value: icrValue } = useAnimatedCounter(10, 2000, 0);
 
   useEffect(() => {
     const handleMouse = (e) => {
@@ -115,17 +115,17 @@ export default function Hero({ onGetStarted, onContinueAsGuest }) {
       <div className="hero-content container">
         <div className="hero-badge animate-fade-in-up">
           <Activity size={14} />
-          <span>Intelligent T1D Management</span>
+          <span>Preview demo for T1D logging</span>
         </div>
         
         <h1 className="hero-title animate-fade-in-up stagger-1">
-          Take control of<br />
-          <span className="hero-title-accent">your Type 1.</span>
+          Preview Type 1<br />
+          <span className="hero-title-accent">patterns calmly.</span>
         </h1>
         
         <p className="hero-subtitle animate-fade-in-up stagger-2">
-          Betatrace brings meals, insulin, and glucose trends into one calmer workspace
-          so you can spot patterns faster and make better-informed day-to-day decisions.
+          Betatrace brings meals, insulin, and glucose trends into one calmer mobile workspace
+          for personal logging, pattern review, and clinician conversations.
         </p>
 
         <div className="hero-actions animate-fade-in-up stagger-3">
@@ -134,24 +134,24 @@ export default function Hero({ onGetStarted, onContinueAsGuest }) {
             <ArrowRight size={18} />
           </button>
           <button className="btn btn-glass btn-lg" onClick={onContinueAsGuest}>
-            Continue as Guest
+            Explore Guest Demo
           </button>
         </div>
 
         <div className="hero-stats animate-fade-in-up stagger-4">
-          <div className="hero-stat" ref={tirCounter.ref}>
-            <span className="hero-stat-value">{tirCounter.value}%</span>
-            <span className="hero-stat-label">Avg Time in Range</span>
+          <div className="hero-stat" ref={tirRef}>
+            <span className="hero-stat-value">{tirValue}%</span>
+            <span className="hero-stat-label">Demo Time in Range</span>
           </div>
           <div className="hero-stat-divider" />
-          <div className="hero-stat" ref={a1cCounter.ref}>
-            <span className="hero-stat-value">{a1cCounter.value}</span>
-            <span className="hero-stat-label">Est. A1C</span>
+          <div className="hero-stat" ref={a1cRef}>
+            <span className="hero-stat-value">{a1cValue}</span>
+            <span className="hero-stat-label">Demo A1C Estimate</span>
           </div>
           <div className="hero-stat-divider" />
-          <div className="hero-stat" ref={icrCounter.ref}>
-            <span className="hero-stat-value">1:{icrCounter.value}</span>
-            <span className="hero-stat-label">Predicted ICR</span>
+          <div className="hero-stat" ref={icrRef}>
+            <span className="hero-stat-value">1:{icrValue}</span>
+            <span className="hero-stat-label">Demo Ratio Setting</span>
           </div>
         </div>
       </div>

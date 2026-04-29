@@ -137,28 +137,6 @@ export default function ParticleBackground() {
     }
   }, []);
 
-  const animate = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const particles = particlesRef.current;
-    const { x: mouseX, y: mouseY } = mouseRef.current;
-
-    // Update and draw particles
-    particles.forEach(particle => {
-      particle.update(mouseX, mouseY, scrollRef.current);
-      particle.draw(ctx);
-    });
-
-    // Draw connections
-    drawConnections(ctx, particles);
-
-    animationRef.current = requestAnimationFrame(animate);
-  }, [drawConnections]);
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -188,7 +166,22 @@ export default function ParticleBackground() {
     // Initial setup
     handleResize();
 
-    // Start animation
+    const animate = () => {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const particles = particlesRef.current;
+      const { x: mouseX, y: mouseY } = mouseRef.current;
+
+      particles.forEach(particle => {
+        particle.update(mouseX, mouseY, scrollRef.current);
+        particle.draw(ctx);
+      });
+
+      drawConnections(ctx, particles);
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
     animate();
 
     // Event listeners
@@ -206,7 +199,7 @@ export default function ParticleBackground() {
       window.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [initParticles, animate]);
+  }, [initParticles, drawConnections]);
 
   return <canvas ref={canvasRef} className="particle-background" />;
 }

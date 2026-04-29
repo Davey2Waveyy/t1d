@@ -5,15 +5,30 @@
 
 const now = new Date();
 const subtractHours = (h) => new Date(now.getTime() - h * 60 * 60 * 1000).toISOString();
+const meals = [
+  { hour: 8.2, rise: 42, width: 1.4 },
+  { hour: 13.1, rise: 58, width: 1.8 },
+  { hour: 19.4, rise: 72, width: 2.1 },
+  { hour: 22.2, rise: 24, width: 1.1 },
+];
 
-export const mockGlucoseReadings = Array.from({ length: 48 * 12 }, (_, i) => {
-  const time = subtractHours(i * 0.5); // Every 30 mins
-  // Generate a realistic trend (sine wave with noise)
-  const hour = new Date(time).getHours();
-  let base = 120 + Math.sin(hour / 4) * 40; // Circadian rhythm
-  if (hour > 12 && hour < 14) base += 60; // Post-lunch spike
-  if (hour > 19 && hour < 21) base += 80; // Post-dinner spike
-  const value = Math.round(base + (Math.random() - 0.5) * 20);
+function seededNoise(index) {
+  return Math.sin(index * 12.9898) * 7 + Math.sin(index * 4.73) * 4;
+}
+
+export const mockGlucoseReadings = Array.from({ length: 48 * 6 }, (_, i) => {
+  const time = subtractHours(i / 6);
+  const date = new Date(time);
+  const hour = date.getHours() + date.getMinutes() / 60;
+  const overnightDrift = hour < 5 ? -8 + hour * 2 : 0;
+  const morningRise = Math.max(0, 18 - Math.abs(hour - 6.7) * 9);
+  const circadian = Math.sin((hour - 4) / 24 * Math.PI * 2) * 10;
+  const mealEffect = meals.reduce((sum, meal) => {
+    const distance = Math.min(Math.abs(hour - meal.hour), Math.abs(hour + 24 - meal.hour), Math.abs(hour - 24 - meal.hour));
+    return sum + meal.rise * Math.exp(-(distance * distance) / (2 * meal.width * meal.width));
+  }, 0);
+  const correctionDip = hour > 15 && hour < 17 ? -20 : 0;
+  const value = Math.round(104 + overnightDrift + morningRise + circadian + mealEffect + correctionDip + seededNoise(i));
   
   return {
     id: `mock-g-${i}`,
@@ -24,10 +39,10 @@ export const mockGlucoseReadings = Array.from({ length: 48 * 12 }, (_, i) => {
 }).reverse();
 
 export const mockMeals = [
-  { id: 'm1', logged_at: subtractHours(2), name: 'Late Breakfast', carbs: 45, meal_type: 'Breakfast' },
-  { id: 'm2', logged_at: subtractHours(18), name: 'Dinner: Pasta', carbs: 85, meal_type: 'Dinner' },
-  { id: 'm3', logged_at: subtractHours(24), name: 'Lunch: Chicken Salad', carbs: 30, meal_type: 'Lunch' },
-  { id: 'm4', logged_at: subtractHours(42), name: 'Pizza Night', carbs: 110, meal_type: 'Dinner' },
+  { id: 'm1', logged_at: subtractHours(3), name: 'Oatmeal and berries', carbs: 45, meal_type: 'Breakfast' },
+  { id: 'm2', logged_at: subtractHours(18), name: 'Pasta dinner', carbs: 85, meal_type: 'Dinner' },
+  { id: 'm3', logged_at: subtractHours(25), name: 'Chicken salad', carbs: 30, meal_type: 'Lunch' },
+  { id: 'm4', logged_at: subtractHours(42), name: 'Pizza night', carbs: 110, meal_type: 'Dinner' },
 ];
 
 export const mockDoses = [

@@ -1,13 +1,54 @@
 import { supabase } from './supabase'
 import { mockGlucoseReadings, mockMeals, mockDoses, mockSettings } from './mockData'
+import { sanitizeStoredSettings } from './publishConfig'
+
+const DEMO_MEALS_KEY = 'betatrace_demo_meals'
+const DEMO_DOSES_KEY = 'betatrace_demo_insulin_doses'
+const DEMO_GLUCOSE_KEY = 'betatrace_demo_glucose_readings'
+const DEMO_SETTINGS_KEY = 'betatrace_settings'
+
+async function getCurrentUser() {
+  if (!supabase) return null
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
+  } catch (err) {
+    console.error('Supabase user lookup failed; using demo data.', err)
+    return null
+  }
+}
+
+function readDemoList(key, fallback = []) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]')
+    return Array.isArray(parsed) ? parsed : fallback
+  } catch {
+    return fallback
+  }
+}
+
+function writeDemoList(key, entries) {
+  localStorage.setItem(key, JSON.stringify(entries))
+}
+
+function createDemoEntry(key, entry) {
+  const data = { ...entry, id: `demo-${Date.now()}-${Math.random().toString(16).slice(2)}` }
+  const entries = [data, ...readDemoList(key)]
+  writeDemoList(key, entries)
+  return { data, error: null }
+}
 
 // ============================================
 // MEALS
 // ============================================
 
 export async function getMeals(limit = 50) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: mockMeals.slice(0, limit), error: null }
+  const user = await getCurrentUser()
+  if (!user) {
+    const demoMeals = readDemoList(DEMO_MEALS_KEY)
+    return { data: [...demoMeals, ...mockMeals].slice(0, limit), error: null }
+  }
 
   const { data, error } = await supabase
     .from('meals')
@@ -18,8 +59,8 @@ export async function getMeals(limit = 50) {
 }
 
 export async function addMeal(meal) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: null, error: { message: 'Not authenticated' } }
+  const user = await getCurrentUser()
+  if (!user) return createDemoEntry(DEMO_MEALS_KEY, meal)
 
   const { data, error } = await supabase
     .from('meals')
@@ -30,6 +71,8 @@ export async function addMeal(meal) {
 }
 
 export async function deleteMeal(id) {
+  if (!supabase) return { error: null }
+
   const { error } = await supabase
     .from('meals')
     .delete()
@@ -42,8 +85,11 @@ export async function deleteMeal(id) {
 // ============================================
 
 export async function getInsulinDoses(limit = 50) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: mockDoses.slice(0, limit), error: null }
+  const user = await getCurrentUser()
+  if (!user) {
+    const demoDoses = readDemoList(DEMO_DOSES_KEY)
+    return { data: [...demoDoses, ...mockDoses].slice(0, limit), error: null }
+  }
 
   const { data, error } = await supabase
     .from('insulin_doses')
@@ -54,8 +100,8 @@ export async function getInsulinDoses(limit = 50) {
 }
 
 export async function addInsulinDose(dose) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: null, error: { message: 'Not authenticated' } }
+  const user = await getCurrentUser()
+  if (!user) return createDemoEntry(DEMO_DOSES_KEY, dose)
 
   const { data, error } = await supabase
     .from('insulin_doses')
@@ -66,6 +112,8 @@ export async function addInsulinDose(dose) {
 }
 
 export async function deleteInsulinDose(id) {
+  if (!supabase) return { error: null }
+
   const { error } = await supabase
     .from('insulin_doses')
     .delete()
@@ -78,10 +126,11 @@ export async function deleteInsulinDose(id) {
 // ============================================
 
 export async function getGlucoseReadings(hours = 24) {
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) {
     const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000)
-    const filtered = mockGlucoseReadings.filter(r => new Date(r.recorded_at) >= cutoff)
+    const demoReadings = readDemoList(DEMO_GLUCOSE_KEY)
+    const filtered = [...demoReadings, ...mockGlucoseReadings].filter(r => new Date(r.recorded_at) >= cutoff)
     return { data: filtered, error: null }
   }
 
@@ -96,8 +145,11 @@ export async function getGlucoseReadings(hours = 24) {
 }
 
 export async function getAllGlucoseReadings(limit = 500) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: mockGlucoseReadings.slice(0, limit), error: null }
+  const user = await getCurrentUser()
+  if (!user) {
+    const demoReadings = readDemoList(DEMO_GLUCOSE_KEY)
+    return { data: [...demoReadings, ...mockGlucoseReadings].slice(0, limit), error: null }
+  }
 
   const { data, error } = await supabase
     .from('glucose_readings')
@@ -108,8 +160,8 @@ export async function getAllGlucoseReadings(limit = 500) {
 }
 
 export async function addGlucoseReading(reading) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: null, error: { message: 'Not authenticated' } }
+  const user = await getCurrentUser()
+  if (!user) return createDemoEntry(DEMO_GLUCOSE_KEY, reading)
 
   const { data, error } = await supabase
     .from('glucose_readings')
@@ -124,8 +176,15 @@ export async function addGlucoseReading(reading) {
 // ============================================
 
 export async function getUserSettings() {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: mockSettings, error: null }
+  const user = await getCurrentUser()
+  if (!user) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DEMO_SETTINGS_KEY) || 'null')
+      return { data: sanitizeStoredSettings(saved ?? mockSettings), error: null }
+    } catch {
+      return { data: sanitizeStoredSettings(mockSettings), error: null }
+    }
+  }
 
   const { data, error } = await supabase
     .from('user_settings')
@@ -136,8 +195,12 @@ export async function getUserSettings() {
 }
 
 export async function updateUserSettings(settings) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { data: null, error: { message: 'Not authenticated' } }
+  const user = await getCurrentUser()
+  if (!user) {
+    const data = sanitizeStoredSettings(settings)
+    localStorage.setItem(DEMO_SETTINGS_KEY, JSON.stringify(data))
+    return { data, error: null }
+  }
 
   const { data, error } = await supabase
     .from('user_settings')
@@ -151,7 +214,7 @@ export async function updateUserSettings(settings) {
 // STATISTICS HELPERS
 // ============================================
 
-export function calculateStats(glucoseReadings, meals, insulinDoses) {
+export function calculateStats(glucoseReadings, meals, insulinDoses, thresholds = { low: 70, high: 180 }) {
   // Default empty stats
   const emptyStats = {
     currentGlucose: null,
@@ -187,7 +250,7 @@ export function calculateStats(glucoseReadings, meals, insulinDoses) {
   }
 
   // Time in range (70-180)
-  const inRange = glucoseReadings.filter(r => r.value >= 70 && r.value <= 180).length
+  const inRange = glucoseReadings.filter(r => r.value >= thresholds.low && r.value <= thresholds.high).length
   const timeInRange = Math.round((inRange / glucoseReadings.length) * 100)
 
   // Average glucose

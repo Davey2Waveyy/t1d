@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import {
   DEFAULT_SESSION_SETTINGS,
@@ -31,7 +31,18 @@ export function SettingsProvider({ children }) {
   });
   const [sessionSettings, setSessionSettings] = useState(() => sanitizeSessionSettings(null));
 
-  const settings = mergeSettings(storedSettings, sessionSettings);
+  const settings = useMemo(
+    () => mergeSettings(storedSettings, sessionSettings),
+    [storedSettings, sessionSettings],
+  );
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('light-theme', settings.darkMode === false);
+    root.classList.toggle('dark-theme', settings.darkMode !== false);
+    root.classList.toggle('dark', settings.darkMode !== false);
+    root.style.colorScheme = settings.darkMode === false ? 'light' : 'dark';
+  }, [settings.darkMode]);
 
   useEffect(() => {
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(storedSettings));

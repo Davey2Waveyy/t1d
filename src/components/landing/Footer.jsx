@@ -13,7 +13,7 @@ export default function Footer() {
               <span>Betatrace</span>
             </div>
             <p className="footer-tagline">
-              Built for Type 1 Diabetics, by someone who gets it.<br />
+              A preview demo for Type 1 diabetes logging and pattern review.<br />
               Named after beta cells — the ones we're missing.
             </p>
           </div>

@@ -6,15 +6,15 @@ const TREND_ICON = {
   falling_fast: 'trending_down',
 };
 
-const STATUS = (value) => {
+const STATUS = (value, thresholds) => {
   if (value == null) return { label: '-', tone: 'text-secondary' };
-  if (value < 70) return { label: 'LOW', tone: 'glucose-low' };
-  if (value > 180) return { label: 'HIGH', tone: 'glucose-high' };
+  if (value < thresholds.low) return { label: 'LOW', tone: 'glucose-low' };
+  if (value > thresholds.high) return { label: 'HIGH', tone: 'glucose-high' };
   return { label: 'IN RANGE', tone: 'glucose-normal' };
 };
 
-export default function GlucoseHero({ value, trend, updatedAt, unit = 'mg/dL' }) {
-  const status = STATUS(value);
+export default function GlucoseHero({ value, trend, updatedAt, unit = 'mg/dL', target, thresholds = { low: 70, high: 180 } }) {
+  const status = STATUS(value, thresholds);
   const trendIcon = TREND_ICON[trend] ?? 'trending_flat';
 
   return (
@@ -31,6 +31,11 @@ export default function GlucoseHero({ value, trend, updatedAt, unit = 'mg/dL' })
         <span className="font-mono text-headline-hero text-text-primary">{value ?? '-'}</span>
         <span className="font-mono text-data-mono text-text-secondary">{unit}</span>
       </div>
+      {target !== undefined && target !== '' && (
+        <div className="font-mono text-[11px] text-text-secondary">
+          Target {target} {unit}
+        </div>
+      )}
       <div className="flex items-center gap-2 text-text-muted mt-auto pt-sm border-t border-border-subtle">
         <span className="material-symbols-outlined text-[14px]">sync</span>
         <span className="font-mono text-data-mono">{updatedAt ? `Updated ${updatedAt}` : 'No data yet'}</span>

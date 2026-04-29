@@ -9,6 +9,7 @@ export default {
     'bg-chart-carbs/10', 'bg-chart-carbs/20', 'text-chart-carbs', 'border-chart-carbs/30',
     'bg-chart-insulin/10', 'bg-chart-insulin/20', 'text-chart-insulin', 'border-chart-insulin/30',
     'bg-text-secondary/20', 'text-text-secondary',
+    'bg-chart-carbs/20',
   ],
   theme: {
     extend: {

@@ -31,7 +31,7 @@ test('ad composition includes Morning Logs after cold open', () => {
   assert.match(source, /function\s+LoggingScene\(/);
   assert.match(source, /<Sequence\s+from=\{55\}\s+durationInFrames=\{95\}>[\s\S]*<LoggingScene\s+\/>[\s\S]*<\/Sequence>/);
   assert.match(source, /Morning Logs/);
-  assert.match(source, /Meal, dose, glucose in seconds\./);
+  assert.match(source, /Meal, dose, glucose\./);
 });
 
 test('ad composition fills the approved day-in-life timeline with a longer closing sequence', () => {
@@ -71,4 +71,11 @@ test('A1C closing sequence includes GitHub and LinkedIn URLs with a playful boun
   assert.match(source, /linkedin\.com\/in\/david-cilliers/);
   assert.match(source, /impactSquash/);
   assert.match(source, /ringToOrb/);
+});
+
+test('concept scenes use subtle bottom-center disclaimer', () => {
+  const source = readCompositionSource('BetaTraceAd.jsx');
+
+  assert.match(source, /Concept demo - selected features shown as prototypes/);
+  assert.match(source, /function\s+ConceptDisclaimer\(/);
 });

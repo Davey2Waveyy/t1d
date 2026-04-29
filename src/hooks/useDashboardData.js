@@ -1,7 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { getGlucoseReadings, getMeals, getInsulinDoses, calculateStats } from '../lib/dataService';
+import { useSettings } from '../contexts/SettingsContext';
+import { getThresholds, toDisplayGlucose } from '../lib/glucoseUnits';
+import { DEFAULT_SETTINGS } from '../lib/publishConfig';
 
-function buildRecentActivity(meals, insulin, glucose) {
+function buildRecentActivity(meals, insulin, glucose, settings) {
   const mealItems = (meals ?? []).slice(0, 4).map((meal) => ({
     key: `meal-${meal.id ?? meal.logged_at}`,
     type: 'meal',
@@ -27,8 +30,8 @@ function buildRecentActivity(meals, insulin, glucose) {
     type: 'glucose',
     title: 'Glucose',
     subtitle: 'Manual reading',
-    value: reading.value ?? 0,
-    unit: ' mg/dL',
+    value: toDisplayGlucose(reading.value ?? 0, settings.glucoseUnit),
+    unit: ` ${settings.glucoseUnit}`,
     occurredAt: reading.recorded_at,
   }));
 
@@ -39,6 +42,10 @@ function buildRecentActivity(meals, insulin, glucose) {
 }
 
 export function useDashboardData() {
+  const { settings = DEFAULT_SETTINGS } = useSettings();
+  const glucoseUnit = settings.glucoseUnit;
+  const lowThreshold = settings.lowThreshold;
+  const highThreshold = settings.highThreshold;
   const [state, setState] = useState({
     loading: true,
     error: null,
@@ -66,8 +73,8 @@ export function useDashboardData() {
         setState({
           loading: false,
           error: glucoseResult.error ?? mealsResult.error ?? insulinResult.error ?? null,
-          stats: calculateStats(glucose, meals, insulin),
-          recentActivity: buildRecentActivity(meals, insulin, glucose),
+          stats: calculateStats(glucose, meals, insulin, getThresholds(settings)),
+          recentActivity: buildRecentActivity(meals, insulin, glucose, settings),
           glucose,
           meals,
           insulin,
@@ -82,7 +89,7 @@ export function useDashboardData() {
     return () => {
       cancelled = true;
     };
-  }, [refreshKey]);
+  }, [refreshKey, glucoseUnit, lowThreshold, highThreshold]);
 
   return { ...state, refresh };
 }

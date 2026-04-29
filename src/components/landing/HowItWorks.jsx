@@ -12,14 +12,14 @@ const steps = [
   {
     number: '02',
     icon: BarChart3,
-    title: 'Analyze',
-    description: 'Betatrace organizes your entries into trend views, summaries, and ratio calculators that are easier to interpret.',
+    title: 'Review',
+    description: 'Betatrace organizes your entries into trend views, summaries, and settings context that are easier to scan.',
   },
   {
     number: '03',
     icon: Zap,
-    title: 'Optimize',
-    description: 'Use those patterns to refine your routines, prepare better questions for your care team, and track progress over time.',
+    title: 'Prepare',
+    description: 'Use those patterns to prepare better questions for your care team while following your prescribed care plan.',
   },
 ];
 
@@ -31,7 +31,7 @@ export default function HowItWorks() {
           <p className="text-subheading">How It Works</p>
           <h2 className="hiw-title text-display">
             Three steps to<br />
-            <em>better management.</em>
+            <em>a calmer review.</em>
           </h2>
         </ScrollReveal>
 
