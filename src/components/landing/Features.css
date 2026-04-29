@@ -21,7 +21,7 @@
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   grid-auto-rows: 1fr;
   gap: var(--space-lg);
@@ -516,6 +516,12 @@
   .feature-preview {
     height: auto;
     min-height: 250px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1020px) {
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

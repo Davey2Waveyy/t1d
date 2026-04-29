@@ -4,6 +4,7 @@
   color: var(--text-light);
   position: relative;
   overflow: hidden;
+  scroll-margin-top: 88px;
 }
 
 .how-it-works::before {
@@ -33,14 +34,23 @@
 
 .hiw-steps {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2xl);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(1.25rem, 4vw, 3rem);
   position: relative;
+}
+
+.hiw-steps > div {
+  height: 100%;
 }
 
 .hiw-step {
   position: relative;
-  padding: var(--space-2xl);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  min-height: 400px;
+  height: 100%;
+  padding: clamp(2rem, 4vw, 3rem);
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
@@ -62,7 +72,7 @@
   font-weight: 700;
   color: var(--accent-teal);
   letter-spacing: 0.1em;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 1.65rem;
   opacity: 0.7;
 }
 
@@ -75,17 +85,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 1.7rem;
 }
 
 .hiw-step-title {
   font-family: var(--font-serif);
   font-size: 1.8rem;
   color: var(--text-light);
-  margin-bottom: var(--space-md);
+  line-height: 1.05;
+  margin-bottom: 1rem;
 }
 
 .hiw-step-desc {
+  max-width: 24ch;
   font-size: 0.95rem;
   color: var(--text-muted);
   line-height: 1.7;
@@ -103,5 +115,9 @@
   .hiw-steps {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
+  }
+
+  .hiw-step {
+    min-height: 0;
   }
 }

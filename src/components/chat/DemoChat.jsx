@@ -37,15 +37,17 @@ function createFallbackReply(text, context) {
     return `The current sample glucose is ${context?.stats?.currentGlucose ?? 'unknown'} ${context?.settings?.glucoseUnit ?? 'mg/dL'} with a ${context?.stats?.glucoseTrend ?? 'stable'} trend. This is preview data only.`;
   }
 
-  return 'I could not reach the model, but I can still summarize the sample dashboard. Ask about time in range, recent meals, insulin, or glucose trends.';
+  return 'I am in local demo mode, so I can summarize the sample dashboard without calling the model. Ask about time in range, recent meals, insulin, or glucose trends.';
 }
 
-export default function DemoChat({ context }) {
+export default function DemoChat({ context, hidden = false }) {
+  if (hidden) return null;
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([WELCOME]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
-  const [status, setStatus] = useState('AI live');
+  const [status, setStatus] = useState('Demo mode');
   const [used, setUsed] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     return Number.parseInt(stored || '0', 10) || 0;
@@ -100,7 +102,7 @@ export default function DemoChat({ context }) {
       setStatus('AI live');
       setMessages((current) => [...current, { role: 'assistant', content: data.reply }]);
     } catch {
-      setStatus('Offline fallback');
+      setStatus('Demo mode');
       setMessages((current) => [
         ...current,
         { role: 'assistant', content: createFallbackReply(text, context), error: true },

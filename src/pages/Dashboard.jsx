@@ -49,7 +49,7 @@ export default function Dashboard() {
       <BottomNav onPressLog={() => setLogOpen(true)} />
       <LogActionSheet open={logOpen} onOpenChange={setLogOpen} />
       <GuestNotificationsSheet open={notificationsOpen} onOpenChange={setNotificationsOpen} />
-      <DemoChat context={chatContext} />
+      <DemoChat context={chatContext} hidden={logOpen || notificationsOpen} />
       <PreviewNotice />
       {!online && <Toast tone="warn" duration={0}>You're offline - saves will fail until you reconnect.</Toast>}
       <IOSInstallPrompt />
