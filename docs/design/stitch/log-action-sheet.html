@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Log Quick Action - Betatrace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "primary": "#56f1c3",
+                "surface-tint": "#3edeb2",
+                "glucose-normal": "#2DD4A8",
+                "surface-bright": "#333b37",
+                "border-default": "rgba(45, 212, 168, 0.15)",
+                "inverse-primary": "#006c53",
+                "border-strong": "rgba(45, 212, 168, 0.30)",
+                "secondary-fixed": "#cde9dc",
+                "on-surface-variant": "#bbcac2",
+                "surface-container-lowest": "#09100d",
+                "on-tertiary": "#4e2600",
+                "on-secondary-fixed-variant": "#334c43",
+                "surface-container-high": "#242c28",
+                "on-primary-fixed-variant": "#00513e",
+                "surface-raised": "#132B23",
+                "chart-carbs": "#38BDF8",
+                "border-subtle": "rgba(45, 212, 168, 0.08)",
+                "surface-container-highest": "#2f3633",
+                "primary-fixed-dim": "#3edeb2",
+                "surface-base": "#0D1B16",
+                "background": "#0e1512",
+                "surface-input": "#0A1410",
+                "tertiary": "#ffcfad",
+                "surface-dim": "#0e1512",
+                "on-tertiary-fixed": "#2f1400",
+                "on-secondary-container": "#a0bbaf",
+                "error-container": "#93000a",
+                "chart-insulin": "#A78BFA",
+                "on-primary-fixed": "#002117",
+                "tertiary-fixed-dim": "#ffb781",
+                "tertiary-fixed": "#ffdcc4",
+                "outline": "#85948d",
+                "surface-overlay": "#1A3D32",
+                "tertiary-container": "#ffa965",
+                "error": "#ffb4ab",
+                "on-secondary-fixed": "#072018",
+                "on-background": "#dde4df",
+                "on-primary": "#00382a",
+                "glucose-high": "#FBBF24",
+                "on-surface": "#dde4df",
+                "on-tertiary-fixed-variant": "#6f3800",
+                "surface-container-low": "#161d1a",
+                "text-primary": "#E8F5F0",
+                "primary-container": "#2dd4a8",
+                "text-secondary": "#8BA89F",
+                "secondary-container": "#334c43",
+                "surface-variant": "#2f3633",
+                "text-muted": "#4A6B60",
+                "on-tertiary-container": "#773c00",
+                "secondary": "#b2cdc0",
+                "primary-fixed": "#63fbcd",
+                "on-secondary": "#1d352d",
+                "glucose-low": "#FB7185",
+                "outline-variant": "#3c4a44",
+                "on-error-container": "#ffdad6",
+                "on-primary-container": "#005742",
+                "surface": "#0e1512",
+                "on-error": "#690005",
+                "inverse-on-surface": "#2b322f",
+                "inverse-surface": "#dde4df",
+                "secondary-fixed-dim": "#b2cdc0",
+                "surface-container": "#1a211e"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "lg": "1.5rem",
+                "xl": "3rem",
+                "base": "4px",
+                "md": "1rem",
+                "sm": "0.5rem",
+                "xs": "0.25rem"
+        },
+        "fontFamily": {
+                "body-base": [
+                        "Inter", "sans-serif"
+                ],
+                "label-caps": [
+                        "Inter", "sans-serif"
+                ],
+                "title-lg": [
+                        "Inter", "sans-serif"
+                ],
+                "data-mono": [
+                        "JetBrains Mono", "monospace"
+                ],
+                "stat-lg": [
+                        "JetBrains Mono", "monospace"
+                ],
+                "headline-hero": [
+                        "JetBrains Mono", "monospace"
+                ]
+        },
+        "fontSize": {
+                "body-base": [
+                        "15px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-caps": [
+                        "11px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "0.1em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "title-lg": [
+                        "22px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "600"
+                        }
+                ],
+                "data-mono": [
+                        "13px",
+                        {
+                                "lineHeight": "1",
+                                "fontWeight": "500"
+                        }
+                ],
+                "stat-lg": [
+                        "28px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.03em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-hero": [
+                        "56px",
+                        {
+                                "lineHeight": "1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  /* Safe area padding for PWA */
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  
+  /* Material Symbols Configuration */
+  .material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  }
+  
+  .icon-fill {
+    font-variation-settings: 'FILL' 1;
+  }
+  
+  /* Custom scrollbar to match design system */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(45, 212, 168, 0.2);
+    border-radius: 9999px;
+  }
+  
+  /* Prevent background scroll when sheet is open */
+  body.sheet-open {
+    overflow: hidden;
+  }
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-base text-text-primary antialiased font-body-base sheet-open h-screen w-screen overflow-hidden flex justify-center">
+<!-- Mock Background Context (Dimmed Dashboard) -->
+<div class="fixed inset-0 w-full max-w-[480px] mx-auto opacity-30 pointer-events-none select-none z-0 overflow-hidden">
+<!-- Top Nav Placeholder -->
+<header class="flex items-center justify-between px-4 h-16 border-b border-subtle pt-safe">
+<div class="w-8 h-8 rounded-full bg-surface-raised border border-subtle"></div>
+<div class="text-title-lg font-title-lg text-primary">GLUCOSE</div>
+<span class="material-symbols-outlined text-text-secondary">notifications</span>
+</header>
+<!-- Content Placeholder -->
+<main class="p-4 space-y-xl">
+<!-- Hero Stat -->
+<div class="flex flex-col items-center justify-center pt-8 pb-4">
+<span class="text-label-caps font-label-caps text-text-secondary uppercase">Current Reading</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-headline-hero font-headline-hero text-text-primary">104</span>
+<span class="text-data-mono font-data-mono text-text-secondary">mg/dL</span>
+</div>
+<div class="mt-4 px-3 py-1 rounded-full bg-surface-raised border border-border-default flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-glucose-normal"></span>
+<span class="text-label-caps font-label-caps text-glucose-normal uppercase">In Range</span>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-raised rounded-xl p-[20px] border border-subtle">
+<span class="text-label-caps font-label-caps text-text-secondary uppercase">Active Insulin</span>
+<div class="mt-2 text-stat-lg font-stat-lg text-text-primary">2.4<span class="text-data-mono font-data-mono text-text-secondary ml-1">U</span></div>
+</div>
+<div class="bg-surface-raised rounded-xl p-[20px] border border-subtle">
+<span class="text-label-caps font-label-caps text-text-secondary uppercase">Carbs on board</span>
+<div class="mt-2 text-stat-lg font-stat-lg text-text-primary">15<span class="text-data-mono font-data-mono text-text-secondary ml-1">g</span></div>
+</div>
+</div>
+</main>
+</div>
+<!-- Overlay Scrim -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"></div>
+<!-- Bottom Sheet Container -->
+<div class="fixed bottom-0 w-full max-w-[480px] z-50 flex flex-col justify-end pointer-events-none">
+<!-- The Sheet -->
+<div class="bg-surface-base rounded-t-[24px] border-t border-x border-border-strong shadow-[0_-8px_32px_rgba(0,0,0,0.5)] pointer-events-auto flex flex-col pb-safe w-full">
+<!-- Handle & Header -->
+<div class="flex flex-col items-center pt-4 pb-2 px-6">
+<!-- Drag Handle -->
+<div class="w-12 h-1.5 rounded-full bg-surface-variant mb-6"></div>
+<!-- Title -->
+<h2 class="text-title-lg font-title-lg text-text-primary w-full text-center mb-6">Log what?</h2>
+</div>
+<!-- Action Items List -->
+<div class="flex flex-col px-4 pb-2 gap-3">
+<!-- Action 1: Glucose -->
+<button class="w-full flex items-center bg-surface-raised hover:bg-surface-overlay active:scale-[0.97] transition-all duration-200 border border-subtle hover:border-border-default rounded-xl p-4 min-h-[72px] group text-left">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center mr-4 group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-primary-container icon-fill">water_drop</span>
+</div>
+<div class="flex-1">
+<span class="block text-body-base font-body-base font-semibold text-text-primary">Log Glucose reading</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-text-primary transition-colors">chevron_right</span>
+</button>
+<!-- Action 2: Meal / Carbs -->
+<button class="w-full flex items-center bg-surface-raised hover:bg-surface-overlay active:scale-[0.97] transition-all duration-200 border border-subtle hover:border-border-default rounded-xl p-4 min-h-[72px] group text-left">
+<div class="w-12 h-12 rounded-full bg-chart-carbs/10 flex items-center justify-center mr-4 group-hover:bg-chart-carbs/20 transition-colors">
+<span class="material-symbols-outlined text-chart-carbs icon-fill">restaurant</span>
+</div>
+<div class="flex-1">
+<span class="block text-body-base font-body-base font-semibold text-text-primary">Log Meal / carbs</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-text-primary transition-colors">chevron_right</span>
+</button>
+<!-- Action 3: Insulin -->
+<button class="w-full flex items-center bg-surface-raised hover:bg-surface-overlay active:scale-[0.97] transition-all duration-200 border border-subtle hover:border-border-default rounded-xl p-4 min-h-[72px] group text-left">
+<div class="w-12 h-12 rounded-full bg-chart-insulin/10 flex items-center justify-center mr-4 group-hover:bg-chart-insulin/20 transition-colors">
+<span class="material-symbols-outlined text-chart-insulin icon-fill">vaccines</span>
+</div>
+<div class="flex-1">
+<span class="block text-body-base font-body-base font-semibold text-text-primary">Log Insulin dose</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-text-primary transition-colors">chevron_right</span>
+</button>
+</div>
+<!-- Cancel Action -->
+<div class="px-4 py-4 mt-2">
+<button class="w-full min-h-[48px] rounded-lg bg-transparent text-text-secondary hover:text-text-primary hover:bg-surface-raised active:scale-[0.97] transition-all text-body-base font-body-base font-medium flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">close</span>
+                Cancel
+            </button>
+</div>
+</div>
+</div>
+</body></html>

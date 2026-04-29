@@ -1,49 +1,51 @@
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
-function devApiPlugin(env) {
-  return {
-    name: 'dev-api-chat',
-    configureServer(server) {
-      server.middlewares.use('/api/chat', async (req, res) => {
-        if (req.method !== 'POST') {
-          res.statusCode = 405
-          return res.end(JSON.stringify({ error: 'Method not allowed' }))
-        }
-        try {
-          const chunks = []
-          for await (const chunk of req) chunks.push(chunk)
-          const body = JSON.parse(Buffer.concat(chunks).toString() || '{}')
-
-          const mod = await import('./api/chat.js')
-          const handler = mod.default
-          await handler(
-            { method: 'POST', body, headers: req.headers },
-            {
-              status(code) {
-                res.statusCode = code
-                return this
-              },
-              json(payload) {
-                res.setHeader('Content-Type', 'application/json')
-                res.end(JSON.stringify(payload))
-              },
-            }
-          )
-        } catch (err) {
-          console.error('dev /api/chat error', err)
-          res.statusCode = 500
-          res.end(JSON.stringify({ error: 'Dev proxy error' }))
-        }
-      })
-    },
-  }
-}
-
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  process.env.GROQ_API_KEY = env.GROQ_API_KEY || process.env.GROQ_API_KEY
-  return {
-    plugins: [react(), devApiPlugin(env)],
-  }
-})
+export default defineConfig({
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'icons/*.png'],
+      manifest: false,
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fonts-v1',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
+          {
+            urlPattern: ({ url, request }) =>
+              url.hostname.endsWith('.supabase.co') &&
+              request.method === 'GET' &&
+              /\/rest\/v1\/(glucose_readings|meals|insulin_doses|user_settings)/.test(url.pathname),
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'data-reads-v1',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
+      devOptions: { enabled: false },
+    }),
+  ],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    include: [
+      'src/test/**/*.test.js',
+      'src/hooks/**/*.test.js',
+      'src/components/**/*.test.jsx',
+    ],
+    passWithNoTests: true,
+    setupFiles: ['./src/test/setup.js'],
+  },
+});

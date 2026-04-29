@@ -1,4 +1,0 @@
-.insulin-log { display: flex; flex-direction: column; gap: var(--space-xl); }
-.insulin-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--space-md); }
-.insulin-form-inner { display: flex; flex-direction: column; gap: var(--space-md); margin-top: var(--space-md); }
-@media (max-width: 768px) { .insulin-grid { grid-template-columns: 1fr; } }

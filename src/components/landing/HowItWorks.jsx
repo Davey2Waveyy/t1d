@@ -7,19 +7,19 @@ const steps = [
     number: '01',
     icon: ClipboardList,
     title: 'Log',
-    description: 'Enter your meals, insulin doses, and import your CGM data. The more data, the smarter your predictions.',
+    description: 'Log meals, insulin doses, and glucose readings in one place so your day is easy to review later.',
   },
   {
     number: '02',
     icon: BarChart3,
-    title: 'Analyze',
-    description: 'Betatrace crunches your data to find patterns, calculate ratios, and identify trends across days and weeks.',
+    title: 'Review',
+    description: 'Betatrace organizes your entries into trend views, summaries, and settings context that are easier to scan.',
   },
   {
     number: '03',
     icon: Zap,
-    title: 'Optimize',
-    description: 'Get personalized insulin-to-carb ratios, correction factors, and alerts that help you stay in range.',
+    title: 'Prepare',
+    description: 'Use those patterns to prepare better questions for your care team while following your prescribed care plan.',
   },
 ];
 
@@ -31,7 +31,7 @@ export default function HowItWorks() {
           <p className="text-subheading">How It Works</p>
           <h2 className="hiw-title text-display">
             Three steps to<br />
-            <em>better management.</em>
+            <em>a calmer review.</em>
           </h2>
         </ScrollReveal>
 

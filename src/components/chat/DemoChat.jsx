@@ -1,27 +1,56 @@
-import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { MessageCircle, Send, Sparkles, X } from 'lucide-react';
 import './DemoChat.css';
 
-const MAX_MESSAGES = 3;
-const STORAGE_KEY = 'betatrace_chat_count_v1';
+const MAX_MESSAGES = 5;
+const STORAGE_KEY = 'betatrace_chat_count_v2';
+const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || '/api/chat';
 
 const WELCOME = {
   role: 'assistant',
   content:
-    "Hi, I'm Beta — your T1D demo assistant. Ask me about carb counting, ICR, or how Betatrace works. (Demo limit: 3 messages.)",
+    "Hi, I'm Beta. Ask me about the sample glucose, meals, insulin, or what the preview is showing.",
 };
 
-export default function DemoChat() {
+function createFallbackReply(text, context) {
+  const lower = text.toLowerCase();
+
+  if (lower.includes('range') || lower.includes('tir')) {
+    return `The sample data is showing ${context?.stats?.timeInRange ?? 'unknown'}% time in range. Treat that as preview data only, not medical guidance.`;
+  }
+
+  if (lower.includes('meal') || lower.includes('carb')) {
+    const meal = context?.recentMeals?.[0];
+    return meal
+      ? `The most recent sample meal is ${meal.name} with ${meal.carbs}g carbs. I can discuss patterns around logged meals, but not recommend dosing.`
+      : 'I do not see recent meal entries in the sample context.';
+  }
+
+  if (lower.includes('insulin') || lower.includes('dose')) {
+    const dose = context?.recentInsulin?.[0];
+    return dose
+      ? `The most recent sample insulin entry is ${dose.units}u of ${dose.type}. I can explain the log, but dosing decisions should stay with your care team.`
+      : 'I do not see recent insulin entries in the sample context.';
+  }
+
+  if (lower.includes('glucose') || lower.includes('trend')) {
+    return `The current sample glucose is ${context?.stats?.currentGlucose ?? 'unknown'} ${context?.settings?.glucoseUnit ?? 'mg/dL'} with a ${context?.stats?.glucoseTrend ?? 'stable'} trend. This is preview data only.`;
+  }
+
+  return 'I am in local demo mode, so I can summarize the sample dashboard without calling the model. Ask about time in range, recent meals, insulin, or glucose trends.';
+}
+
+export default function DemoChat({ context, hidden = false }) {
+  if (hidden) return null;
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([WELCOME]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState('Demo mode');
   const [used, setUsed] = useState(() => {
-    try {
-      return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) || 0;
-    } catch {
-      return 0;
-    }
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return Number.parseInt(stored || '0', 10) || 0;
   });
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -30,47 +59,53 @@ export default function DemoChat() {
   const limitReached = remaining === 0;
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, sending, open]);
 
   useEffect(() => {
-    if (open && !limitReached) inputRef.current?.focus();
+    if (open && !limitReached) {
+      inputRef.current?.focus();
+    }
   }, [open, limitReached]);
 
-  async function sendMessage(e) {
-    e?.preventDefault();
+  async function sendMessage(event) {
+    event.preventDefault();
+
     const text = input.trim();
     if (!text || sending || limitReached) return;
 
-    const next = [...messages, { role: 'user', content: text }];
-    setMessages(next);
     setInput('');
     setSending(true);
+    const nextMessages = [...messages, { role: 'user', content: text }];
+    setMessages(nextMessages);
 
     try {
-      const res = await fetch('/api/chat', {
+      const response = await fetch(CHAT_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: next.filter((m) => m !== WELCOME).map(({ role, content }) => ({ role, content })),
+          messages: nextMessages
+            .filter((message) => message !== WELCOME)
+            .map(({ role, content }) => ({ role, content })),
+          context,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Request failed');
-      setMessages((m) => [...m, { role: 'assistant', content: data.reply }]);
-      const newUsed = used + 1;
-      setUsed(newUsed);
-      try {
-        localStorage.setItem(STORAGE_KEY, String(newUsed));
-      } catch {
-        /* ignore */
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Chat service unavailable');
       }
-    } catch (err) {
-      setMessages((m) => [
-        ...m,
-        { role: 'assistant', content: `Sorry — ${err.message}. Try again in a moment.`, error: true },
+
+      const nextUsed = used + 1;
+      localStorage.setItem(STORAGE_KEY, String(nextUsed));
+      setUsed(nextUsed);
+      setStatus('AI live');
+      setMessages((current) => [...current, { role: 'assistant', content: data.reply }]);
+    } catch {
+      setStatus('Demo mode');
+      setMessages((current) => [
+        ...current,
+        { role: 'assistant', content: createFallbackReply(text, context), error: true },
       ]);
     } finally {
       setSending(false);
@@ -78,84 +113,71 @@ export default function DemoChat() {
   }
 
   return (
-    <>
+    <div className="demochat">
       {!open && (
         <button
+          type="button"
           className="demochat-fab"
           onClick={() => setOpen(true)}
-          aria-label="Open demo chat"
+          aria-label="Open Beta assistant"
         >
-          <MessageCircle size={22} />
-          <span className="demochat-fab-label">Ask Beta</span>
+          <MessageCircle size={21} />
+          <span>Ask Beta</span>
         </button>
       )}
 
       {open && (
-        <div className="demochat-panel" role="dialog" aria-label="Demo chat assistant">
+        <section className="demochat-panel" role="dialog" aria-label="Beta demo assistant">
           <header className="demochat-header">
-            <div className="demochat-header-title">
+            <div className="demochat-title">
               <Sparkles size={16} />
-              <span>Beta — Demo Assistant</span>
+              <span>Beta</span>
             </div>
-            <div className="demochat-header-meta">
-              <span className="demochat-counter">
-                {remaining}/{MAX_MESSAGES} left
+            <div className="demochat-meta">
+              <span className={status === 'AI live' ? 'demochat-status-live' : 'demochat-status-fallback'}>
+                {status}
               </span>
-              <button
-                className="demochat-close"
-                onClick={() => setOpen(false)}
-                aria-label="Close chat"
-              >
+              <span>{remaining} left</span>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close Beta assistant">
                 <X size={18} />
               </button>
             </div>
           </header>
 
           <div className="demochat-messages" ref={scrollRef}>
-            {messages.map((m, i) => (
+            {messages.map((message, index) => (
               <div
-                key={i}
-                className={`demochat-msg demochat-msg-${m.role}${m.error ? ' demochat-msg-error' : ''}`}
+                key={`${message.role}-${index}`}
+                className={`demochat-message demochat-message-${message.role}${message.error ? ' demochat-message-error' : ''}`}
               >
-                {m.content}
+                {message.content}
               </div>
             ))}
             {sending && (
-              <div className="demochat-msg demochat-msg-assistant demochat-msg-typing">
-                <span /><span /><span />
+              <div className="demochat-message demochat-message-assistant demochat-typing">
+                <span />
+                <span />
+                <span />
               </div>
             )}
           </div>
 
-          <form className="demochat-input-row" onSubmit={sendMessage}>
+          <form className="demochat-form" onSubmit={sendMessage}>
             <input
               ref={inputRef}
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                limitReached ? 'Demo limit reached' : 'Ask about carbs, ICR, glucose...'
-              }
+              onChange={(event) => setInput(event.target.value)}
+              placeholder={limitReached ? 'Demo limit reached' : 'Ask about the preview...'}
               disabled={sending || limitReached}
-              maxLength={500}
+              maxLength={320}
             />
-            <button
-              type="submit"
-              className="demochat-send"
-              disabled={sending || limitReached || !input.trim()}
-              aria-label="Send"
-            >
+            <button type="submit" disabled={sending || limitReached || !input.trim()} aria-label="Send message">
               <Send size={16} />
             </button>
           </form>
-
-          {limitReached && (
-            <div className="demochat-limit-note">
-              You've used your 3 demo messages. Sign up to chat without limits (coming soon).
-            </div>
-          )}
-        </div>
+        </section>
       )}
-    </>
+    </div>
   );
 }

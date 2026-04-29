@@ -1,4 +1,5 @@
-import { Activity, ExternalLink, Mail, Heart } from 'lucide-react';
+import { Activity, ExternalLink, Heart, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 export default function Footer() {
@@ -12,7 +13,7 @@ export default function Footer() {
               <span>Betatrace</span>
             </div>
             <p className="footer-tagline">
-              Built for Type 1 Diabetics, by someone who gets it.<br />
+              A preview demo for Type 1 diabetes logging and pattern review.<br />
               Named after beta cells — the ones we're missing.
             </p>
           </div>
@@ -20,25 +21,31 @@ export default function Footer() {
           <div className="footer-links">
             <div className="footer-col">
               <h4 className="footer-col-title">Product</h4>
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How It Works</a>
-              <a href="#" >Dashboard</a>
-              <a href="#" >Changelog</a>
+              <a href="/#features">Features</a>
+              <a href="/#how-it-works">How It Works</a>
+              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/changelog">Changelog</Link>
             </div>
             <div className="footer-col">
               <h4 className="footer-col-title">Resources</h4>
-              <a href="#">Documentation</a>
-              <a href="#">API Reference</a>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
+              <Link to="/documentation">Documentation</Link>
+              <Link to="/api-reference">Security</Link>
+              <Link to="/privacy-policy">Privacy Policy</Link>
+              <Link to="/terms-of-service">Terms of Service</Link>
             </div>
             <div className="footer-col">
               <h4 className="footer-col-title">Connect</h4>
               <a href="https://github.com/Davey2Waveyy/t1d" target="_blank" rel="noopener noreferrer">
                 <ExternalLink size={14} /> GitHub
               </a>
-              <a href="#">
+              <a href="https://linkedin.com/in/david-cilliers/" target="_blank" rel="noopener noreferrer">
+                <ExternalLink size={14} /> LinkedIn
+              </a>
+              <Link to="/contact">
                 <Mail size={14} /> Contact
+              </Link>
+              <a href="mailto:davdancil@gmail.com">
+                <ExternalLink size={14} /> Email
               </a>
             </div>
           </div>

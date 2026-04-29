@@ -1,10 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Activity } from 'lucide-react';
-import heroImg from '../../assets/hero.png';
+import ParticleBackground from './ParticleBackground';
 import './Hero.css';
 
-export default function Hero({ onGetStarted }) {
+// Animated counter hook - counts up when element becomes visible
+function useAnimatedCounter(end, duration = 2000, decimals = 0) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+
+          const startTime = performance.now();
+          const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Easing function (ease-out cubic)
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = eased * end;
+
+            setCount(current);
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [end, duration, hasAnimated]);
+
+  const formatted = decimals > 0
+    ? count.toFixed(decimals)
+    : Math.round(count).toString();
+
+  return { ref, value: formatted };
+}
+
+export default function Hero({ onGetStarted, onContinueAsGuest }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Animated counters for stats
+  const { ref: tirRef, value: tirValue } = useAnimatedCounter(72, 2000, 0);
+  const { ref: a1cRef, value: a1cValue } = useAnimatedCounter(6.4, 2000, 1);
+  const { ref: icrRef, value: icrValue } = useAnimatedCounter(10, 2000, 0);
 
   useEffect(() => {
     const handleMouse = (e) => {
@@ -18,6 +71,7 @@ export default function Hero({ onGetStarted }) {
     <section className="hero" id="hero">
       {/* Animated glucose curve background */}
       <div className="hero-bg">
+        <ParticleBackground />
         <svg className="hero-glucose-curve" viewBox="0 0 1440 400" preserveAspectRatio="none"
           style={{ transform: `translate(${mousePos.x * -15}px, ${mousePos.y * -10}px)` }}>
           <defs>
@@ -59,57 +113,45 @@ export default function Hero({ onGetStarted }) {
       </div>
 
       <div className="hero-content container">
-        <div className="hero-copy">
-          <div className="hero-badge animate-fade-in-up">
-            <Activity size={14} />
-            <span>Intelligent T1D Management</span>
-          </div>
+        <div className="hero-badge animate-fade-in-up">
+          <Activity size={14} />
+          <span>Preview demo for T1D logging</span>
+        </div>
+        
+        <h1 className="hero-title animate-fade-in-up stagger-1">
+          Preview Type 1<br />
+          <span className="hero-title-accent">patterns calmly.</span>
+        </h1>
+        
+        <p className="hero-subtitle animate-fade-in-up stagger-2">
+          Betatrace brings meals, insulin, and glucose trends into one calmer mobile workspace
+          for personal logging, pattern review, and clinician conversations.
+        </p>
 
-          <h1 className="hero-title animate-fade-in-up stagger-1">
-            Take control of<br />
-            <span className="hero-title-accent">your Type 1.</span>
-          </h1>
-
-          <p className="hero-subtitle animate-fade-in-up stagger-2">
-            Betatrace uses your meal and insulin data to build predictive models,
-            optimize your insulin-to-carb ratio, and surface patterns you'd never spot alone.
-          </p>
-
-          <div className="hero-actions animate-fade-in-up stagger-3">
-            <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
-              Get Started
-              <ArrowRight size={18} />
-            </button>
-            <button className="btn btn-secondary btn-lg" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>
-              See Features
-            </button>
-          </div>
-
-          <div className="hero-stats animate-fade-in-up stagger-4">
-            <div className="hero-stat">
-              <span className="hero-stat-value">72%</span>
-              <span className="hero-stat-label">Avg Time in Range</span>
-            </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
-              <span className="hero-stat-value">6.4</span>
-              <span className="hero-stat-label">Est. A1C</span>
-            </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
-              <span className="hero-stat-value">1:10</span>
-              <span className="hero-stat-label">Predicted ICR</span>
-            </div>
-          </div>
+        <div className="hero-actions animate-fade-in-up stagger-3">
+          <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
+            Get Started
+            <ArrowRight size={18} />
+          </button>
+          <button className="btn btn-glass btn-lg" onClick={onContinueAsGuest}>
+            Explore Guest Demo
+          </button>
         </div>
 
-        <div className="hero-mockup animate-fade-in-up stagger-3">
-          <div className="hero-phone">
-            <div className="hero-phone-notch" />
-            <div className="hero-phone-screen">
-              <img src={heroImg} alt="Betatrace app screenshot" />
-            </div>
-            <div className="hero-phone-home" />
+        <div className="hero-stats animate-fade-in-up stagger-4">
+          <div className="hero-stat" ref={tirRef}>
+            <span className="hero-stat-value">{tirValue}%</span>
+            <span className="hero-stat-label">Demo Time in Range</span>
+          </div>
+          <div className="hero-stat-divider" />
+          <div className="hero-stat" ref={a1cRef}>
+            <span className="hero-stat-value">{a1cValue}</span>
+            <span className="hero-stat-label">Demo A1C Estimate</span>
+          </div>
+          <div className="hero-stat-divider" />
+          <div className="hero-stat" ref={icrRef}>
+            <span className="hero-stat-value">1:{icrValue}</span>
+            <span className="hero-stat-label">Demo Ratio Setting</span>
           </div>
         </div>
       </div>

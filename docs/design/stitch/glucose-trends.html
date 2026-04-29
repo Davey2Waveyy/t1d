@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Betatrace - Glucose Trends</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#56f1c3",
+                      "surface-tint": "#3edeb2",
+                      "glucose-normal": "#2DD4A8",
+                      "surface-bright": "#333b37",
+                      "border-default": "rgba(45, 212, 168, 0.15)",
+                      "inverse-primary": "#006c53",
+                      "border-strong": "rgba(45, 212, 168, 0.30)",
+                      "secondary-fixed": "#cde9dc",
+                      "on-surface-variant": "#bbcac2",
+                      "surface-container-lowest": "#09100d",
+                      "on-tertiary": "#4e2600",
+                      "on-secondary-fixed-variant": "#334c43",
+                      "surface-container-high": "#242c28",
+                      "on-primary-fixed-variant": "#00513e",
+                      "surface-raised": "#132B23",
+                      "chart-carbs": "#38BDF8",
+                      "border-subtle": "rgba(45, 212, 168, 0.08)",
+                      "surface-container-highest": "#2f3633",
+                      "primary-fixed-dim": "#3edeb2",
+                      "surface-base": "#0D1B16",
+                      "background": "#0e1512",
+                      "surface-input": "#0A1410",
+                      "tertiary": "#ffcfad",
+                      "surface-dim": "#0e1512",
+                      "on-tertiary-fixed": "#2f1400",
+                      "on-secondary-container": "#a0bbaf",
+                      "error-container": "#93000a",
+                      "chart-insulin": "#A78BFA",
+                      "on-primary-fixed": "#002117",
+                      "tertiary-fixed-dim": "#ffb781",
+                      "tertiary-fixed": "#ffdcc4",
+                      "outline": "#85948d",
+                      "surface-overlay": "#1A3D32",
+                      "tertiary-container": "#ffa965",
+                      "error": "#ffb4ab",
+                      "on-secondary-fixed": "#072018",
+                      "on-background": "#dde4df",
+                      "on-primary": "#00382a",
+                      "glucose-high": "#FBBF24",
+                      "on-surface": "#dde4df",
+                      "on-tertiary-fixed-variant": "#6f3800",
+                      "surface-container-low": "#161d1a",
+                      "text-primary": "#E8F5F0",
+                      "primary-container": "#2dd4a8",
+                      "text-secondary": "#8BA89F",
+                      "secondary-container": "#334c43",
+                      "surface-variant": "#2f3633",
+                      "text-muted": "#4A6B60",
+                      "on-tertiary-container": "#773c00",
+                      "secondary": "#b2cdc0",
+                      "primary-fixed": "#63fbcd",
+                      "on-secondary": "#1d352d",
+                      "glucose-low": "#FB7185",
+                      "outline-variant": "#3c4a44",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-container": "#005742",
+                      "surface": "#0e1512",
+                      "on-error": "#690005",
+                      "inverse-on-surface": "#2b322f",
+                      "inverse-surface": "#dde4df",
+                      "secondary-fixed-dim": "#b2cdc0",
+                      "surface-container": "#1a211e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "1.5rem",
+                      "xl": "3rem",
+                      "base": "4px",
+                      "md": "1rem",
+                      "sm": "0.5rem",
+                      "xs": "0.25rem"
+              },
+              "fontFamily": {
+                      "body-base": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "stat-lg": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-hero": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "body-base": [
+                              "15px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "11px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-lg": [
+                              "22px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-mono": [
+                              "13px",
+                              {
+                                      "lineHeight": "1",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "stat-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-hero": [
+                              "56px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface-base');
+            color: theme('colors.text-primary');
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 20px); }
+        
+        /* Custom scrollbar for web view */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.surface-variant'); border-radius: 4px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col mx-auto max-w-[480px] md:max-w-none relative">
+<!-- TopAppBar (Web & Mobile) -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800 text-teal-400 font-['Inter'] tracking-tight flex items-center justify-between px-4 h-16 pt-safe max-w-[480px] md:max-w-none md:px-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-raised border border-border-default flex items-center justify-center">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a smiling person with neutral background, soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUm3U2XM46dVqfkveSPxP9PeirBre9-Rd2JjstIDDW1RRIIqM80JxpACSCyQekI6J4UNOFWc3mjh3c6AI8zjM4bXmLCU08W_9IKNBTmUUXQAXwTvd0_Yq8HfAOVIDtT9E5Tn1Z8kT4Te-MbNBJRERd8FKvkn9vCj5-WBksN6J_OCD6VJNiF9_VRYAsMxrqETNu5XKtDAAcYncAAkJCLDH33h-PtIombYGVsAl6BTQcjOgJXbctmcJ4xMOChqbiQH36_hN3YmcXM4LJ"/>
+</div>
+</div>
+<div class="text-lg font-bold tracking-widest text-slate-50">
+            GLUCOSE
+        </div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-800 active:scale-95 transition-transform text-teal-400">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[480px] mx-auto pt-[88px] pb-[100px] px-4 md:px-0 md:max-w-[800px] flex flex-col gap-[24px]">
+<!-- Segmented Control -->
+<div class="w-full bg-surface-raised border border-border-subtle rounded-lg p-1 flex mt-2">
+<button class="flex-1 py-2 text-center rounded-md font-label-caps text-label-caps text-text-secondary hover:bg-surface-overlay transition-colors">24H</button>
+<button class="flex-1 py-2 text-center rounded-md font-label-caps text-label-caps bg-surface-overlay border border-border-default text-primary shadow-sm transition-colors">7D</button>
+<button class="flex-1 py-2 text-center rounded-md font-label-caps text-label-caps text-text-secondary hover:bg-surface-overlay transition-colors">30D</button>
+<button class="flex-1 py-2 text-center rounded-md font-label-caps text-label-caps text-text-secondary hover:bg-surface-overlay transition-colors">90D</button>
+</div>
+<!-- Summary Stats (Bento Grid) -->
+<div class="grid grid-cols-2 gap-[16px] md:grid-cols-4">
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col gap-2 hover:border-border-default transition-colors">
+<span class="font-label-caps text-label-caps text-text-secondary">AVG GLUCOSE</span>
+<div class="flex items-end gap-2">
+<span class="font-stat-lg text-stat-lg text-text-primary">112</span>
+<span class="font-data-mono text-data-mono text-text-muted pb-1">mg/dL</span>
+</div>
+</div>
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col gap-2 hover:border-border-default transition-colors">
+<span class="font-label-caps text-label-caps text-text-secondary">GMI</span>
+<div class="flex items-end gap-2">
+<span class="font-stat-lg text-stat-lg text-text-primary">5.8</span>
+<span class="font-data-mono text-data-mono text-text-muted pb-1">%</span>
+</div>
+</div>
+</div>
+<!-- Main Chart Area -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col gap-[16px] relative overflow-hidden">
+<div class="flex justify-between items-center z-10 relative">
+<span class="font-title-lg text-title-lg text-text-primary">Trends</span>
+<span class="font-data-mono text-data-mono text-text-muted">Last 7 Days</span>
+</div>
+<!-- Abstract Chart Representation -->
+<div class="h-[240px] w-full relative z-10 mt-4 border-b border-l border-surface-variant">
+<!-- Target Zone Shading -->
+<div class="absolute w-full h-[120px] top-[60px] bg-primary/5 rounded-sm border-y border-primary/10"></div>
+<!-- Chart Line SVG Mockup -->
+<svg class="absolute inset-0 h-full w-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-glucose-normal" d="M0,50 Q10,40 20,45 T40,60 T60,30 T80,50 T100,45" fill="none" stroke="currentColor" stroke-width="2"></path>
+<!-- Dots -->
+<circle class="fill-glucose-normal" cx="20" cy="45" r="1.5"></circle>
+<circle class="fill-glucose-normal" cx="40" cy="60" r="1.5"></circle>
+<circle class="fill-glucose-high" cx="60" cy="30" r="1.5"></circle>
+<circle class="fill-glucose-normal" cx="80" cy="50" r="1.5"></circle>
+</svg>
+<!-- Y-Axis Labels -->
+<div class="absolute left-[-25px] top-[20px] font-data-mono text-[10px] text-text-muted">180</div>
+<div class="absolute left-[-25px] top-[60px] font-data-mono text-[10px] text-text-muted">140</div>
+<div class="absolute left-[-25px] top-[180px] font-data-mono text-[10px] text-text-muted">70</div>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-[-20px] w-full flex justify-between font-data-mono text-[10px] text-text-muted px-2">
+<span>Mon</span>
+<span>Wed</span>
+<span>Fri</span>
+<span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Time in Range Section -->
+<div class="bg-surface-raised border border-border-subtle rounded-xl p-[20px] flex flex-col gap-[16px]">
+<span class="font-title-lg text-title-lg text-text-primary">Time in Range</span>
+<div class="flex flex-col gap-[12px] mt-2">
+<!-- High -->
+<div class="flex items-center gap-4">
+<div class="w-[60px] font-label-caps text-label-caps text-text-secondary text-right">HIGH</div>
+<div class="flex-1 h-[8px] bg-surface-base rounded-full overflow-hidden">
+<div class="h-full bg-glucose-high rounded-full" style="width: 25%"></div>
+</div>
+<div class="w-[40px] font-data-mono text-data-mono text-text-primary text-right">25%</div>
+</div>
+<!-- In Range -->
+<div class="flex items-center gap-4">
+<div class="w-[60px] font-label-caps text-label-caps text-primary text-right">TARGET</div>
+<div class="flex-1 h-[12px] bg-surface-base rounded-full overflow-hidden shadow-[0_0_10px_rgba(45,212,168,0.2)]">
+<div class="h-full bg-glucose-normal rounded-full" style="width: 71%"></div>
+</div>
+<div class="w-[40px] font-data-mono text-data-mono text-primary font-bold text-right">71%</div>
+</div>
+<!-- Low -->
+<div class="flex items-center gap-4">
+<div class="w-[60px] font-label-caps text-label-caps text-text-secondary text-right">LOW</div>
+<div class="flex-1 h-[8px] bg-surface-base rounded-full overflow-hidden">
+<div class="h-full bg-glucose-low rounded-full" style="width: 4%"></div>
+</div>
+<div class="w-[40px] font-data-mono text-data-mono text-text-primary text-right">4%</div>
+</div>
+</div>
+</div>
+<!-- Recent Logs Section -->
+<div class="flex flex-col gap-[12px]">
+<div class="flex justify-between items-end px-1">
+<span class="font-title-lg text-title-lg text-text-primary">Recent Logs</span>
+<button class="font-label-caps text-label-caps text-primary uppercase tracking-wider hover:text-surface-tint transition-colors">View All</button>
+</div>
+<div class="bg-surface-raised border border-border-subtle rounded-xl flex flex-col overflow-hidden">
+<!-- Log Item 1 -->
+<div class="p-[16px] flex items-center gap-4 border-b border-border-subtle hover:bg-surface-overlay transition-colors active:scale-[0.98]">
+<div class="w-[12px] h-[12px] rounded-full bg-glucose-normal shadow-[0_0_8px_rgba(45,212,168,0.4)]"></div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-base text-body-base text-text-primary">Pre-meal Check</span>
+<span class="font-data-mono text-[11px] text-text-muted mt-1">Today, 12:30 PM</span>
+</div>
+<div class="flex items-end gap-1">
+<span class="font-stat-lg text-[22px] font-semibold text-text-primary">108</span>
+<span class="font-data-mono text-[10px] text-text-muted pb-[3px]">mg/dL</span>
+</div>
+</div>
+<!-- Log Item 2 -->
+<div class="p-[16px] flex items-center gap-4 border-b border-border-subtle hover:bg-surface-overlay transition-colors active:scale-[0.98]">
+<div class="w-[12px] h-[12px] rounded-full bg-glucose-high shadow-[0_0_8px_rgba(251,191,36,0.4)]"></div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-base text-body-base text-text-primary">Morning Fasting</span>
+<span class="font-data-mono text-[11px] text-text-muted mt-1">Today, 07:15 AM</span>
+</div>
+<div class="flex items-end gap-1">
+<span class="font-stat-lg text-[22px] font-semibold text-text-primary">142</span>
+<span class="font-data-mono text-[10px] text-text-muted pb-[3px]">mg/dL</span>
+</div>
+</div>
+<!-- Log Item 3 -->
+<div class="p-[16px] flex items-center gap-4 hover:bg-surface-overlay transition-colors active:scale-[0.98]">
+<div class="w-[12px] h-[12px] rounded-full bg-glucose-normal shadow-[0_0_8px_rgba(45,212,168,0.4)]"></div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-base text-body-base text-text-primary">Post-workout</span>
+<span class="font-data-mono text-[11px] text-text-muted mt-1">Yesterday, 06:45 PM</span>
+</div>
+<div class="flex items-end gap-1">
+<span class="font-stat-lg text-[22px] font-semibold text-text-primary">95</span>
+<span class="font-data-mono text-[10px] text-text-muted pb-[3px]">mg/dL</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 pb-safe bg-slate-950/80 backdrop-blur-xl border-t border-slate-800 text-[10px] font-medium font-['Inter'] uppercase tracking-wider flex justify-around items-center h-20 px-2">
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span>Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-teal-400 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span>Glucose</span>
+</a>
+<!-- Central FAB-style Action -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full relative -top-3" href="#">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(86,241,195,0.3)]">
+<span class="material-symbols-outlined text-inverse-primary" style="font-variation-settings: 'FILL' 1;">add</span>
+</div>
+<span class="mt-1">Log</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+<span>Meals</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-200 active:scale-90 transition-all duration-200 w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">more_horiz</span>
+<span>More</span>
+</a>
+</nav>
+<!-- Desktop SideNav Placeholder (Hidden on Mobile) -->
+<aside class="hidden md:flex fixed left-0 top-16 bottom-0 w-[240px] bg-surface-raised border-r border-border-subtle flex-col py-6 px-4 gap-2 z-40">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary hover:bg-surface-overlay transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-body-base text-body-base">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-overlay text-primary border border-border-default transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-body-base text-body-base font-medium">Glucose Trends</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary hover:bg-surface-overlay transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+<span class="font-body-base text-body-base">Meals</span>
+</a>
+<div class="mt-auto">
+<button class="w-full bg-primary text-inverse-primary font-title-lg text-body-base py-3 rounded-lg hover:bg-surface-tint transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+                New Log
+            </button>
+</div>
+</aside>
+</body></html>

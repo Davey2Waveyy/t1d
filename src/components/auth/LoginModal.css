@@ -8,7 +8,16 @@
   justify-content: center;
   z-index: var(--z-modal);
   padding: var(--space-xl);
-  animation: fadeIn 0.2s ease-out;
+  animation: modalOverlayIn 200ms var(--ease-out);
+}
+
+@keyframes modalOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-container {
@@ -20,6 +29,36 @@
   max-width: 420px;
   position: relative;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  /* Per Emil: "Nothing in the real world appears from nothing" */
+  animation: modalContainerIn 250ms var(--ease-out);
+}
+
+.modal-preview {
+  max-width: 400px;
+}
+
+.modal-preview-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-lg);
+  color: var(--accent-teal);
+  background: var(--accent-teal-dim);
+  border: 1px solid rgba(45, 212, 168, 0.2);
+  border-radius: var(--radius-full);
+}
+
+@keyframes modalContainerIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-close {
@@ -33,7 +72,12 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  transition: transform 160ms var(--ease-out), color 150ms var(--ease-out),
+              background 150ms var(--ease-out);
+}
+
+.modal-close:active {
+  transform: scale(0.95);
 }
 
 .modal-close:hover {
@@ -43,6 +87,15 @@
 
 .modal-header {
   margin-bottom: var(--space-xl);
+}
+
+.modal-kicker {
+  margin-bottom: var(--space-sm);
+  color: var(--accent-teal);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .modal-title {
@@ -55,6 +108,18 @@
 .modal-subtitle {
   font-size: 0.9rem;
   color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.modal-preview-copy {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
 }
 
 .modal-form {
@@ -137,12 +202,17 @@
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: transform 160ms var(--ease-out), border-color 150ms var(--ease-out),
+              background 150ms var(--ease-out);
 }
 
 .btn-social:hover {
   border-color: var(--border-medium);
   background: var(--bg-card-hover);
+}
+
+.btn-social:active {
+  transform: scale(0.98);
 }
 
 .modal-guest {
@@ -154,11 +224,15 @@
   font-weight: 500;
   padding: 0.5rem;
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  transition: transform 160ms var(--ease-out), background 150ms var(--ease-out);
 }
 
 .modal-guest:hover {
   background: var(--accent-teal-dim);
+}
+
+.modal-guest:active {
+  transform: scale(0.98);
 }
 
 .modal-toggle {

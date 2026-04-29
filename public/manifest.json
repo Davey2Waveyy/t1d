@@ -1,0 +1,24 @@
+{
+  "name": "Betatrace",
+  "short_name": "Betatrace",
+  "description": "Type 1 diabetes management - glucose, meals, insulin.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#0D1B16",
+  "theme_color": "#0D1B16",
+  "orientation": "portrait-primary",
+  "categories": ["health", "medical", "lifestyle"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-apple-180.png", "sizes": "180x180", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Log Glucose", "url": "/dashboard/glucose/log", "icons": [{ "src": "/icons/shortcut-glucose.png", "sizes": "96x96" }] },
+    { "name": "Log Meal", "url": "/dashboard/meals/log", "icons": [{ "src": "/icons/shortcut-meal.png", "sizes": "96x96" }] },
+    { "name": "Log Insulin", "url": "/dashboard/insulin/log", "icons": [{ "src": "/icons/shortcut-insulin.png", "sizes": "96x96" }] }
+  ]
+}

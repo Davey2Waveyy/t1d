@@ -1,0 +1,210 @@
+.public-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(45, 212, 168, 0.14), transparent 32%),
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 28%),
+    linear-gradient(180deg, #0b1512 0%, #0f1a17 38%, #12211c 100%);
+  color: var(--text-light);
+}
+
+.public-page-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
+  background: rgba(11, 21, 18, 0.82);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.public-page-header-inner {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.public-page-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.public-page-logo svg {
+  color: var(--accent-teal);
+}
+
+.public-page-header-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.public-page-header-links a {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.public-page-header-links a:hover {
+  color: var(--text-light);
+}
+
+.public-page-main {
+  padding: calc(72px + var(--space-4xl)) 0 var(--space-4xl);
+}
+
+.public-page-hero {
+  max-width: 760px;
+  margin-bottom: var(--space-3xl);
+}
+
+.public-page-title {
+  max-width: 12ch;
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  letter-spacing: -0.03em;
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.public-page-intro {
+  max-width: 680px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: rgba(232, 245, 240, 0.8);
+}
+
+.public-page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.9fr);
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.public-page-sections {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.public-page-section,
+.public-page-sidebar-card {
+  background: rgba(19, 43, 35, 0.58);
+  border: 1px solid rgba(45, 212, 168, 0.14);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(12px);
+}
+
+.public-page-section {
+  padding: var(--space-xl);
+}
+
+.public-page-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-md);
+  color: var(--text-light);
+}
+
+.public-page-copy {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.public-page-copy p {
+  color: rgba(232, 245, 240, 0.76);
+  line-height: 1.75;
+}
+
+.public-page-sidebar {
+  position: sticky;
+  top: calc(72px + var(--space-xl));
+}
+
+.public-page-sidebar-card {
+  padding: var(--space-xl);
+}
+
+.public-page-highlights {
+  display: grid;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.public-page-highlight {
+  display: grid;
+  gap: 2px;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(10, 20, 16, 0.72);
+  border: 1px solid rgba(45, 212, 168, 0.1);
+}
+
+.public-page-highlight--link {
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.public-page-highlight--link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(45, 212, 168, 0.26);
+  color: var(--text-light);
+}
+
+.public-page-highlight-label {
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.public-page-highlight strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.public-page-highlight svg {
+  justify-self: end;
+  color: var(--accent-teal);
+}
+
+@media (max-width: 900px) {
+  .public-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-page-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .public-page-main {
+    padding: calc(72px + var(--space-3xl)) 0 var(--space-3xl);
+  }
+
+  .public-page-header-inner,
+  .public-page-header-links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .public-page-header-inner {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+  }
+
+  .public-page-header-links {
+    gap: var(--space-sm);
+  }
+
+  .public-page-section,
+  .public-page-sidebar-card {
+    padding: var(--space-lg);
+  }
+}
