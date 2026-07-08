@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { getInsulinDoses } from '../../../lib/dataService';
 import ActivityRow from '../cards/ActivityRow';
 import EmptyState from '../ui/EmptyState';
+import ScreenSkeleton from '../ui/Skeleton';
+import BackLink from '../ui/BackLink';
 
 function formatDay(dateValue) {
   const date = new Date(dateValue);
@@ -66,24 +68,28 @@ export default function MoreInsulin() {
   }, [doses]);
 
   if (doses === null) {
-    return <div className="p-md text-text-secondary">Loading...</div>;
+    return <ScreenSkeleton hero={false} rows={5} />;
   }
 
   if (doses.length === 0) {
     return (
-      <EmptyState
-        icon="vaccines"
-        title="No insulin logged"
-        description="Log doses to keep your history close to your glucose and meals."
-        action="Log insulin"
-        onAction={() => navigate('/dashboard/insulin/log')}
-      />
+      <div className="flex flex-col gap-md">
+        <BackLink to="/dashboard/more" label="More" />
+        <EmptyState
+          icon="vaccines"
+          title="No insulin logged"
+          description="Log doses to keep your history close to your glucose and meals."
+          action="Log insulin"
+          onAction={() => navigate('/dashboard/insulin/log', { state: { background: '/dashboard/more/insulin' } })}
+        />
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-lg">
       <div className="flex flex-col gap-xs">
+        <BackLink to="/dashboard/more" label="More" />
         <h1 className="font-body text-title-lg text-text-primary">Insulin</h1>
         <p className="font-body text-body-base text-text-secondary">Recent bolus, basal, and correction doses.</p>
       </div>

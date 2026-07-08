@@ -1,53 +1,91 @@
-import { ClipboardList, BarChart3, Zap } from 'lucide-react';
-import ScrollReveal from '../ui/ScrollReveal';
-import './HowItWorks.css';
+import { useRef } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { PencilLine, ScanSearch, MessagesSquare } from 'lucide-react';
 
-const steps = [
+const ease = [0.23, 1, 0.32, 1];
+
+const STEPS = [
   {
-    number: '01',
-    icon: ClipboardList,
-    title: 'Log',
-    description: 'Log meals, insulin doses, and glucose readings in one place so your day is easy to review later.',
+    icon: PencilLine,
+    title: 'Log as you go',
+    copy: 'Meals, insulin doses, and glucose readings land in one place. Each entry takes a few seconds, so logging survives real life.',
   },
   {
-    number: '02',
-    icon: BarChart3,
-    title: 'Review',
-    description: 'Betatrace organizes your entries into trend views, summaries, and settings context that are easier to scan.',
+    icon: ScanSearch,
+    title: 'Review the shape of your week',
+    copy: 'Trends, time-in-range balance, and day-by-day meal views turn scattered numbers into something you can actually read.',
   },
   {
-    number: '03',
-    icon: Zap,
-    title: 'Prepare',
-    description: 'Use those patterns to prepare better questions for your care team while following your prescribed care plan.',
+    icon: MessagesSquare,
+    title: 'Bring better questions to your care team',
+    copy: 'Walk into appointments with concrete patterns — “I rise after dinner most nights” — instead of trying to remember the month.',
   },
 ];
 
 export default function HowItWorks() {
-  return (
-    <section className="how-it-works" id="how-it-works">
-      <div className="container">
-        <ScrollReveal>
-          <p className="text-subheading">How It Works</p>
-          <h2 className="hiw-title text-display">
-            Three steps to<br />
-            <em>a calmer review.</em>
-          </h2>
-        </ScrollReveal>
+  const listRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: listRef,
+    offset: ['start 0.75', 'end 0.55'],
+  });
+  const lineScale = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
 
-        <div className="hiw-steps">
-          {steps.map((step, i) => (
-            <ScrollReveal key={step.number} delay={i * 0.15}>
-              <div className="hiw-step">
-                <div className="hiw-step-number">{step.number}</div>
-                <div className="hiw-step-icon">
-                  <step.icon size={28} />
-                </div>
-                <h3 className="hiw-step-title">{step.title}</h3>
-                <p className="hiw-step-desc">{step.description}</p>
-                {i < steps.length - 1 && <div className="hiw-step-connector" />}
+  return (
+    <section className="how" id="how-it-works">
+      <div className="container how-inner">
+        <div className="how-head">
+          <motion.p
+            className="text-kicker"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.55, ease }}
+          >
+            How it works
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ delay: 0.08, duration: 0.65, ease }}
+          >
+            Three steps to
+            <em> a calmer review.</em>
+          </motion.h2>
+          <motion.p
+            className="how-lede"
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ delay: 0.16, duration: 0.65, ease }}
+          >
+            No streaks, no scores, no guilt mechanics. Betatrace is a notebook
+            that reads itself back to you.
+          </motion.p>
+        </div>
+
+        <div className="how-steps" ref={listRef}>
+          <div className="how-line" aria-hidden="true">
+            <motion.span style={{ scaleY: lineScale }} />
+          </div>
+          {STEPS.map((step, i) => (
+            <motion.article
+              key={step.title}
+              className="how-step"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-90px' }}
+              transition={{ delay: i * 0.06, duration: 0.65, ease }}
+            >
+              <div className="how-step-marker">
+                <span className="how-step-num">0{i + 1}</span>
+                <span className="how-step-icon"><step.icon size={17} strokeWidth={2.2} /></span>
               </div>
-            </ScrollReveal>
+              <div className="how-step-body">
+                <h3>{step.title}</h3>
+                <p>{step.copy}</p>
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>

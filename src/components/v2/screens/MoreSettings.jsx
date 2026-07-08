@@ -6,6 +6,8 @@ import { useSettings } from '../../../contexts/SettingsContext';
 import { convertGlucoseSettingValue } from '../../../lib/glucoseUnits';
 import Field, { inputCls } from '../ui/Field';
 import StepperInput from '../ui/StepperInput';
+import BackLink from '../ui/BackLink';
+import ScreenSkeleton from '../ui/Skeleton';
 
 const DEFAULT_FORM = {
   timezone: 'America/New_York',
@@ -126,12 +128,13 @@ export default function MoreSettings() {
   }
 
   if (loading) {
-    return <div className="p-md text-text-secondary">Loading...</div>;
+    return <ScreenSkeleton hero={false} rows={4} />;
   }
 
   return (
     <form onSubmit={save} className="flex flex-col gap-md">
       <div className="flex flex-col gap-xs">
+        <BackLink to="/dashboard/more" label="More" />
         <h1 className="font-body text-title-lg text-text-primary">Settings</h1>
         <p className="font-body text-body-base text-text-secondary">
           {isGuest ? 'Guest session' : profile?.full_name || user?.email || 'Betatrace user'}

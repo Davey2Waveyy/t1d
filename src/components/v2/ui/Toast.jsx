@@ -23,7 +23,7 @@ export default function Toast({ children, tone = 'info', onDismiss, duration = 4
   if (!visible) return null;
 
   return (
-    <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-50 px-md py-sm rounded-full border ${TONE[tone]} font-body text-body-base shadow-lg animate-[fadeIn_180ms_var(--ease-out)]`}>
+    <div className={`absolute top-20 left-1/2 -translate-x-1/2 z-[55] max-w-[92%] px-md py-sm rounded-full border ${TONE[tone]} font-body text-[13px] backdrop-blur-xl shadow-pop animate-[fadeInUp_220ms_var(--ease-out)]`}>
       {children}
     </div>
   );

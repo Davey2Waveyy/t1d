@@ -1,160 +1,220 @@
-import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Activity } from 'lucide-react';
-import ParticleBackground from './ParticleBackground';
-import './Hero.css';
+import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight, ArrowDown, Lock, HeartPulse, Smartphone } from 'lucide-react';
 
-// Animated counter hook - counts up when element becomes visible
-function useAnimatedCounter(end, duration = 2000, decimals = 0) {
-  const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const ref = useRef(null);
+const ease = [0.32, 0.72, 0, 1];
 
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+const rise = {
+  hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { delay: 0.1 + i * 0.1, duration: 0.9, ease },
+  }),
+};
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
+// 24h of believable glucose, hand-tuned: overnight flat, breakfast rise,
+// lunch bump, post-dinner climb that settles.
+const CURVE = 'M0,66 C10,64 18,62 28,63 C38,64 44,58 52,42 C60,28 66,30 74,40 C82,50 88,54 98,50 C108,46 114,36 124,38 C134,40 142,52 152,56 C160,59 166,44 176,30 C186,18 194,22 202,34 C210,45 218,52 228,54 C238,56 246,53 256,52';
 
-          const startTime = performance.now();
-          const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            // Easing function (ease-out cubic)
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = eased * end;
-
-            setCount(current);
-
-            if (progress < 1) {
-              requestAnimationFrame(animate);
-            }
-          };
-
-          requestAnimationFrame(animate);
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [end, duration, hasAnimated]);
-
-  const formatted = decimals > 0
-    ? count.toFixed(decimals)
-    : Math.round(count).toString();
-
-  return { ref, value: formatted };
+function GlucoseSpark({ delay = 1 }) {
+  const reduced = useReducedMotion();
+  return (
+    <svg viewBox="0 0 256 88" className="phone-spark" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#4be0b4" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#4be0b4" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="26" width="256" height="34" rx="4" className="phone-spark-band" />
+      <motion.path
+        d={`${CURVE} L256,88 L0,88 Z`}
+        fill="url(#sparkFill)"
+        stroke="none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: delay + 1.1, duration: 0.8 }}
+      />
+      <motion.path
+        d={CURVE}
+        fill="none"
+        stroke="#4be0b4"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={{ pathLength: reduced ? 1 : 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay, duration: 1.8, ease: 'easeInOut' }}
+      />
+      <motion.circle
+        cx="256"
+        cy="52"
+        r="3.5"
+        className="phone-spark-dot"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: delay + 1.7, duration: 0.3 }}
+      />
+    </svg>
+  );
 }
 
-export default function Hero({ onGetStarted, onContinueAsGuest }) {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+function PhonePreview() {
+  const [glucose, setGlucose] = useState(112);
 
-  // Animated counters for stats
-  const { ref: tirRef, value: tirValue } = useAnimatedCounter(72, 2000, 0);
-  const { ref: a1cRef, value: a1cValue } = useAnimatedCounter(6.4, 2000, 1);
-  const { ref: icrRef, value: icrValue } = useAnimatedCounter(10, 2000, 0);
-
+  // Gentle live drift so the mock feels alive without being noisy
   useEffect(() => {
-    const handleMouse = (e) => {
-      setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
-    };
-    window.addEventListener('mousemove', handleMouse);
-    return () => window.removeEventListener('mousemove', handleMouse);
+    const id = setInterval(() => {
+      setGlucose((value) => {
+        const next = value + Math.round((Math.random() - 0.45) * 3);
+        return Math.max(96, Math.min(128, next));
+      });
+    }, 2600);
+    return () => clearInterval(id);
   }, []);
 
   return (
+    <motion.div
+      className="hero-phone-wrap"
+      initial={{ opacity: 0, y: 50, rotate: 2, filter: 'blur(10px)' }}
+      animate={{ opacity: 1, y: 0, rotate: 0, filter: 'blur(0px)' }}
+      transition={{ delay: 0.4, duration: 1.2, ease }}
+    >
+      <div className="hero-phone" role="img" aria-label="Preview of the Betatrace mobile dashboard">
+        <div className="hero-phone-core">
+          <div className="hero-phone-notch" />
+          <div className="hero-phone-screen">
+            <div className="phone-topbar">
+              <span className="phone-avatar">B</span>
+              <span className="phone-wordmark">Betatrace</span>
+              <span className="phone-bell" />
+            </div>
+
+            <p className="phone-greeting">Good evening, guest</p>
+
+            <div className="phone-hero-card">
+              <div className="phone-hero-head">
+                <span>Current</span>
+                <span className="phone-chip">In range</span>
+              </div>
+              <div className="phone-hero-value">
+                <strong>{glucose}</strong>
+                <small>mg/dL</small>
+              </div>
+              <GlucoseSpark />
+            </div>
+
+            <div className="phone-stat-row">
+              <div className="phone-stat">
+                <span>Carbs today</span>
+                <strong>128<small>g</small></strong>
+              </div>
+              <div className="phone-stat">
+                <span>Time in range</span>
+                <strong>74<small>%</small></strong>
+              </div>
+            </div>
+
+            <div className="phone-activity">
+              <div className="phone-activity-row">
+                <span className="phone-dot phone-dot--meal" />
+                <div><strong>Dinner</strong><em>Pasta, 62g carbs</em></div>
+                <small>19:24</small>
+              </div>
+              <div className="phone-activity-row">
+                <span className="phone-dot phone-dot--insulin" />
+                <div><strong>Bolus</strong><em>5.5u Humalog</em></div>
+                <small>19:12</small>
+              </div>
+            </div>
+          </div>
+          <div className="hero-phone-home" />
+        </div>
+      </div>
+
+      <motion.span
+        className="hero-float hero-float--meal"
+        initial={{ opacity: 0, y: 18, x: -8 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
+        transition={{ delay: 1.7, duration: 0.8, ease }}
+        aria-hidden="true"
+      >
+        <span className="phone-dot phone-dot--meal" />
+        Meal logged · +62g
+      </motion.span>
+
+      <motion.span
+        className="hero-float hero-float--insight"
+        initial={{ opacity: 0, y: 18, x: 8 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
+        transition={{ delay: 2.1, duration: 0.8, ease }}
+        aria-hidden="true"
+      >
+        <HeartPulse size={13} strokeWidth={1.8} />
+        Steady overnight baseline
+      </motion.span>
+    </motion.div>
+  );
+}
+
+export default function Hero({ onOpenDemo }) {
+  return (
     <section className="hero" id="hero">
-      {/* Animated glucose curve background */}
-      <div className="hero-bg">
-        <ParticleBackground />
-        <svg className="hero-glucose-curve" viewBox="0 0 1440 400" preserveAspectRatio="none"
-          style={{ transform: `translate(${mousePos.x * -15}px, ${mousePos.y * -10}px)` }}>
-          <defs>
-            <linearGradient id="glucoseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#2DD4A8" stopOpacity="0.05" />
-              <stop offset="50%" stopColor="#2DD4A8" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.05" />
-            </linearGradient>
-            <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#2DD4A8" stopOpacity="0.2" />
-              <stop offset="30%" stopColor="#2DD4A8" stopOpacity="0.6" />
-              <stop offset="70%" stopColor="#38BDF8" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.2" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M0,280 C120,260 180,180 300,200 C420,220 480,120 600,140 C720,160 780,100 900,80 C1020,60 1080,160 1200,180 C1320,200 1380,140 1440,160"
-            fill="none"
-            stroke="url(#lineGrad)"
-            strokeWidth="2"
-          />
-          <path
-            d="M0,280 C120,260 180,180 300,200 C420,220 480,120 600,140 C720,160 780,100 900,80 C1020,60 1080,160 1200,180 C1320,200 1380,140 1440,160 L1440,400 L0,400 Z"
-            fill="url(#glucoseGrad)"
-          />
-          {/* Second wave */}
-          <path
-            d="M0,320 C160,300 240,220 400,250 C560,280 640,180 800,200 C960,220 1040,150 1200,130 C1360,110 1400,180 1440,200"
-            fill="none"
-            stroke="url(#lineGrad)"
-            strokeWidth="1.5"
-            opacity="0.4"
-          />
-        </svg>
-        {/* Floating orbs */}
-        <div className="hero-orb hero-orb-1" style={{ transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 20}px)` }} />
-        <div className="hero-orb hero-orb-2" style={{ transform: `translate(${mousePos.x * -20}px, ${mousePos.y * 25}px)` }} />
-        <div className="hero-orb hero-orb-3" style={{ transform: `translate(${mousePos.x * 15}px, ${mousePos.y * -15}px)` }} />
+      <div className="hero-aurora" aria-hidden="true">
+        <span className="hero-aurora-a" />
+        <span className="hero-aurora-b" />
+        <span className="hero-aurora-grid" />
       </div>
 
-      <div className="hero-content container">
-        <div className="hero-badge animate-fade-in-up">
-          <Activity size={14} />
-          <span>Preview demo for T1D logging</span>
-        </div>
-        
-        <h1 className="hero-title animate-fade-in-up stagger-1">
-          Preview Type 1<br />
-          <span className="hero-title-accent">patterns calmly.</span>
-        </h1>
-        
-        <p className="hero-subtitle animate-fade-in-up stagger-2">
-          Betatrace brings meals, insulin, and glucose trends into one calmer mobile workspace
-          for personal logging, pattern review, and clinician conversations.
-        </p>
+      <div className="container hero-inner">
+        <div className="hero-copy">
+          <motion.p className="text-kicker hero-kicker" variants={rise} initial="hidden" animate="show" custom={0}>
+            <Smartphone size={12} strokeWidth={1.8} />
+            A T1D logging demo
+          </motion.p>
 
-        <div className="hero-actions animate-fade-in-up stagger-3">
-          <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
-            Get Started
-            <ArrowRight size={18} />
-          </button>
-          <button className="btn btn-glass btn-lg" onClick={onContinueAsGuest}>
-            Explore Guest Demo
-          </button>
+          <motion.h1 className="hero-title" variants={rise} initial="hidden" animate="show" custom={1}>
+            See your Type&nbsp;1 patterns,
+            <em> calmly.</em>
+          </motion.h1>
+
+          <motion.p className="hero-subtitle" variants={rise} initial="hidden" animate="show" custom={2}>
+            Betatrace brings meals, insulin, and glucose into one quiet mobile
+            workspace — so reviewing your week feels less like homework and more
+            like a conversation.
+          </motion.p>
+
+          <motion.div className="hero-actions" variants={rise} initial="hidden" animate="show" custom={3}>
+            <button className="btn btn-primary btn-lg" onClick={onOpenDemo}>
+              Explore the live demo
+              <span className="btn-orb"><ArrowRight size={15} strokeWidth={2} /></span>
+            </button>
+            <a className="btn btn-glass btn-lg" href="#how-it-works">
+              How it works
+              <span className="btn-orb"><ArrowDown size={15} strokeWidth={2} /></span>
+            </a>
+          </motion.div>
+
+          <motion.ul className="hero-trust" variants={rise} initial="hidden" animate="show" custom={4}>
+            <li><Lock size={12} strokeWidth={1.8} /> No account needed</li>
+            <li>Demo data stays on this device</li>
+            <li>Not medical advice</li>
+          </motion.ul>
         </div>
 
-        <div className="hero-stats animate-fade-in-up stagger-4">
-          <div className="hero-stat" ref={tirRef}>
-            <span className="hero-stat-value">{tirValue}%</span>
-            <span className="hero-stat-label">Demo Time in Range</span>
-          </div>
-          <div className="hero-stat-divider" />
-          <div className="hero-stat" ref={a1cRef}>
-            <span className="hero-stat-value">{a1cValue}</span>
-            <span className="hero-stat-label">Demo A1C Estimate</span>
-          </div>
-          <div className="hero-stat-divider" />
-          <div className="hero-stat" ref={icrRef}>
-            <span className="hero-stat-value">1:{icrValue}</span>
-            <span className="hero-stat-label">Demo Ratio Setting</span>
-          </div>
-        </div>
+        <PhonePreview />
       </div>
+
+      <motion.div
+        className="hero-scroll-hint"
+        aria-hidden="true"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2.4, duration: 1 }}
+      >
+        <span />
+      </motion.div>
     </section>
   );
 }

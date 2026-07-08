@@ -395,10 +395,6 @@ function LogRow({ frame, delay, type, detail, value, color }) {
 function LoggingScene() {
   const frame = useCurrentFrame();
 
-  const headlineProgress = interpolate(frame, [46, 68], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
   const sunProgress = interpolate(frame, [8, 34], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
