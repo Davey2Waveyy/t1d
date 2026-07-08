@@ -1,10 +1,27 @@
 /**
  * Realistic Mock Data for 'Guest Mode' demo.
- * Generates 48 hours of glucose, meals, and insulin.
+ * Generates 48 hours of glucose, meals, and insulin — timestamps anchored
+ * to believable local meal times so the log reads like a real day.
  */
 
 const now = new Date();
 const subtractHours = (h) => new Date(now.getTime() - h * 60 * 60 * 1000).toISOString();
+
+// A local wall-clock time `daysAgo` days back (0 = today, 1 = yesterday).
+function atTime(daysAgo, hour, minute) {
+  const date = new Date(now);
+  date.setDate(date.getDate() - daysAgo);
+  date.setHours(hour, minute, 0, 0);
+  return date.toISOString();
+}
+
+// If a "today" slot hasn't happened yet, roll it back a day so entries
+// never sit in the future.
+function pastTime(daysAgo, hour, minute) {
+  const iso = atTime(daysAgo, hour, minute);
+  return new Date(iso) > now ? atTime(daysAgo + 1, hour, minute) : iso;
+}
+
 const meals = [
   { hour: 8.2, rise: 42, width: 1.4 },
   { hour: 13.1, rise: 58, width: 1.8 },
@@ -29,7 +46,7 @@ export const mockGlucoseReadings = Array.from({ length: 48 * 6 }, (_, i) => {
   }, 0);
   const correctionDip = hour > 15 && hour < 17 ? -20 : 0;
   const value = Math.round(104 + overnightDrift + morningRise + circadian + mealEffect + correctionDip + seededNoise(i));
-  
+
   return {
     id: `mock-g-${i}`,
     recorded_at: time,
@@ -39,18 +56,18 @@ export const mockGlucoseReadings = Array.from({ length: 48 * 6 }, (_, i) => {
 }).reverse();
 
 export const mockMeals = [
-  { id: 'm1', logged_at: subtractHours(3), name: 'Oatmeal and berries', carbs: 45, meal_type: 'Breakfast' },
-  { id: 'm2', logged_at: subtractHours(18), name: 'Pasta dinner', carbs: 85, meal_type: 'Dinner' },
-  { id: 'm3', logged_at: subtractHours(25), name: 'Chicken salad', carbs: 30, meal_type: 'Lunch' },
-  { id: 'm4', logged_at: subtractHours(42), name: 'Pizza night', carbs: 110, meal_type: 'Dinner' },
+  { id: 'm1', logged_at: pastTime(0, 7, 58), name: 'Oats and berries', carbs: 46, meal_type: 'Breakfast' },
+  { id: 'm2', logged_at: pastTime(1, 19, 24), name: 'Pasta night', carbs: 74, meal_type: 'Dinner' },
+  { id: 'm3', logged_at: pastTime(1, 12, 41), name: 'Chicken wrap', carbs: 38, meal_type: 'Lunch' },
+  { id: 'm4', logged_at: pastTime(2, 19, 47), name: 'Homemade pizza', carbs: 96, meal_type: 'Dinner' },
 ];
 
 export const mockDoses = [
-  { id: 'd1', logged_at: subtractHours(2.1), units: 4.5, insulin_type: 'Bolus', brand: 'Humalog' },
-  { id: 'd2', logged_at: subtractHours(18.2), units: 8.5, insulin_type: 'Bolus', brand: 'Humalog' },
-  { id: 'd3', logged_at: subtractHours(24.1), units: 3.0, insulin_type: 'Bolus', brand: 'Humalog' },
-  { id: 'd4', logged_at: subtractHours(24), units: 22.0, insulin_type: 'Basal', brand: 'Lantus' },
-  { id: 'd5', logged_at: subtractHours(42.2), units: 11.0, insulin_type: 'Bolus', brand: 'Humalog' },
+  { id: 'd1', logged_at: pastTime(0, 7, 52), units: 4.5, insulin_type: 'Bolus', brand: 'Humalog' },
+  { id: 'd2', logged_at: pastTime(1, 19, 12), units: 7.5, insulin_type: 'Bolus', brand: 'Humalog' },
+  { id: 'd3', logged_at: pastTime(1, 12, 35), units: 3.0, insulin_type: 'Bolus', brand: 'Humalog' },
+  { id: 'd4', logged_at: pastTime(1, 22, 0), units: 22.0, insulin_type: 'Basal', brand: 'Lantus' },
+  { id: 'd5', logged_at: pastTime(2, 19, 39), units: 9.5, insulin_type: 'Bolus', brand: 'Humalog' },
 ];
 
 export const mockSettings = {

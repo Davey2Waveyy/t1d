@@ -4,6 +4,7 @@ import StatCard from '../cards/StatCard';
 import ActivityRow from '../cards/ActivityRow';
 import GlucoseChart from '../charts/GlucoseChart';
 import EmptyState from '../ui/EmptyState';
+import ScreenSkeleton from '../ui/Skeleton';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSettings } from '../../../contexts/SettingsContext';
@@ -30,7 +31,7 @@ export default function Home() {
   const navigate = useNavigate();
   const { loading, error, stats, glucose, meals, insulin, recentActivity } = useDashboardData();
 
-  if (loading) return <div className="p-md text-text-secondary">Loading...</div>;
+  if (loading) return <ScreenSkeleton />;
 
   const lastReading = glucose[glucose.length - 1];
   const thresholds = getThresholds(settings);
@@ -55,7 +56,7 @@ export default function Home() {
           title="No data yet"
           description="Log your first reading to see your dashboard come to life."
           action="Log a reading"
-          onAction={() => navigate('/dashboard/glucose/log')}
+          onAction={() => navigate('/dashboard/glucose/log', { state: { background: '/dashboard' } })}
         />
       ) : (
         <>

@@ -1,61 +1,69 @@
-import { Activity, ExternalLink, Heart, Mail } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Activity, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import './Footer.css';
 
-export default function Footer() {
+const ease = [0.23, 1, 0.32, 1];
+
+export default function Footer({ onOpenDemo }) {
   return (
     <footer className="footer" id="footer">
       <div className="container">
-        <div className="footer-top">
+        <motion.div
+          className="footer-cta"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease }}
+        >
+          <h2>
+            Ready for a<em> calmer review?</em>
+          </h2>
+          <p>The full demo runs in your browser — no sign-up, no install, nothing to undo.</p>
+          <button className="btn btn-primary btn-lg" onClick={onOpenDemo}>
+            Open the live demo
+            <span className="btn-orb"><ArrowRight size={15} strokeWidth={2} /></span>
+          </button>
+        </motion.div>
+
+        <div className="footer-main">
           <div className="footer-brand">
-            <div className="footer-logo">
-              <Activity size={24} />
-              <span>Betatrace</span>
-            </div>
-            <p className="footer-tagline">
-              A preview demo for Type 1 diabetes logging and pattern review.<br />
-              Named after beta cells — the ones we're missing.
+            <span className="landing-logo">
+              <span className="landing-logo-mark"><Activity size={17} strokeWidth={2.4} /></span>
+              <span className="landing-logo-word">Betatrace</span>
+            </span>
+            <p>
+              A preview demo for Type 1 diabetes logging and pattern review.
+              Named after beta cells — the ones we’re missing.
             </p>
           </div>
-          
-          <div className="footer-links">
+
+          <nav className="footer-cols" aria-label="Footer">
             <div className="footer-col">
-              <h4 className="footer-col-title">Product</h4>
-              <a href="/#features">Features</a>
-              <a href="/#how-it-works">How It Works</a>
-              <Link to="/dashboard">Dashboard</Link>
+              <h3>Product</h3>
+              <a href="#features">Features</a>
+              <a href="#how-it-works">How it works</a>
+              <a href="#ask-beta">Ask Beta</a>
               <Link to="/changelog">Changelog</Link>
             </div>
             <div className="footer-col">
-              <h4 className="footer-col-title">Resources</h4>
+              <h3>Resources</h3>
               <Link to="/documentation">Documentation</Link>
-              <Link to="/api-reference">Security</Link>
-              <Link to="/privacy-policy">Privacy Policy</Link>
-              <Link to="/terms-of-service">Terms of Service</Link>
+              <a href="https://github.com/Davey2Waveyy/t1d" target="_blank" rel="noopener noreferrer">
+                GitHub <ArrowUpRight size={12} strokeWidth={2.4} />
+              </a>
+              <Link to="/contact">Contact</Link>
             </div>
             <div className="footer-col">
-              <h4 className="footer-col-title">Connect</h4>
-              <a href="https://github.com/Davey2Waveyy/t1d" target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={14} /> GitHub
-              </a>
-              <a href="https://linkedin.com/in/david-cilliers/" target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={14} /> LinkedIn
-              </a>
-              <Link to="/contact">
-                <Mail size={14} /> Contact
-              </Link>
-              <a href="mailto:davdancil@gmail.com">
-                <ExternalLink size={14} /> Email
-              </a>
+              <h3>Legal</h3>
+              <Link to="/privacy-policy">Privacy policy</Link>
+              <Link to="/terms-of-service">Terms of service</Link>
             </div>
-          </div>
+          </nav>
         </div>
-        
+
         <div className="footer-bottom">
-          <p className="footer-copyright">© {new Date().getFullYear()} Betatrace. All rights reserved.</p>
-          <p className="footer-made">
-            Made with <Heart size={12} className="footer-heart" /> for the T1D community
-          </p>
+          <p>© {new Date().getFullYear()} Betatrace. Not medical advice.</p>
+          <p>Made with care for the T1D community.</p>
         </div>
       </div>
     </footer>

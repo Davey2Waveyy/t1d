@@ -5,111 +5,41 @@
 @tailwind utilities;
 
 /* ============================================
-   BETATRACE — Design System & Global Styles
+   BETATRACE — Global styles
+   Fraunces (display) · Instrument Sans (UI) · Spline Sans Mono (data)
    ============================================ */
 
-/* CSS Custom Properties */
 :root {
-  /* Backgrounds */
-  --bg-primary: #FAFCFB;
-  --bg-secondary: #F0F5F3;
-  --bg-dark: #0F1A17;
-  --bg-dashboard: #0D1B16;
-  --bg-card: #132B23;
-  --bg-card-hover: #1A3D32;
-  --bg-input: #0A1410;
-  --bg-modal-overlay: rgba(0, 0, 0, 0.6);
-  --bg-glass: rgba(19, 43, 35, 0.7);
-  
-  /* Accents */
-  --accent-teal: #2DD4A8;
-  --accent-teal-dim: rgba(45, 212, 168, 0.15);
-  --accent-emerald: #10B981;
-  --accent-emerald-dim: rgba(16, 185, 129, 0.15);
-  --accent-sky: #38BDF8;
-  --accent-sky-dim: rgba(56, 189, 248, 0.15);
-  --accent-rose: #FB7185;
-  --accent-rose-dim: rgba(251, 113, 133, 0.15);
-  --accent-amber: #FBBF24;
-  --accent-amber-dim: rgba(251, 191, 36, 0.15);
-  --accent-violet: #A78BFA;
-  --accent-violet-dim: rgba(167, 139, 250, 0.15);
-  --accent-fuchsia: #E879F9;
-  --accent-fuchsia-dim: rgba(232, 121, 249, 0.15);
-  
-  /* Text */
-  --text-primary: #1A2E28;
-  --text-secondary: #6B8A80;
-  --text-light: #E8F5F0;
-  --text-muted: #4A6B60;
-  --text-white: #FFFFFF;
-  
-  /* Borders */
-  --border-light: rgba(45, 212, 168, 0.1);
-  --border-medium: rgba(45, 212, 168, 0.2);
-  --border-strong: rgba(45, 212, 168, 0.35);
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.15);
-  --shadow-glow: 0 0 20px rgba(45, 212, 168, 0.15);
-  --shadow-glow-strong: 0 0 40px rgba(45, 212, 168, 0.25);
-  
-  /* Spacing */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
-  --space-5xl: 8rem;
-  
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-  
-  /* Typography */
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  
-  /* Easing Curves (Emil Kowalski design principles) */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Spline Sans Mono', 'Fira Code', monospace;
 
-  /* Transitions */
+  /* Editorial paper palette — landing, marketing, desktop chrome */
+  --paper: #f6f3ea;
+  --paper-raised: #fffefa;
+  --paper-deep: #ece7da;
+  --ink: #1c2b24;
+  --ink-soft: #56685d;
+  --ink-faint: #90a096;
+  --accent-deep: #1e7d5f;
+  --hairline: rgba(28, 43, 36, 0.1);
+  --hairline-strong: rgba(28, 43, 36, 0.2);
+  --shadow-ambient: 0 30px 70px -30px rgba(28, 43, 36, 0.28);
+
+  --bg-modal-overlay: rgba(2, 8, 6, 0.65);
+
   --transition-fast: 150ms var(--ease-out);
   --transition-base: 200ms var(--ease-out);
   --transition-slow: 300ms var(--ease-out);
-  --transition-spring: 400ms var(--ease-spring);
-  
-  /* Z-index scale */
-  --z-dropdown: 100;
-  --z-sidebar: 200;
+
+  --z-nav: 100;
+  --z-chat: 200;
   --z-modal: 300;
   --z-toast: 400;
-
-  /* Glucose zones */
-  --glucose-low: #FB7185;
-  --glucose-normal: #2DD4A8;
-  --glucose-high: #FBBF24;
-  --glucose-very-high: #FB7185;
-
-  /* Sidebar */
-  --sidebar-width: 260px;
-  --sidebar-collapsed: 72px;
 }
 
 /* ============================================
-   Reset & Base
+   Reset & base
    ============================================ */
 *, *::before, *::after {
   margin: 0;
@@ -127,16 +57,12 @@ body {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
+  color: var(--ink);
+  background-color: var(--paper);
   overflow-x: hidden;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-  transition: color var(--transition-fast);
-}
+a { text-decoration: none; color: inherit; }
 
 button {
   cursor: pointer;
@@ -144,6 +70,7 @@ button {
   background: none;
   font-family: inherit;
   font-size: inherit;
+  color: inherit;
 }
 
 input, textarea, select {
@@ -153,440 +80,196 @@ input, textarea, select {
   outline: none;
 }
 
-img {
-  max-width: 100%;
-  display: block;
+img { max-width: 100%; display: block; }
+ul, ol { list-style: none; }
+
+h1, h2, h3 {
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
-ul, ol {
-  list-style: none;
+p { text-wrap: pretty; }
+
+/* Visible focus for keyboard users, invisible for pointer users */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: rgba(75, 224, 180, 0.28);
+  color: var(--text-primary);
 }
 
 /* ============================================
-   Typography
+   Type helpers
    ============================================ */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif);
-  line-height: 1.15;
-  font-weight: 500;
-}
+.text-display-font { font-family: var(--font-display); }
 
-.text-serif { font-family: var(--font-serif); }
-.text-sans { font-family: var(--font-sans); }
-.text-mono { font-family: var(--font-mono); }
-
-.text-hero {
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  letter-spacing: -0.02em;
-}
-
-.text-display {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  letter-spacing: -0.015em;
-}
-
-.text-heading {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  letter-spacing: -0.01em;
-}
-
-.text-subheading {
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-teal);
-}
-
-.text-body-lg {
-  font-size: 1.125rem;
-  line-height: 1.7;
-}
-
-.text-body {
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.text-small {
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.text-xs {
-  font-size: 0.75rem;
-  line-height: 1.4;
-}
-
-.text-data {
+/* Eyebrow tag — microscopic pill preceding display headings */
+.text-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.32rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline-strong);
+  background: rgba(255, 254, 250, 0.6);
   font-family: var(--font-mono);
-  font-size: 0.875rem;
-  letter-spacing: 0.02em;
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
 }
 
 /* ============================================
-   Utility Classes
-   ============================================ */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-xl);
-}
-
-.container-wide {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 var(--space-xl);
-}
-
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.gap-xs { gap: var(--space-xs); }
-.gap-sm { gap: var(--space-sm); }
-.gap-md { gap: var(--space-md); }
-.gap-lg { gap: var(--space-lg); }
-.gap-xl { gap: var(--space-xl); }
-.gap-2xl { gap: var(--space-2xl); }
-
-/* ============================================
-   Buttons
+   Buttons (landing + auth modal) — island pills on paper
    ============================================ */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-full);
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: transform 160ms var(--ease-out), background 200ms var(--ease-out),
-              border-color 200ms var(--ease-out), color 200ms var(--ease-out),
-              box-shadow 200ms var(--ease-out);
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.72rem 0.72rem 0.72rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 550;
+  font-size: 0.94rem;
+  letter-spacing: -0.01em;
+  transition: transform 500ms cubic-bezier(0.32, 0.72, 0, 1),
+              background 300ms cubic-bezier(0.32, 0.72, 0, 1),
+              border-color 300ms cubic-bezier(0.32, 0.72, 0, 1),
+              color 300ms cubic-bezier(0.32, 0.72, 0, 1),
+              box-shadow 500ms cubic-bezier(0.32, 0.72, 0, 1);
   white-space: nowrap;
 }
 
-.btn:active {
-  transform: scale(0.97);
+.btn:not(:has(.btn-orb)) { padding: 0.72rem 1.5rem; }
+
+.btn:active { transform: scale(0.98); }
+
+/* Nested trailing icon — a button inside the button */
+.btn-orb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  transition: transform 500ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+.btn:hover .btn-orb { transform: translate(2px, -1px) scale(1.05); }
+
 .btn-primary {
-  background: var(--accent-teal);
-  color: var(--bg-dark);
-  font-weight: 600;
+  background: var(--ink, #1c2b24);
+  color: var(--paper, #f7f4ec);
+  box-shadow: 0 18px 38px -16px rgba(28, 43, 36, 0.45);
+}
+
+.btn-primary .btn-orb {
+  background: rgba(247, 244, 236, 0.14);
+  color: var(--paper, #f7f4ec);
 }
 
 .btn-primary:hover {
-  background: #5AE6C5;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-strong);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--text-light);
-  border: 1px solid var(--border-medium);
-}
-
-.btn-secondary:hover {
-  border-color: var(--accent-teal);
-  color: var(--accent-teal);
   transform: translateY(-1px);
+  box-shadow: 0 24px 48px -16px rgba(28, 43, 36, 0.5);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--ink-soft, #5a6e63);
   padding: 0.5rem 1rem;
 }
 
-.btn-ghost:hover {
-  color: var(--accent-teal);
-}
-
-.btn-secondary-outline {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-medium);
-}
-
-.btn-secondary-outline:hover {
-  border-color: var(--accent-teal);
-  color: var(--accent-teal);
-  transform: translateY(-1px);
-}
+.btn-ghost:hover { color: var(--ink, #1c2b24); }
 
 .btn-glass {
-  background: var(--bg-glass);
+  background: rgba(255, 254, 250, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border-medium);
-  color: var(--text-light);
-  font-weight: 500;
+  border: 1px solid rgba(28, 43, 36, 0.14);
+  color: var(--ink, #1c2b24);
+  box-shadow: 0 12px 30px -18px rgba(28, 43, 36, 0.25);
+}
+
+.btn-glass .btn-orb {
+  background: rgba(28, 43, 36, 0.07);
+  color: var(--ink, #1c2b24);
 }
 
 .btn-glass:hover {
-  background: rgba(45, 212, 168, 0.1);
-  border-color: var(--accent-teal);
-  color: var(--accent-teal);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  border-color: rgba(28, 43, 36, 0.3);
+  transform: translateY(-1px);
 }
 
-.btn-dark {
-  background: var(--bg-dark);
-  color: var(--text-light);
-}
+.btn-sm { padding: 0.5rem 1.05rem; font-size: 0.84rem; }
+.btn-lg { font-size: 1rem; padding: 0.9rem 0.9rem 0.9rem 1.8rem; }
+.btn-lg:not(:has(.btn-orb)) { padding: 0.9rem 1.8rem; }
+.btn-lg .btn-orb { width: 2.15rem; height: 2.15rem; }
 
-.btn-dark:hover {
-  background: var(--bg-card);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.btn-sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-}
-
-.btn-lg {
-  padding: 1rem 2rem;
-  font-size: 1rem;
-}
-
-.btn-icon {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  transition: transform 160ms var(--ease-out), background 200ms var(--ease-out),
-              color 200ms var(--ease-out);
-}
-
-.btn-icon:active {
-  transform: scale(0.95);
+/* ============================================
+   Layout
+   ============================================ */
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
 }
 
 /* ============================================
-   Cards
+   Texture — subtle grain so dark surfaces don't feel flat
    ============================================ */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
-}
-
-.card:hover {
-  border-color: var(--border-medium);
-  box-shadow: var(--shadow-glow);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-lg);
-}
-
-.card-title {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-light);
-}
-
-.card-subtitle {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: var(--space-xs);
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
 }
 
 /* ============================================
-   Form Elements
+   Loading screen
    ============================================ */
-.form-group {
+.loading-screen {
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.form-label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.form-input {
-  padding: 0.75rem 1rem;
-  background: var(--bg-input);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  color: var(--text-light);
-  font-size: 0.95rem;
-  transition: all var(--transition-fast);
-}
-
-.form-input:focus {
-  border-color: var(--accent-teal);
-  box-shadow: 0 0 0 3px var(--accent-teal-dim);
-}
-
-.form-input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.6;
-}
-
-.form-select {
-  padding: 0.75rem 1rem;
-  background: var(--bg-input);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  color: var(--text-light);
-  font-size: 0.95rem;
-  transition: all var(--transition-fast);
-  appearance: none;
-  cursor: pointer;
-}
-
-.form-select:focus {
-  border-color: var(--accent-teal);
-  box-shadow: 0 0 0 3px var(--accent-teal-dim);
-}
-
-/* ============================================
-   Badges & Tags
-   ============================================ */
-.badge {
-  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  justify-content: center;
+  background: var(--paper);
+  color: var(--ink-soft);
+  gap: 1.25rem;
 }
 
-.badge-teal {
-  background: var(--accent-teal-dim);
-  color: var(--accent-teal);
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 2.5px solid var(--hairline);
+  border-top-color: var(--accent-deep);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.badge-rose {
-  background: var(--accent-rose-dim);
-  color: var(--accent-rose);
-}
-
-.badge-amber {
-  background: var(--accent-amber-dim);
-  color: var(--accent-amber);
-}
-
-.badge-sky {
-  background: var(--accent-sky-dim);
-  color: var(--accent-sky);
-}
-
-.badge-emerald {
-  background: var(--accent-emerald-dim);
-  color: var(--accent-emerald);
-}
-
-.badge-ghost {
-  background: var(--bg-input);
-  color: var(--text-muted);
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ============================================
-   Alerts
+   Keyframes shared across app
    ============================================ */
-.alert {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
-  font-size: 0.9rem;
-  margin-bottom: var(--space-lg);
-}
-
-.alert-error {
-  background: var(--accent-rose-dim);
-  color: var(--accent-rose);
-  border: 1px solid rgba(251, 113, 133, 0.3);
-}
-
-.alert-success {
-  background: var(--accent-teal-dim);
-  color: var(--accent-teal);
-  border: 1px solid rgba(45, 212, 168, 0.3);
-}
-
-.alert-warning {
-  background: var(--accent-amber-dim);
-  color: var(--accent-amber);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-}
-
-/* Spinner */
-.spinner {
-  animation: spin 1s linear infinite;
-}
-
-/* ============================================
-   Animations
-   ============================================ */
-/* Per Emil: "Keep animations under 300ms for UI" */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-@keyframes glucoseWave {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes shimmer {
@@ -594,195 +277,50 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 200% center; }
 }
 
-/* Per Emil: "Never animate from scale(0). Start from
-   scale(0.95) or higher combined with opacity." */
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.animate-fade-in-up { animation: fadeInUp 450ms var(--ease-out) both; }
+.animate-fade-in { animation: fadeIn 300ms var(--ease-out) both; }
+.animate-scale-in { animation: scaleIn 250ms var(--ease-out) both; }
+
+.stagger-1 { animation-delay: 60ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 240ms; }
+
+/* Skeleton loading */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-raised);
+  border-radius: 0.5rem;
 }
 
-@keyframes dotPulse {
-  0%, 100% { 
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(45, 212, 168, 0.4);
-  }
-  50% { 
-    transform: scale(1.1);
-    box-shadow: 0 0 0 10px rgba(45, 212, 168, 0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 400ms var(--ease-out) forwards;
-}
-
-.animate-fade-in {
-  animation: fadeIn 300ms var(--ease-out) forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 250ms var(--ease-out) forwards;
-}
-
-/* Per Emil: "Keep stagger delays short (30-80ms between items).
-   Long delays make the interface feel slow." */
-.stagger-1 { animation-delay: 0ms; }
-.stagger-2 { animation-delay: 50ms; }
-.stagger-3 { animation-delay: 100ms; }
-.stagger-4 { animation-delay: 150ms; }
-.stagger-5 { animation-delay: 200ms; }
-.stagger-6 { animation-delay: 250ms; }
-.stagger-7 { animation-delay: 300ms; }
-.stagger-8 { animation-delay: 350ms; }
-
-/* ============================================
-   Loading Screen
-   ============================================ */
-.loading-screen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-dashboard);
-  color: var(--text-light);
-  gap: var(--space-lg);
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-medium);
-  border-top-color: var(--accent-teal);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.045) 50%, transparent 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
 }
 
 /* ============================================
    Scrollbar
    ============================================ */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-dashboard);
-}
-
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: var(--radius-full);
+  background: var(--surface-overlay);
+  border-radius: 9999px;
+  border: 2px solid var(--surface-base);
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-teal);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
 
 /* ============================================
-   Responsive
+   Number inputs
    ============================================ */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 var(--space-md);
-  }
-  
-  :root {
-    --sidebar-width: 0px;
-}
-}
-
-/* ============================================
-   Number Inputs
-   ============================================ */
-input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
   appearance: textfield;
-}
-
-/* Only hide default spinners for our specific NumberInput component's internal field */
-.number-field::-webkit-inner-spin-button,
-.number-field::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* ============================================
-   Accessibility - Reduced Motion
-   Per Emil Kowalski: "Reduced motion means fewer
-   and gentler animations, not zero. Keep opacity
-   and color transitions that aid comprehension."
-   ============================================ */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  /* Keep essential feedback animations but make them instant */
-  .btn:active,
-  .btn-icon:active,
-  .btn-social:active,
-  .sidebar-item:active {
-    transform: scale(0.98);
-    transition: none;
-  }
-
-  /* Disable decorative animations entirely */
-  .hero-orb,
-  .animate-fade-in-up,
-  .animate-fade-in,
-  .animate-scale-in {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  /* Keep spinner functional but faster */
-  .loading-spinner,
-  .spinner {
-    animation: spin 0.5s linear infinite !important;
-  }
-}
-
-/* ============================================
-   Touch Device Hover Protection
-   Per Emil Kowalski: "Touch devices trigger hover
-   on tap, causing false positives."
-   ============================================ */
-@media (hover: none) {
-  .btn:hover,
-  .btn-primary:hover,
-  .btn-secondary:hover,
-  .btn-ghost:hover,
-  .btn-glass:hover,
-  .btn-dark:hover,
-  .card:hover,
-  .stat-card:hover {
-    transform: none;
-    box-shadow: none;
-  }
-}
-
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-.material-symbols-outlined.icon-fill {
-  font-variation-settings: 'FILL' 1;
 }
 
 input[type='number']::-webkit-outer-spin-button,
@@ -791,6 +329,37 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type='number'] {
-  -moz-appearance: textfield;
+/* ============================================
+   Icons
+   ============================================ */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.icon-fill {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* ============================================
+   Reduced motion — fewer and gentler, not zero
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .loading-spinner, .spinner {
+    animation: spin 0.5s linear infinite !important;
+  }
+}
+
+/* Touch devices: no sticky hover states */
+@media (hover: none) {
+  .btn:hover, .btn-primary:hover, .btn-glass:hover, .btn-ghost:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }

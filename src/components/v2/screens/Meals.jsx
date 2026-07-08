@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getMeals } from '../../../lib/dataService';
 import ActivityRow from '../cards/ActivityRow';
 import EmptyState from '../ui/EmptyState';
+import ScreenSkeleton from '../ui/Skeleton';
 
 function formatDay(dateValue) {
   const date = new Date(dateValue);
@@ -66,7 +67,7 @@ export default function Meals() {
   }, [meals]);
 
   if (meals === null) {
-    return <div className="p-md text-text-secondary">Loading...</div>;
+    return <ScreenSkeleton hero={false} rows={5} />;
   }
 
   if (meals.length === 0) {
@@ -76,7 +77,7 @@ export default function Meals() {
         title="No meals logged"
         description="Track what you eat to see how it affects your glucose."
         action="Log a meal"
-        onAction={() => navigate('/dashboard/meals/log')}
+        onAction={() => navigate('/dashboard/meals/log', { state: { background: '/dashboard/meals' } })}
       />
     );
   }

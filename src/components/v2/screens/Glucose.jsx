@@ -9,6 +9,7 @@ import StatCard from '../cards/StatCard';
 import GlucoseChart from '../charts/GlucoseChart';
 import TimeInRangeBar from '../charts/TimeInRangeBar';
 import EmptyState from '../ui/EmptyState';
+import ScreenSkeleton from '../ui/Skeleton';
 
 const RANGES = [
   { key: '24H', label: '24H', hours: 24 },
@@ -80,7 +81,7 @@ export default function Glucose() {
   const thresholds = getThresholds(settings);
 
   if (loading) {
-    return <div className="p-md text-text-secondary">Loading...</div>;
+    return <ScreenSkeleton rows={2} />;
   }
 
   return (
@@ -115,7 +116,7 @@ export default function Glucose() {
           title="No glucose data in this range"
           description="Try a different time range or log your first reading."
           action="Log a reading"
-          onAction={() => navigate('/dashboard/glucose/log')}
+          onAction={() => navigate('/dashboard/glucose/log', { state: { background: '/dashboard/glucose' } })}
         />
       ) : (
         <>
