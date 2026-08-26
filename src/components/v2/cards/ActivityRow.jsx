@@ -8,8 +8,9 @@ const TYPE_VISUALS = {
   glucose: { icon: 'water_drop', tone: 'glucose-normal' },
 };
 
-export default function ActivityRow({ type, title, subtitle, value, unit, time, tone }) {
+export default function ActivityRow({ type, title, subtitle, value, unit, time, tone, source }) {
   const visual = TYPE_VISUALS[tone] ?? TYPE_VISUALS[type] ?? TYPE_VISUALS.glucose;
+  const isAgentLogged = source === 'webmcp';
 
   return (
     <div className="bg-surface-overlay border border-border-subtle rounded-lg p-3 flex items-center gap-3">
@@ -17,7 +18,14 @@ export default function ActivityRow({ type, title, subtitle, value, unit, time, 
         <span className="material-symbols-outlined">{visual.icon}</span>
       </div>
       <div className="flex-1 flex flex-col min-w-0">
-        <span className="font-body text-body-base text-text-primary font-medium truncate">{title}</span>
+        <span className="font-body text-body-base text-text-primary font-medium truncate flex items-center gap-1.5">
+          <span className="truncate">{title}</span>
+          {isAgentLogged && (
+            <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-primary">
+              Agent logged
+            </span>
+          )}
+        </span>
         {subtitle && <span className="font-mono text-[11px] text-text-secondary truncate">{subtitle}</span>}
       </div>
       <div className="flex flex-col items-end">

@@ -105,6 +105,7 @@ export default function Meals() {
                 unit="g"
                 time={formatTime(meal.logged_at ?? meal.created_at)}
                 tone={(meal.meal_type ?? 'meal').toLowerCase()}
+                source={meal.source}
               />
             ))}
           </div>

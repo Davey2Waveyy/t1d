@@ -147,6 +147,7 @@ export default function Glucose() {
                   value={toDisplayGlucose(reading.value, settings.glucoseUnit)}
                   unit={` ${settings.glucoseUnit}`}
                   time={formatClock(reading.recorded_at)}
+                  source={reading.source}
                 />
               ))}
             </div>
