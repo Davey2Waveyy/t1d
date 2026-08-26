@@ -5,6 +5,12 @@
 
 ---
 
+## Scope of This Session
+
+Your scope is repository implementation only: inspect, edit, test, commit, and push the requested changes. Do not prepare the Devpost submission, demo video, judging materials, project strategy, or deployment; those will be handled separately.
+
+---
+
 ## Project Info
 
 - **Repo**: https://github.com/Davey2Waveyy/t1d
