@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 import Hero from '../components/landing/Hero';
 import Features from '../components/landing/Features';
 import HowItWorks from '../components/landing/HowItWorks';
-import AskBeta from '../components/landing/AskBeta';
 import Safety from '../components/landing/Safety';
 import Faq from '../components/landing/Faq';
 import Footer from '../components/landing/Footer';
@@ -16,7 +15,6 @@ import '../components/landing/landing.css';
 const NAV_LINKS = [
   { href: '#features', label: 'Features' },
   { href: '#how-it-works', label: 'How it works' },
-  { href: '#ask-beta', label: 'Ask Beta' },
   { href: '#safety', label: 'Safety' },
 ];
 
@@ -140,7 +138,6 @@ export default function Landing() {
         <Hero onOpenDemo={enterDemo} />
         <Features />
         <HowItWorks />
-        <AskBeta onOpenDemo={enterDemo} />
         <Safety />
         <Faq />
       </main>

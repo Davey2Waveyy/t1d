@@ -10,15 +10,11 @@ export const DEFAULT_SETTINGS = {
   icr_dinner: '',
   icr_snack: '',
   isf: '',
-  nightscoutUrl: '',
-  nightscoutToken: '',
 };
 
 export const DEFAULT_SESSION_SETTINGS = {
   enableAiInsights: false,
   geminiApiKey: '',
-  nightscoutUrl: '',
-  nightscoutToken: '',
 };
 
 const ALLOWED_SETTING_KEYS = new Set(Object.keys(DEFAULT_SETTINGS));

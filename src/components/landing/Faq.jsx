@@ -16,10 +16,6 @@ const QA = [
     a: 'No, deliberately. It records what you log and describes patterns. Dosing decisions belong with you and your clinician.',
   },
   {
-    q: 'Does it connect to my CGM?',
-    a: 'A Nightscout import exists in the demo, and Dexcom import is sketched as a future option. The preview mostly uses generated sample data.',
-  },
-  {
     q: 'Why “Betatrace”?',
     a: 'Named after beta cells — the ones people with Type 1 are missing. The app traces what they used to handle quietly.',
   },
