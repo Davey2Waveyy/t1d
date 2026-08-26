@@ -7,6 +7,20 @@ const DEMO_DOSES_KEY = 'betatrace_demo_insulin_doses'
 const DEMO_GLUCOSE_KEY = 'betatrace_demo_glucose_readings'
 const DEMO_SETTINGS_KEY = 'betatrace_settings'
 
+// In-browser this is always window.localStorage. The in-memory fallback
+// keeps the demo store (and its tests) working in any environment without
+// a DOM, e.g. under plain `node --test`.
+const memoryStorage = new Map()
+const memoryStorageFallback = {
+  getItem: (key) => (memoryStorage.has(key) ? memoryStorage.get(key) : null),
+  setItem: (key, value) => { memoryStorage.set(key, String(value)) },
+  removeItem: (key) => { memoryStorage.delete(key) },
+}
+
+function getStorage() {
+  return typeof localStorage !== 'undefined' ? localStorage : memoryStorageFallback
+}
+
 async function getCurrentUser() {
   if (!supabase) return null
 
@@ -65,7 +79,7 @@ function generateDemoId(prefix) {
 
 function readDemoList(key) {
   try {
-    const parsed = JSON.parse(localStorage.getItem(key) || '[]')
+    const parsed = JSON.parse(getStorage().getItem(key) || '[]')
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -73,7 +87,7 @@ function readDemoList(key) {
 }
 
 function writeDemoList(key, entries) {
-  localStorage.setItem(key, JSON.stringify(entries))
+  getStorage().setItem(key, JSON.stringify(entries))
 }
 
 function toResultError(err) {
@@ -310,9 +324,9 @@ export function addDemoEntryBatch({ occurredAt, glucose, meal, insulin, source =
  * or the guest-notification-seen flag.
  */
 export function resetDemoData() {
-  localStorage.removeItem(DEMO_MEALS_KEY)
-  localStorage.removeItem(DEMO_DOSES_KEY)
-  localStorage.removeItem(DEMO_GLUCOSE_KEY)
+  getStorage().removeItem(DEMO_MEALS_KEY)
+  getStorage().removeItem(DEMO_DOSES_KEY)
+  getStorage().removeItem(DEMO_GLUCOSE_KEY)
   notifyDemoDataChange({ type: 'reset' })
 }
 
@@ -499,7 +513,7 @@ export async function getUserSettings() {
   const user = await getCurrentUser()
   if (!user) {
     try {
-      const saved = JSON.parse(localStorage.getItem(DEMO_SETTINGS_KEY) || 'null')
+      const saved = JSON.parse(getStorage().getItem(DEMO_SETTINGS_KEY) || 'null')
       return { data: sanitizeStoredSettings(saved ?? mockSettings), error: null }
     } catch {
       return { data: sanitizeStoredSettings(mockSettings), error: null }
@@ -518,7 +532,7 @@ export async function updateUserSettings(settings) {
   const user = await getCurrentUser()
   if (!user) {
     const data = sanitizeStoredSettings(settings)
-    localStorage.setItem(DEMO_SETTINGS_KEY, JSON.stringify(data))
+    getStorage().setItem(DEMO_SETTINGS_KEY, JSON.stringify(data))
     return { data, error: null }
   }
 
