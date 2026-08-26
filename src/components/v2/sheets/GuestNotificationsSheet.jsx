@@ -13,12 +13,6 @@ const ITEMS = [
     body: 'The guest dataset is spending most of the morning inside target, which is a nice calm baseline for the dashboard.',
     tone: 'glucose-normal',
   },
-  {
-    icon: 'tips_and_updates',
-    title: 'Nightscout can be connected',
-    body: 'For a project demo, you can keep manual logging as the default and surface Nightscout as an optional advanced connection.',
-    tone: 'chart-carbs',
-  },
 ];
 
 export default function GuestNotificationsSheet({ open, onOpenChange }) {

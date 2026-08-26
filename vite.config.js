@@ -20,18 +20,6 @@ export default defineConfig({
               expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
             },
           },
-          {
-            urlPattern: ({ url, request }) =>
-              url.hostname.endsWith('.supabase.co') &&
-              request.method === 'GET' &&
-              /\/rest\/v1\/(glucose_readings|meals|insulin_doses|user_settings)/.test(url.pathname),
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'data-reads-v1',
-              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
         ],
       },
       devOptions: { enabled: false },

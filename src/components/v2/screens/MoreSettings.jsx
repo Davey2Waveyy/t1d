@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getUserSettings, updateUserSettings } from '../../../lib/dataService';
 import { useSettings } from '../../../contexts/SettingsContext';
@@ -58,12 +57,10 @@ function normalizeSettings(settings) {
 export default function MoreSettings() {
   const { user, profile, isGuest } = useAuth();
   const { settings, updateSettings } = useSettings();
-  const [searchParams] = useSearchParams();
   const [form, setForm] = useState(() => normalizeSettings(settings));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(null);
-  const nightscoutRef = useRef(null);
   const sectionCls = 'bg-surface-raised border border-border-subtle rounded-lg p-sm sm:p-md flex flex-col gap-sm';
 
   useEffect(() => {
@@ -86,12 +83,6 @@ export default function MoreSettings() {
       cancelled = true;
     };
   }, []);
-
-  useEffect(() => {
-    if (!loading && searchParams.get('focus') === 'nightscout') {
-      nightscoutRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [loading, searchParams]);
 
   const set = (key) => (event) => {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -211,30 +202,6 @@ export default function MoreSettings() {
               Light
             </button>
           </div>
-        </div>
-      </section>
-
-      <section ref={nightscoutRef} className={sectionCls}>
-        {sectionTitle('cloud_sync', 'Nightscout connection')}
-        <div className="grid grid-cols-1 gap-sm">
-          <Field label="Nightscout URL">
-            <input
-              className={inputCls}
-              type="url"
-              value={form.nightscoutUrl ?? ''}
-              onChange={set('nightscoutUrl')}
-              placeholder="https://your-nightscout-site.example"
-            />
-          </Field>
-          <Field label="Nightscout API secret">
-            <input
-              className={inputCls}
-              type="password"
-              value={form.nightscoutToken ?? ''}
-              onChange={set('nightscoutToken')}
-              placeholder="Stored locally for your demo session"
-            />
-          </Field>
         </div>
       </section>
 

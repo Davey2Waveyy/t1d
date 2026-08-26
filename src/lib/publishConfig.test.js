@@ -17,8 +17,6 @@ test('sanitizeStoredSettings removes sensitive client-side integration secrets',
     targetGlucose: '6.2',
     lowThreshold: '4.1',
     highThreshold: '9.8',
-    nightscoutUrl: 'https://example.fly.dev',
-    nightscoutToken: 'super-secret',
     geminiApiKey: 'AIza-secret',
     enableAiInsights: true,
   });
@@ -44,16 +42,12 @@ test('sanitizeSessionSettings keeps sensitive integration values in session scop
     timezone: 'Europe/London',
     enableAiInsights: true,
     geminiApiKey: 'AIza-secret',
-    nightscoutUrl: 'https://example.fly.dev',
-    nightscoutToken: 'super-secret',
   });
 
   assert.deepEqual(sanitized, {
     ...DEFAULT_SESSION_SETTINGS,
     enableAiInsights: true,
     geminiApiKey: 'AIza-secret',
-    nightscoutUrl: 'https://example.fly.dev',
-    nightscoutToken: 'super-secret',
   });
 });
 
@@ -67,8 +61,6 @@ test('mergeSettings combines persisted preferences with session credentials', ()
     {
       enableAiInsights: true,
       geminiApiKey: 'AIza-secret',
-      nightscoutUrl: 'https://example.fly.dev',
-      nightscoutToken: 'super-secret',
     }
   );
 
@@ -80,7 +72,5 @@ test('mergeSettings combines persisted preferences with session credentials', ()
     ...DEFAULT_SESSION_SETTINGS,
     enableAiInsights: true,
     geminiApiKey: 'AIza-secret',
-    nightscoutUrl: 'https://example.fly.dev',
-    nightscoutToken: 'super-secret',
   });
 });
