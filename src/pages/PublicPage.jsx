@@ -50,7 +50,7 @@ const publicPageContent = {
           'Public visitors can browse the landing, documentation, legal, changelog, and contact pages without creating an account.',
           'Guest visitors can enter the dashboard demo and store preview entries locally on their current device.',
           'Signed-in account sync is beta and should not be treated as guaranteed storage until the backend connection is verified.',
-          'The production bundle for this release avoids asking end users to paste third-party AI or CGM secrets directly into the browser.',
+          'The challenge experience uses synthetic data and does not require third-party service credentials.',
         ],
       },
       {

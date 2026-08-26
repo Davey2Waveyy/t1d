@@ -40,7 +40,6 @@ The current app feels like a collection of features assembled without a unifying
 Betatrace manages a serious health condition. The UI should reflect that. Think:
 
 - **Apple Health + Linear** — data-forward, systematic, nothing wasted
-- **Dexcom Clarity** — clean glucose charts, clinical confidence, calm color use
 - **Things 3** — intentional whitespace, typography that works, native-feeling interactions
 
 The goal is an app that a person trusts with their insulin dosing. It should feel **precise, calm, and reliable** — not flashy.
@@ -1211,7 +1210,7 @@ function LogEntry({ icon: Icon, title, subtitle, value, unit, timestamp, status 
 │  [4.0] [5.5] [7.0] [8.5]   │  ← Quick-tap presets (optional)
 │                             │
 │  Source                     │
-│  [Manual] [Dexcom] [Other] │  ← Segmented control
+│  [Manual] [Synthetic]      │  ← Segmented control
 │                             │
 │  Notes (optional)           │
 │  ┌───────────────────────┐  │
