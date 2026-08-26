@@ -459,7 +459,7 @@ function LoggingScene() {
           frame={frame}
           delay={42}
           type="Reading"
-          detail="Dexcom value added"
+          detail="Glucose value added"
           value="118"
           color="#10b981"
         />
@@ -748,93 +748,6 @@ function AIChatbotScene() {
         bottom={90}
         right={90}
       />
-    </AbsoluteFill>
-  );
-}
-
-function NightscoutSyncScene() {
-  const frame = useCurrentFrame();
-  const syncProgress = interpolate(frame, [18, 78], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  const pulse = interpolate(frame % 30, [0, 15, 30], [0.35, 1, 0.35]);
-
-  return (
-    <AbsoluteFill style={{ backgroundColor: colors.bgDeep, padding: 80 }}>
-      <SceneLabel frame={frame} text="Nightscout Sync" />
-      <div
-        style={{
-          position: 'absolute',
-          top: 430,
-          left: 150,
-          right: 150,
-          height: 280,
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: 136,
-            left: 130,
-            right: 130,
-            height: 6,
-            background: '#2dd4a833',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            top: 124,
-            left: `${130 + syncProgress * 500}px`,
-            width: 30,
-            height: 30,
-            borderRadius: '50%',
-            background: '#2dd4a8',
-            boxShadow: '0 0 32px rgba(45,212,168,0.75)',
-          }}
-        />
-        {['Nightscout', 'Betatrace'].map((label, index) => (
-          <div
-            key={label}
-            style={{
-              position: 'absolute',
-              top: 60,
-              left: index === 0 ? 0 : 'auto',
-              right: index === 1 ? 0 : 'auto',
-              width: 260,
-              height: 170,
-              borderRadius: 32,
-              background: colors.card,
-              border: '2px solid #2dd4a855',
-              color: colors.text,
-              fontFamily: index === 0 ? fonts.sans : fonts.serif,
-              fontSize: index === 0 ? 34 : 42,
-              fontWeight: index === 0 ? 900 : 500,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: index === 0 ? 1 : 0.6 + pulse * 0.4,
-            }}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          right: 80,
-          bottom: 180,
-          color: colors.text,
-          fontFamily: fonts.serif,
-          fontSize: 72,
-          lineHeight: 1.05,
-        }}
-      >
-        Bring CGM history into the same decision layer.
-      </div>
     </AbsoluteFill>
   );
 }
@@ -1163,103 +1076,6 @@ function CorrectionFactorScene() {
         }}
       >
         From high to target with less math.
-      </div>
-    </AbsoluteFill>
-  );
-}
-
-function DexcomImportScene() {
-  const frame = useCurrentFrame();
-
-  const readings = [132, 128, 119, 124, 138, 145, 151, 142, 136, 127, 118, 112];
-
-  return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: colors.bg,
-        padding: 80,
-        overflow: 'hidden',
-      }}
-    >
-      <SceneLabel frame={frame} text="Dexcom Import" />
-      <AccentBlob
-        frame={frame}
-        color="sky"
-        size={240}
-        top={-100}
-        right={-100}
-        shape="blob"
-      />
-      <div
-        style={{
-          marginTop: 280,
-          borderRadius: 28,
-          background: colors.card,
-          border: '2px solid #38bdf844',
-          padding: 34,
-        }}
-      >
-        <div
-          style={{
-            color: colors.muted,
-            fontFamily: fonts.sans,
-            fontSize: 22,
-            fontWeight: 800,
-            letterSpacing: 2,
-            textTransform: 'uppercase',
-            marginBottom: 24,
-          }}
-        >
-          Live CGM Feed
-        </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', height: 260 }}>
-          {readings.map((val, i) => {
-            const barProgress = interpolate(frame - i * 5, [8, 28], [0, 1], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-            });
-            const height = ((val - 90) / 80) * 220;
-            return (
-              <div
-                key={i}
-                style={{
-                  flex: 1,
-                  borderRadius: 8,
-                  background: val < 120 ? '#10b981' : val > 140 ? '#fbbf24' : '#2dd4a8',
-                  height: height * barProgress,
-                  opacity: barProgress,
-                }}
-              />
-            );
-          })}
-        </div>
-        <div
-          style={{
-            marginTop: 20,
-            display: 'flex',
-            justifyContent: 'space-between',
-            color: colors.muted,
-            fontFamily: fonts.mono,
-            fontSize: 18,
-          }}
-        >
-          <span>12h ago</span>
-          <span>Now</span>
-        </div>
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          right: 80,
-          bottom: 180,
-          color: colors.text,
-          fontFamily: fonts.serif,
-          fontSize: 68,
-          lineHeight: 1.05,
-        }}
-      >
-        Pull CGM data in, automatically.
       </div>
     </AbsoluteFill>
   );

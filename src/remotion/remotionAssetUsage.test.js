@@ -52,9 +52,17 @@ test('ad composition fills the approved day-in-life timeline with a longer closi
     assert.match(source, new RegExp(copy));
   }
 
-  assert.doesNotMatch(source, /<NightscoutSyncScene\s+\/>/);
-  assert.doesNotMatch(source, /<DexcomImportScene\s+\/>/);
+  assert.doesNotMatch(source, /NightscoutSyncScene/);
+  assert.doesNotMatch(source, /DexcomImportScene/);
   assert.doesNotMatch(source, /<EndCardScene\s+\/>/);
+});
+
+test('ad composition contains no provider-specific integration wording', () => {
+  const source = readCompositionSource('BetaTraceAd.jsx');
+
+  assert.doesNotMatch(source, /Nightscout/i);
+  assert.doesNotMatch(source, /Dexcom/i);
+  assert.doesNotMatch(source, /CGM/);
 });
 
 test('Root composition is 30fps and 900 frames', () => {

@@ -51,7 +51,6 @@
 
 .section-head .text-kicker,
 .how-head .text-kicker,
-.askbeta-copy .text-kicker,
 .safety-head .text-kicker,
 .faq-head .text-kicker {
   margin-bottom: 1.3rem;
@@ -1060,179 +1059,6 @@
 }
 
 /* ------------------------------------------------------------
-   Ask Beta — the dark chat screen as an object on paper
-   ------------------------------------------------------------ */
-.askbeta-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: clamp(2.5rem, 6vw, 5.5rem);
-  align-items: center;
-}
-
-/* Paper tray around the dark chat panel */
-.askbeta-chat {
-  border-radius: 1.9rem;
-  padding: 0.5rem;
-  background: linear-gradient(175deg, rgba(255, 254, 250, 0.75), rgba(236, 231, 218, 0.55));
-  border: 1px solid var(--hairline);
-  box-shadow: var(--shadow-ambient);
-}
-
-.askbeta-chat-core {
-  display: flex;
-  flex-direction: column;
-  border-radius: calc(1.9rem - 0.5rem);
-  background: #081210;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-  overflow: hidden;
-  min-height: 25rem;
-}
-
-.askbeta-chat-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.95rem 1.2rem;
-  border-bottom: 1px solid rgba(45, 212, 168, 0.1);
-}
-
-.askbeta-chat-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 460;
-  color: #edf7f2;
-}
-
-.askbeta-chat-title svg { color: #4be0b4; }
-
-.askbeta-chat-status {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #648577;
-}
-
-.askbeta-chat-scroll {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  padding: 1.2rem;
-  overflow-y: auto;
-  max-height: 21rem;
-}
-
-.askbeta-bubble {
-  max-width: 88%;
-  padding: 0.7rem 0.95rem;
-  border-radius: 1.05rem;
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
-.askbeta-bubble--user {
-  align-self: flex-end;
-  background: #4be0b4;
-  color: #03291e;
-  font-weight: 500;
-  border-bottom-right-radius: 0.35rem;
-}
-
-.askbeta-bubble--assistant {
-  align-self: flex-start;
-  background: #143028;
-  color: #edf7f2;
-  border: 1px solid rgba(45, 212, 168, 0.1);
-  border-bottom-left-radius: 0.35rem;
-}
-
-.askbeta-typing { display: inline-flex; gap: 0.3rem; padding: 0.85rem 1rem; }
-
-.askbeta-typing span {
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-  background: #648577;
-  animation: typing-bounce 1.2s ease-in-out infinite;
-}
-
-.askbeta-typing span:nth-child(2) { animation-delay: 0.15s; }
-.askbeta-typing span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes typing-bounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-4px); opacity: 1; }
-}
-
-.askbeta-chat-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 1.2rem 1.2rem;
-  padding: 0.55rem 0.55rem 0.55rem 1rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(45, 212, 168, 0.12);
-  background: #060d0b;
-  font-size: 0.8rem;
-  color: #648577;
-}
-
-.askbeta-chat-foot i {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 9999px;
-  background: #4be0b4;
-  color: #03291e;
-}
-
-.askbeta-copy h2 { margin-bottom: 2.1rem; }
-
-.askbeta-points {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2.3rem;
-}
-
-.askbeta-points li { display: flex; gap: 1.05rem; }
-
-.askbeta-point-icon {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.85rem;
-  border: 1px solid var(--hairline);
-  background: var(--paper-raised);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 10px 22px -12px rgba(28, 43, 36, 0.3);
-  color: var(--accent-deep);
-}
-
-.askbeta-points h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 0.28rem;
-}
-
-.askbeta-points p {
-  font-size: 0.9rem;
-  line-height: 1.65;
-  color: var(--ink-soft);
-  max-width: 27rem;
-}
-
-/* ------------------------------------------------------------
    Safety — quiet, line-led
    ------------------------------------------------------------ */
 .safety-head { max-width: 42rem; margin-bottom: clamp(2.75rem, 6vw, 4.5rem); }
@@ -1543,12 +1369,8 @@
   .bento-card--insulin, .bento-card--patterns { grid-column: span 6; }
   .bento-card--settings { grid-column: span 12; }
 
-  .how-inner, .askbeta-inner, .faq-inner { grid-template-columns: 1fr; }
+  .how-inner, .faq-inner { grid-template-columns: 1fr; }
   .how-head, .faq-head { position: static; }
-  .askbeta-inner { gap: 2.75rem; }
-  .askbeta-chat { order: 2; }
-  .askbeta-chat-core { min-height: 22rem; }
-  .askbeta-copy { order: 1; }
 
   .safety-list { grid-template-columns: 1fr; gap: 2rem; }
   .footer-main { grid-template-columns: 1fr; gap: 2.5rem; }
