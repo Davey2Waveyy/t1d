@@ -154,13 +154,12 @@ export default function Hero({ onOpenDemo }) {
 
           <motion.h1 className="hero-title" variants={rise} initial="hidden" animate="show" custom={1}>
             See your Type&nbsp;1 patterns,
-            <em> calmly.</em>
+            <em> in one place.</em>
           </motion.h1>
 
           <motion.p className="hero-subtitle" variants={rise} initial="hidden" animate="show" custom={2}>
-            Betatrace brings meals, insulin, and glucose into one quiet mobile
-            workspace — so reviewing your week feels less like homework and more
-            like a conversation.
+            Betatrace brings meals, insulin, and glucose into one mobile workspace,
+            so you can review the week without piecing together separate logs.
           </motion.p>
 
           <motion.div className="hero-actions" variants={rise} initial="hidden" animate="show" custom={3}>

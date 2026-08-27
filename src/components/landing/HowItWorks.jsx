@@ -49,8 +49,8 @@ export default function HowItWorks() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: 0.08, duration: 0.65, ease }}
           >
-            Three steps to
-            <em> a calmer review.</em>
+            Log the day.
+            <em> Review the week.</em>
           </motion.h2>
           <motion.p
             className="how-lede"
@@ -59,8 +59,8 @@ export default function HowItWorks() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: 0.16, duration: 0.65, ease }}
           >
-            No streaks, no scores, no guilt mechanics. Betatrace is a notebook
-            that reads itself back to you.
+            Record meals, insulin, and glucose as they happen. When you review
+            the week, the full timeline is already there.
           </motion.p>
         </div>
 

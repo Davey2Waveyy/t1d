@@ -5,7 +5,7 @@ const ease = [0.23, 1, 0.32, 1];
 const QA = [
   {
     q: 'Is this a real product?',
-    a: 'Betatrace is a working preview demo — the logging, charts, and assistant all function, but it’s a personal project, not a released medical product.',
+    a: 'Betatrace is a working preview. The logging, charts, and browser tools function, but it is not a released medical product.',
   },
   {
     q: 'Do I need an account?',
@@ -17,7 +17,7 @@ const QA = [
   },
   {
     q: 'Why “Betatrace”?',
-    a: 'Named after beta cells — the ones people with Type 1 are missing. The app traces what they used to handle quietly.',
+    a: 'It is named after pancreatic beta cells, which normally produce insulin.',
   },
 ];
 
@@ -41,8 +41,8 @@ export default function Faq() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: 0.08, duration: 0.65, ease }}
           >
-            Asked often,
-            <em> answered plainly.</em>
+            Common questions.
+            <em> Straight answers.</em>
           </motion.h2>
         </div>
 

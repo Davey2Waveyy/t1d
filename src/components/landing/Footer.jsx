@@ -16,9 +16,9 @@ export default function Footer({ onOpenDemo }) {
           transition={{ duration: 0.7, ease }}
         >
           <h2>
-            Ready for a<em> calmer review?</em>
+            Ready to<em> review your week?</em>
           </h2>
-          <p>The full demo runs in your browser — no sign-up, no install, nothing to undo.</p>
+          <p>Open the guest demo in your browser. No account or installation required.</p>
           <button className="btn btn-primary btn-lg" onClick={onOpenDemo}>
             Open the live demo
             <span className="btn-orb"><ArrowRight size={15} strokeWidth={2} /></span>
@@ -32,8 +32,8 @@ export default function Footer({ onOpenDemo }) {
               <span className="landing-logo-word">Betatrace</span>
             </span>
             <p>
-              A preview demo for Type 1 diabetes logging and pattern review.
-              Named after beta cells — the ones we’re missing.
+              A preview demo for Type 1 diabetes logging and pattern review,
+              named after the beta cells that produce insulin.
             </p>
           </div>
 

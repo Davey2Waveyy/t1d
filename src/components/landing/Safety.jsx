@@ -7,7 +7,7 @@ const PRINCIPLES = [
   {
     icon: Ban,
     title: 'Not medical advice',
-    copy: 'Betatrace is a logging and review tool. It never suggests doses, corrections, or treatment changes — and the assistant is built to refuse if asked.',
+    copy: 'Betatrace records information and helps you review patterns. It does not recommend doses, corrections, or treatment changes.',
   },
   {
     icon: HardDrive,
@@ -16,8 +16,8 @@ const PRINCIPLES = [
   },
   {
     icon: Stethoscope,
-    title: 'Made to support your care team',
-    copy: 'The goal is a clearer conversation at your next appointment — your prescribed care plan always comes first.',
+    title: 'Useful at your next appointment',
+    copy: 'Use your history to prepare specific questions for your care team. Follow your prescribed care plan for treatment decisions.',
   },
 ];
 
@@ -33,7 +33,7 @@ export default function Safety() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.55, ease }}
           >
-            Safety first
+            Safety and privacy
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 22 }}
@@ -41,8 +41,8 @@ export default function Safety() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: 0.08, duration: 0.65, ease }}
           >
-            Boring by design,
-            <em> where it matters.</em>
+            Clear boundaries,
+            <em> from the start.</em>
           </motion.h2>
         </div>
 
