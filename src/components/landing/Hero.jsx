@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ArrowDown, Lock, HeartPulse, Smartphone } from 'lucide-react';
+import { ArrowRight, ArrowDown, Lock, Smartphone } from 'lucide-react';
 
 const ease = [0.32, 0.72, 0, 1];
 
@@ -132,28 +132,6 @@ function PhonePreview() {
           <div className="hero-phone-home" />
         </div>
       </div>
-
-      <motion.span
-        className="hero-float hero-float--meal"
-        initial={{ opacity: 0, y: 18, x: -8 }}
-        animate={{ opacity: 1, y: 0, x: 0 }}
-        transition={{ delay: 1.7, duration: 0.8, ease }}
-        aria-hidden="true"
-      >
-        <span className="phone-dot phone-dot--meal" />
-        Meal logged · +62g
-      </motion.span>
-
-      <motion.span
-        className="hero-float hero-float--insight"
-        initial={{ opacity: 0, y: 18, x: 8 }}
-        animate={{ opacity: 1, y: 0, x: 0 }}
-        transition={{ delay: 2.1, duration: 0.8, ease }}
-        aria-hidden="true"
-      >
-        <HeartPulse size={13} strokeWidth={1.8} />
-        Steady overnight baseline
-      </motion.span>
     </motion.div>
   );
 }
