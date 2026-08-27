@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMeals } from '../../../lib/dataService';
+import { useDashboardData } from '../../../hooks/useDashboardData';
 import ActivityRow from '../cards/ActivityRow';
 import EmptyState from '../ui/EmptyState';
 import ScreenSkeleton from '../ui/Skeleton';
@@ -27,33 +27,9 @@ function formatTime(dateValue) {
 
 export default function Meals() {
   const navigate = useNavigate();
-  const [meals, setMeals] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    getMeals(50)
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        setMeals(data ?? []);
-        setError(error ?? null);
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setMeals([]);
-          setError(error);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { meals, loading, error } = useDashboardData();
 
   const groups = useMemo(() => {
-    if (!meals) return [];
-
     const grouped = meals.reduce((acc, meal) => {
       const date = meal.logged_at ?? meal.created_at;
       const dayKey = new Date(date).toDateString();
@@ -66,7 +42,7 @@ export default function Meals() {
     return [...grouped.entries()];
   }, [meals]);
 
-  if (meals === null) {
+  if (loading) {
     return <ScreenSkeleton hero={false} rows={5} />;
   }
 

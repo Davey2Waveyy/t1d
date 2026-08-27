@@ -53,11 +53,18 @@ export function useWebMcpTools({ enabled, getSettings } = {}) {
     const controller = new AbortController()
     setStatus(WEBMCP_STATUS.REGISTERING)
 
-    const tools = getWebMcpToolDefinitions({ getSettings: getSettingsStable })
-
-    Promise.all(
-      tools.map((tool) => Promise.resolve(document.modelContext.registerTool(tool, controller.signal)))
-    )
+    // Defer registration by one microtask so React StrictMode's intentional
+    // setup/cleanup probe can cancel its throwaway effect before any native
+    // tools are registered. Without this, the second setup can race the
+    // first abort and falsely report duplicate-registration failure.
+    Promise.resolve()
+      .then(() => {
+        if (cancelled) return []
+        const tools = getWebMcpToolDefinitions({ getSettings: getSettingsStable })
+        return Promise.all(
+          tools.map((tool) => Promise.resolve(document.modelContext.registerTool(tool, controller.signal)))
+        )
+      })
       .then(() => {
         if (!cancelled) setStatus(WEBMCP_STATUS.READY)
       })

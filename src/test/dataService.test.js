@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   getDemoSnapshot,
+  getDemoRangeSnapshot,
+  getGlucoseReadings,
   addDemoEntryBatch,
   resetDemoData,
   subscribeToDemoDataChanges,
@@ -19,6 +21,30 @@ describe('getDemoSnapshot', () => {
     expect(snapshot.glucose.length).toBeGreaterThan(0);
     expect(snapshot.meals.length).toBeGreaterThan(0);
     expect(snapshot.insulin.length).toBeGreaterThan(0);
+  });
+
+  it('provides a chronological seven-day chart timeline with aligned meals', () => {
+    const range = getDemoRangeSnapshot(24 * 7);
+    const glucoseTimes = range.glucose.map((reading) => new Date(reading.recorded_at).getTime());
+    const mealTimes = range.meals.map((meal) => new Date(meal.logged_at).getTime());
+
+    expect(range.glucose.length).toBeGreaterThan(300);
+    expect(range.meals.length).toBeGreaterThanOrEqual(18);
+    expect(glucoseTimes).toEqual([...glucoseTimes].sort((a, b) => a - b));
+    expect(mealTimes).toEqual([...mealTimes].sort((a, b) => a - b));
+    expect(glucoseTimes.at(-1) - glucoseTimes[0]).toBeGreaterThan(6 * 24 * 60 * 60 * 1000);
+  });
+
+  it('uses the same canonical range for chart reads and preserves local points exactly once', async () => {
+    const manual = addDemoEntryBatch({ glucose: { value: 121, unit: 'mg/dL' }, source: 'manual' });
+    const webmcp = addDemoEntryBatch({ glucose: { value: 139, unit: 'mg/dL' }, source: 'webmcp' });
+
+    const canonical = getDemoRangeSnapshot(24 * 7);
+    const chart = await getGlucoseReadings(24 * 7);
+
+    expect(chart.data.map((reading) => reading.id)).toEqual(canonical.glucose.map((reading) => reading.id));
+    expect(canonical.glucose.filter((reading) => reading.id === manual.glucose.id)).toHaveLength(1);
+    expect(canonical.glucose.filter((reading) => reading.id === webmcp.glucose.id)).toHaveLength(1);
   });
 });
 
@@ -51,6 +77,19 @@ describe('addDemoEntryBatch', () => {
   it('converts mmol/L input to mg/dL for storage', () => {
     const created = addDemoEntryBatch({ glucose: { value: 6.1, unit: 'mmol/L' } });
     expect(created.glucose.value).toBeCloseTo(109.8, 1);
+  });
+
+  it('persists locally added entries for subsequent reads', () => {
+    const created = addDemoEntryBatch({
+      meal: { foodName: 'Persisted toast', carbs: 28, mealType: 'breakfast' },
+      source: 'webmcp',
+    });
+
+    expect(getDemoSnapshot().meals.find((meal) => meal.id === created.meal.id)).toMatchObject({
+      food_name: 'Persisted toast',
+      carbs: 28,
+      source: 'webmcp',
+    });
   });
 
   it('rejects a request with none of glucose, meal, or insulin, and writes nothing', () => {

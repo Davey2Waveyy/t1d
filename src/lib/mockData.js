@@ -1,6 +1,6 @@
 /**
  * Realistic Mock Data for 'Guest Mode' demo.
- * Generates 48 hours of glucose, meals, and insulin — timestamps anchored
+ * Generates seven days of glucose, meals, and insulin — timestamps anchored
  * to believable local meal times so the log reads like a real day.
  */
 
@@ -33,7 +33,7 @@ function seededNoise(index) {
   return Math.sin(index * 12.9898) * 7 + Math.sin(index * 4.73) * 4;
 }
 
-export const mockGlucoseReadings = Array.from({ length: 48 * 6 }, (_, i) => {
+export const mockGlucoseReadings = Array.from({ length: 7 * 24 * 6 }, (_, i) => {
   const time = subtractHours(i / 6);
   const date = new Date(time);
   const hour = date.getHours() + date.getMinutes() / 60;
@@ -55,12 +55,36 @@ export const mockGlucoseReadings = Array.from({ length: 48 * 6 }, (_, i) => {
   };
 }).reverse();
 
-export const mockMeals = [
-  { id: 'm1', logged_at: pastTime(0, 7, 58), name: 'Oats and berries', carbs: 46, meal_type: 'Breakfast' },
-  { id: 'm2', logged_at: pastTime(1, 19, 24), name: 'Pasta night', carbs: 74, meal_type: 'Dinner' },
-  { id: 'm3', logged_at: pastTime(1, 12, 41), name: 'Chicken wrap', carbs: 38, meal_type: 'Lunch' },
-  { id: 'm4', logged_at: pastTime(2, 19, 47), name: 'Homemade pizza', carbs: 96, meal_type: 'Dinner' },
-];
+const mealTemplates = {
+  Breakfast: [
+    ['Oats and berries', 46, 7, 58],
+    ['Eggs and toast', 31, 8, 12],
+    ['Yogurt and granola', 35, 8, 5],
+  ],
+  Lunch: [
+    ['Chicken wrap', 38, 12, 41],
+    ['Rice bowl', 62, 13, 4],
+    ['Soup and crackers', 44, 12, 52],
+  ],
+  Dinner: [
+    ['Pasta night', 74, 19, 24],
+    ['Homemade pizza', 96, 19, 47],
+    ['Salmon and potatoes', 52, 18, 56],
+  ],
+};
+
+export const mockMeals = Array.from({ length: 7 }, (_, day) => {
+  return Object.entries(mealTemplates).map(([mealType, templates], mealIndex) => {
+    const [name, carbs, hour, minute] = templates[day % templates.length];
+    return {
+      id: `m-${day}-${mealIndex}`,
+      logged_at: pastTime(day, hour, minute),
+      name,
+      carbs,
+      meal_type: mealType,
+    };
+  });
+}).flat();
 
 export const mockDoses = [
   { id: 'd1', logged_at: pastTime(0, 7, 52), units: 4.5, insulin_type: 'Bolus', brand: 'Humalog' },

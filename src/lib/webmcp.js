@@ -1,9 +1,11 @@
 import {
   getDemoSnapshot,
+  getDemoRangeSnapshot,
   addDemoEntryBatch,
   resetDemoData,
   calculateStats,
   DemoValidationError,
+  DEMO_SEVEN_DAY_HOURS,
 } from './dataService'
 import { getThresholds, toDisplayGlucose } from './glucoseUnits'
 
@@ -41,6 +43,27 @@ function recordSource(record) {
   return record?.source ?? 'seeded'
 }
 
+function mapGlucoseReading(reading, unit) {
+  return {
+    id: reading.id,
+    value: toDisplayGlucose(reading.value, unit),
+    unit,
+    recordedAt: reading.recorded_at,
+    source: recordSource(reading),
+  }
+}
+
+function mapMeal(meal) {
+  return {
+    id: meal.id,
+    foodName: meal.food_name ?? meal.name ?? 'Meal',
+    carbs: meal.carbs ?? 0,
+    mealType: (meal.meal_type ?? 'snack').toLowerCase(),
+    loggedAt: meal.logged_at,
+    source: recordSource(meal),
+  }
+}
+
 // ---------------------------------------------------------------------------
 // get_demo_state - read-only
 // ---------------------------------------------------------------------------
@@ -49,18 +72,30 @@ function buildGetDemoStateTool({ getSettings } = {}) {
   return {
     name: 'get_demo_state',
     description:
-      'Returns a factual, read-only snapshot of Betatrace\'s explicitly synthetic guest-demo data: the current glucose reading and unit, time-in-range percentage, today\'s logged carbohydrate and insulin totals, and recent glucose/meal/insulin entries with their provenance (manual, webmcp, or seeded). Never returns dose recommendations, correction suggestions, calculated dosing, estimated A1C, active-insulin estimates, or treatment advice.',
+      'Returns factual, read-only Betatrace synthetic guest-demo data. Use range "current" (the default) for current glucose, today totals, and recent entries. Use range "7d" for the chronological seven-day glucose series used by the visible chart plus every meal in that period, including timestamps and provenance for pattern description. Never returns dose recommendations, correction suggestions, calculated dosing, estimated A1C, active-insulin estimates, or treatment advice.',
     inputSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        range: {
+          type: 'string',
+          enum: ['current', '7d'],
+          default: 'current',
+          description: 'Use "7d" when the user asks for a graph or recurring pattern analysis.',
+        },
+      },
       additionalProperties: false,
     },
     annotations: {
       readOnlyHint: true,
       untrustedContentHint: true,
     },
-    async execute(_input, options) {
+    async execute(input = {}, options) {
       assertNotAborted(options)
+
+      const range = input?.range ?? 'current'
+      if (range !== 'current' && range !== '7d') {
+        throw new DemoValidationError('range must be "current" or "7d".', 'range')
+      }
 
       const settings = getSettings?.() ?? {}
       const unit = settings.glucoseUnit === 'mmol/L' ? 'mmol/L' : 'mg/dL'
@@ -70,8 +105,9 @@ function buildGetDemoStateTool({ getSettings } = {}) {
 
       assertNotAborted(options)
 
-      return {
+      const result = {
         synthetic: true,
+        range,
         glucose: {
           current: stats.currentGlucose == null ? null : toDisplayGlucose(stats.currentGlucose, unit),
           unit,
@@ -83,21 +119,8 @@ function buildGetDemoStateTool({ getSettings } = {}) {
           insulinUnits: stats.insulinToday,
         },
         recent: {
-          glucose: snapshot.glucose.slice(0, RECENT_LIMIT).map((reading) => ({
-            id: reading.id,
-            value: toDisplayGlucose(reading.value, unit),
-            unit,
-            recordedAt: reading.recorded_at,
-            source: recordSource(reading),
-          })),
-          meals: snapshot.meals.slice(0, RECENT_LIMIT).map((meal) => ({
-            id: meal.id,
-            foodName: meal.food_name ?? meal.name ?? 'Meal',
-            carbs: meal.carbs ?? 0,
-            mealType: (meal.meal_type ?? 'snack').toLowerCase(),
-            loggedAt: meal.logged_at,
-            source: recordSource(meal),
-          })),
+          glucose: snapshot.glucose.slice(0, RECENT_LIMIT).map((reading) => mapGlucoseReading(reading, unit)),
+          meals: snapshot.meals.slice(0, RECENT_LIMIT).map(mapMeal),
           insulin: snapshot.insulin.slice(0, RECENT_LIMIT).map((dose) => ({
             id: dose.id,
             units: dose.units ?? 0,
@@ -108,6 +131,22 @@ function buildGetDemoStateTool({ getSettings } = {}) {
         },
         safety: SAFETY_BOUNDARY,
       }
+
+      if (range === '7d') {
+        const history = getDemoRangeSnapshot(DEMO_SEVEN_DAY_HOURS)
+        const firstReading = history.glucose[0]
+        const lastReading = history.glucose.at(-1)
+
+        result.history = {
+          coverageStart: firstReading?.recorded_at ?? null,
+          coverageEnd: lastReading?.recorded_at ?? null,
+          unit,
+          glucose: history.glucose.map((reading) => mapGlucoseReading(reading, unit)),
+          meals: history.meals.map(mapMeal),
+        }
+      }
+
+      return result
     },
   }
 }

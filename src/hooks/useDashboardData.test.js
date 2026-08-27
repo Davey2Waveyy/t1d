@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import * as dataService from '../lib/dataService';
 import { useDashboardData } from './useDashboardData';
 
@@ -24,6 +24,7 @@ beforeEach(() => {
     estimatedA1C: 5.5,
     standardDeviation: 0,
   });
+  dataService.subscribeToDemoDataChanges.mockReturnValue(() => {});
 });
 
 describe('useDashboardData', () => {
@@ -45,5 +46,30 @@ describe('useDashboardData', () => {
     result.current.refresh();
 
     await waitFor(() => expect(dataService.getGlucoseReadings).toHaveBeenCalledTimes(2));
+  });
+
+  it('re-fetches immediately when a manual or WebMCP write is announced', async () => {
+    let announceChange;
+    dataService.subscribeToDemoDataChanges.mockImplementation((listener) => {
+      announceChange = listener;
+      return () => {};
+    });
+    const { result } = renderHook(() => useDashboardData({ glucoseHours: 24 * 7 }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    dataService.getMeals.mockResolvedValue({
+      data: [{ id: 'webmcp-meal', food_name: 'Immediate meal', carbs: 23, source: 'webmcp', logged_at: new Date().toISOString() }],
+      error: null,
+    });
+    dataService.getGlucoseReadings.mockResolvedValue({
+      data: [{ id: 'webmcp-glucose', value: 142, source: 'webmcp', recorded_at: new Date().toISOString() }],
+      error: null,
+    });
+
+    act(() => announceChange({ type: 'write', source: 'webmcp' }));
+
+    await waitFor(() => expect(result.current.meals[0]?.id).toBe('webmcp-meal'));
+    expect(result.current.glucose[0]?.id).toBe('webmcp-glucose');
+    expect(dataService.getGlucoseReadings).toHaveBeenLastCalledWith(24 * 7);
   });
 });
