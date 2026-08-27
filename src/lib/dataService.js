@@ -6,6 +6,8 @@ const DEMO_MEALS_KEY = 'betatrace_demo_meals'
 const DEMO_DOSES_KEY = 'betatrace_demo_insulin_doses'
 const DEMO_GLUCOSE_KEY = 'betatrace_demo_glucose_readings'
 const DEMO_SETTINGS_KEY = 'betatrace_settings'
+export const DEMO_SEVEN_DAY_HOURS = 24 * 7
+export const DEMO_MAX_CHART_POINTS = 336
 
 // In-browser this is always window.localStorage. The in-memory fallback
 // keeps the demo store (and its tests) working in any environment without
@@ -88,6 +90,59 @@ function readDemoList(key) {
 
 function writeDemoList(key, entries) {
   getStorage().setItem(key, JSON.stringify(entries))
+}
+
+function timestampFor(record, field) {
+  const timestamp = new Date(record?.[field]).getTime()
+  return Number.isFinite(timestamp) ? timestamp : 0
+}
+
+function sortByTimestamp(records, field, direction = 'desc') {
+  const multiplier = direction === 'asc' ? 1 : -1
+  return [...records].sort((a, b) => (timestampFor(a, field) - timestampFor(b, field)) * multiplier)
+}
+
+function dedupeById(records) {
+  const seen = new Set()
+  return records.filter((record) => {
+    const key = record?.id ?? JSON.stringify(record)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+function sampleEvenly(records, count) {
+  if (count <= 0) return []
+  if (records.length <= count) return records
+  if (count === 1) return [records.at(-1)]
+
+  const selected = []
+  for (let index = 0; index < count; index += 1) {
+    const sourceIndex = Math.round((index * (records.length - 1)) / (count - 1))
+    selected.push(records[sourceIndex])
+  }
+  return dedupeById(selected)
+}
+
+/**
+ * Keeps chart/tool payloads compact while preserving every locally recorded
+ * manual or WebMCP point exactly. Only the dense seeded series is sampled.
+ */
+export function downsampleDemoGlucose(readings, maxPoints = DEMO_MAX_CHART_POINTS) {
+  if (!Number.isFinite(maxPoints) || maxPoints <= 0 || readings.length <= maxPoints) {
+    return readings
+  }
+
+  const localReadings = readings.filter((reading) => reading.source === 'manual' || reading.source === 'webmcp')
+  const seededReadings = readings.filter((reading) => reading.source !== 'manual' && reading.source !== 'webmcp')
+  const seededBudget = Math.max(0, maxPoints - localReadings.length)
+
+  return sortByTimestamp(
+    dedupeById([...sampleEvenly(seededReadings, seededBudget), ...localReadings]),
+    'recorded_at',
+    'asc',
+  )
 }
 
 function toResultError(err) {
@@ -232,9 +287,45 @@ function validateInsulinInput(insulin) {
  */
 export function getDemoSnapshot() {
   return {
-    glucose: [...readDemoList(DEMO_GLUCOSE_KEY), ...mockGlucoseReadings],
-    meals: [...readDemoList(DEMO_MEALS_KEY), ...mockMeals],
-    insulin: [...readDemoList(DEMO_DOSES_KEY), ...mockDoses],
+    glucose: sortByTimestamp(
+      dedupeById([...readDemoList(DEMO_GLUCOSE_KEY), ...mockGlucoseReadings]),
+      'recorded_at',
+    ),
+    meals: sortByTimestamp(
+      dedupeById([...readDemoList(DEMO_MEALS_KEY), ...mockMeals]),
+      'logged_at',
+    ),
+    insulin: sortByTimestamp(
+      dedupeById([...readDemoList(DEMO_DOSES_KEY), ...mockDoses]),
+      'logged_at',
+    ),
+  }
+}
+
+/**
+ * Canonical guest-demo timeline used by both the glucose chart and WebMCP.
+ * Glucose is chronological for charting/pattern analysis; meals and insulin
+ * are chronological so their timestamps align directly with that series.
+ */
+export function getDemoRangeSnapshot(hours = DEMO_SEVEN_DAY_HOURS, options = {}) {
+  const now = Number.isFinite(options.now) ? options.now : Date.now()
+  const maxGlucosePoints = options.maxGlucosePoints ?? DEMO_MAX_CHART_POINTS
+  const cutoff = now - hours * 60 * 60 * 1000
+  const snapshot = getDemoSnapshot()
+  const inRange = (record, field) => {
+    const timestamp = timestampFor(record, field)
+    return timestamp >= cutoff && timestamp <= now + MAX_FUTURE_SKEW_MS
+  }
+
+  const glucose = downsampleDemoGlucose(
+    sortByTimestamp(snapshot.glucose.filter((record) => inRange(record, 'recorded_at')), 'recorded_at', 'asc'),
+    maxGlucosePoints,
+  )
+
+  return {
+    glucose,
+    meals: sortByTimestamp(snapshot.meals.filter((record) => inRange(record, 'logged_at')), 'logged_at', 'asc'),
+    insulin: sortByTimestamp(snapshot.insulin.filter((record) => inRange(record, 'logged_at')), 'logged_at', 'asc'),
   }
 }
 
@@ -449,9 +540,7 @@ export async function deleteInsulinDose(id) {
 export async function getGlucoseReadings(hours = 24) {
   const user = await getCurrentUser()
   if (!user) {
-    const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000)
-    const filtered = getDemoSnapshot().glucose.filter(r => new Date(r.recorded_at) >= cutoff)
-    return { data: filtered, error: null }
+    return { data: getDemoRangeSnapshot(hours).glucose, error: null }
   }
 
   const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString()

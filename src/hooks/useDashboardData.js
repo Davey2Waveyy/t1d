@@ -44,7 +44,7 @@ function buildRecentActivity(meals, insulin, glucose, settings) {
     .slice(0, 6);
 }
 
-export function useDashboardData() {
+export function useDashboardData({ glucoseHours = 24 } = {}) {
   const { settings = DEFAULT_SETTINGS } = useSettings();
   const { glucoseUnit, lowThreshold, highThreshold } = settings;
   const [state, setState] = useState({
@@ -68,7 +68,7 @@ export function useDashboardData() {
     // keeps the effect from re-running on every unrelated settings change.
     const effectSettings = { glucoseUnit, lowThreshold, highThreshold };
 
-    Promise.all([getGlucoseReadings(24), getMeals(50), getInsulinDoses(50)])
+    Promise.all([getGlucoseReadings(glucoseHours), getMeals(50), getInsulinDoses(50)])
       .then(([glucoseResult, mealsResult, insulinResult]) => {
         if (cancelled) return;
 
@@ -95,7 +95,7 @@ export function useDashboardData() {
     return () => {
       cancelled = true;
     };
-  }, [refreshKey, glucoseUnit, lowThreshold, highThreshold]);
+  }, [refreshKey, glucoseHours, glucoseUnit, lowThreshold, highThreshold]);
 
   // Manual log sheets and WebMCP tools both write through the same demo
   // data store; refresh immediately whenever either one succeeds.

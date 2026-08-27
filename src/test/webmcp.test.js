@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { getWebMcpToolDefinitions, isWebMcpSupported, WEBMCP_TOOL_NAMES } from '../lib/webmcp';
-import { getDemoSnapshot, DemoValidationError } from '../lib/dataService';
+import { getDemoSnapshot, getDemoRangeSnapshot, DemoValidationError } from '../lib/dataService';
 
 beforeEach(() => {
   localStorage.clear();
@@ -52,11 +52,12 @@ describe('getWebMcpToolDefinitions', () => {
     }
   });
 
-  it('marks get_demo_state read-only and untrusted-content, with an empty, closed schema', () => {
+  it('marks get_demo_state read-only and untrusted-content, with an optional closed range schema', () => {
     const tool = buildTools().find((t) => t.name === 'get_demo_state');
     expect(tool.annotations).toEqual({ readOnlyHint: true, untrustedContentHint: true });
     expect(tool.inputSchema.additionalProperties).toBe(false);
-    expect(tool.inputSchema.properties).toEqual({});
+    expect(tool.inputSchema.properties.range.enum).toEqual(['current', '7d']);
+    expect(tool.inputSchema.properties.range.default).toBe('current');
   });
 
   it('log_demo_entry requires at least one of glucose/meal/insulin and closes every object level', () => {
@@ -125,6 +126,36 @@ describe('get_demo_state execute', () => {
     await tool('log_demo_entry').execute({ glucose: { value: 111, unit: 'mg/dL' } }, {});
     const result = await tool('get_demo_state').execute({}, {});
     expect(result.recent.glucose[0].source).toBe('webmcp');
+  });
+
+  it('returns the same full seven-day timeline used by the chart, with aligned meal provenance', async () => {
+    const created = await tool('log_demo_entry').execute({
+      glucose: { value: 137, unit: 'mg/dL' },
+      meal: { foodName: 'WebMCP marker meal', carbs: 42, mealType: 'lunch' },
+    }, {});
+    const result = await tool('get_demo_state').execute({ range: '7d' }, {});
+    const chartRange = getDemoRangeSnapshot(24 * 7);
+    const times = result.history.glucose.map((reading) => new Date(reading.recordedAt).getTime());
+
+    expect(result.range).toBe('7d');
+    expect(result.history.unit).toBe('mg/dL');
+    expect(result.history.coverageStart).toBeTruthy();
+    expect(result.history.coverageEnd).toBeTruthy();
+    expect(times.at(-1) - times[0]).toBeGreaterThan(6 * 24 * 60 * 60 * 1000);
+    expect(times).toEqual([...times].sort((a, b) => a - b));
+    expect(result.history.glucose.map((reading) => reading.id)).toEqual(chartRange.glucose.map((reading) => reading.id));
+    expect(result.history.glucose.find((reading) => reading.id === created.created.glucose.id)?.source).toBe('webmcp');
+    expect(result.history.meals.find((meal) => meal.id === created.created.meal.id)).toMatchObject({
+      foodName: 'WebMCP marker meal',
+      carbs: 42,
+      source: 'webmcp',
+    });
+  });
+
+  it('rejects an invalid range without mutating demo data', async () => {
+    const before = getDemoSnapshot();
+    await expect(tool('get_demo_state').execute({ range: '30d' }, {})).rejects.toThrow(DemoValidationError);
+    expect(getDemoSnapshot()).toEqual(before);
   });
 
   it('rejects an already-aborted signal without mutating anything', async () => {

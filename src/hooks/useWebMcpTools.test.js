@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
+import { StrictMode } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useWebMcpTools, WEBMCP_STATUS } from './useWebMcpTools';
 
@@ -72,6 +73,18 @@ describe('useWebMcpTools', () => {
 
     rerender({ enabled: true });
     rerender({ enabled: true });
+
+    expect(registerTool).toHaveBeenCalledTimes(3);
+  });
+
+  it('registers only one tool set under React StrictMode', async () => {
+    const registerTool = vi.fn().mockResolvedValue(undefined);
+    document.modelContext = { registerTool };
+
+    const { result } = renderHook(() => useWebMcpTools({ enabled: true }), {
+      wrapper: StrictMode,
+    });
+    await waitFor(() => expect(result.current).toBe(WEBMCP_STATUS.READY));
 
     expect(registerTool).toHaveBeenCalledTimes(3);
   });

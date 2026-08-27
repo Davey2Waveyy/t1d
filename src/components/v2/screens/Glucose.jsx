@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { calculateStats, getGlucoseReadings } from '../../../lib/dataService';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { getThresholds, toDisplayGlucose } from '../../../lib/glucoseUnits';
@@ -33,51 +32,14 @@ function formatSubtitle(reading, thresholds) {
 export default function Glucose() {
   const navigate = useNavigate();
   const { settings } = useSettings();
-  const dashboardData = useDashboardData();
   const [range, setRange] = useState(RANGES[0]);
-  const [rangeReadings, setRangeReadings] = useState([]);
-  const [rangeLoading, setRangeLoading] = useState(false);
-  const [rangeError, setRangeError] = useState(null);
+  const dashboardData = useDashboardData({ glucoseHours: range.hours });
 
   const handleRangeChange = (item) => {
     setRange(item);
-    if (item.hours !== 24) {
-      setRangeLoading(true);
-      setRangeError(null);
-    }
   };
 
-  useEffect(() => {
-    if (range.hours === 24) {
-      return;
-    }
-
-    let cancelled = false;
-    getGlucoseReadings(range.hours)
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        setRangeReadings(data ?? []);
-        setRangeError(error ?? null);
-      })
-      .catch((error) => {
-        if (!cancelled) setRangeError(error);
-      })
-      .finally(() => {
-        if (!cancelled) setRangeLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [range]);
-
-  const readings = range.hours === 24 ? dashboardData.glucose : rangeReadings;
-  const loading = range.hours === 24 ? dashboardData.loading : rangeLoading;
-  const error = range.hours === 24 ? dashboardData.error : rangeError;
-  const stats = useMemo(
-    () => (range.hours === 24 ? dashboardData.stats : calculateStats(readings, [], [], getThresholds(settings))),
-    [dashboardData.stats, range.hours, readings, settings],
-  );
+  const { glucose: readings, meals, loading, error, stats } = dashboardData;
   const thresholds = getThresholds(settings);
 
   if (loading) {
@@ -130,7 +92,7 @@ export default function Glucose() {
               <h2 className="font-body text-[18px] font-semibold text-text-primary">Trend</h2>
               <span className="font-mono text-data-mono text-text-muted">Last {range.label}</span>
             </div>
-            <GlucoseChart readings={readings} height={220} unit={settings.glucoseUnit} thresholds={thresholds} />
+            <GlucoseChart readings={readings} meals={meals} height={220} unit={settings.glucoseUnit} thresholds={thresholds} />
           </div>
 
           <TimeInRangeBar readings={readings} thresholds={thresholds} />
