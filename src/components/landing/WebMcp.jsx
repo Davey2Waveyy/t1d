@@ -32,64 +32,37 @@ export default function WebMcp({ onOpenDemo }) {
     <section className="webmcp" id="webmcp">
       <div className="container">
         <div className="section-head webmcp-head">
-          <div className="webmcp-head-copy">
-            <motion.p
-              className="text-kicker"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.55, ease }}
-            >
-              <Bot size={12} strokeWidth={1.8} />
-              Built for the WebMCP challenge
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 22 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: 0.08, duration: 0.65, ease }}
-            >
-              An agent can log alongside you,
-              <em> right in the browser.</em>
-            </motion.h2>
-            <motion.p
-              className="webmcp-lede"
-              initial={{ opacity: 0, y: 22 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ delay: 0.16, duration: 0.65, ease }}
-            >
-              Betatrace registers three tools with the page itself, using the native{' '}
-              <code>document.modelContext.registerTool()</code> API — no server, no polyfill. A
-              WebMCP-aware agent can read and log to the exact same guest demo you see on screen,
-              and the dashboard updates the moment it does.
-            </motion.p>
-          </div>
-
-          <motion.div
-            className="webmcp-call-panel"
-            initial={{ opacity: 0, y: 20 }}
+          <motion.p
+            className="text-kicker"
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
-            transition={{ delay: 0.22, duration: 0.65, ease }}
-            aria-hidden="true"
+            transition={{ duration: 0.55, ease }}
           >
-            <div className="webmcp-call-head">
-              <span className="webmcp-call-dot" />
-              agent call
-            </div>
-            <div className="webmcp-call-method">
-              get_demo_state<span className="webmcp-call-dim">(</span>{'{ range: "current" }'}
-              <span className="webmcp-call-dim">)</span>
-            </div>
-            <pre className="webmcp-call-response"><code>{'{\n'}
-{'  '}<span className="webmcp-call-key">"glucose"</span>: {'{\n'}
-{'    '}<span className="webmcp-call-key">"current"</span>: <span className="webmcp-call-val">161</span>,{'\n'}
-{'    '}<span className="webmcp-call-key">"trend"</span>: <span className="webmcp-call-val">"stable"</span>{'\n'}
-{'  '}{'},\n'}
-{'  '}<span className="webmcp-call-key">"today"</span>: {'{ '}<span className="webmcp-call-key">"carbsGrams"</span>: <span className="webmcp-call-val">84</span>{' },\n'}
-{'  '}<span className="webmcp-call-key">"safety"</span>: <span className="webmcp-call-val">"Not medical advice…"</span>{'\n}'}</code></pre>
-          </motion.div>
+            <Bot size={12} strokeWidth={1.8} />
+            Built for the WebMCP challenge
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ delay: 0.08, duration: 0.65, ease }}
+          >
+            An agent can log alongside you,
+            <em> right in the browser.</em>
+          </motion.h2>
+          <motion.p
+            className="webmcp-lede"
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ delay: 0.16, duration: 0.65, ease }}
+          >
+            Betatrace registers three tools with the page itself, using the native{' '}
+            <code>document.modelContext.registerTool()</code> API — no server, no polyfill. A
+            WebMCP-aware agent can read and log to the exact same guest demo you see on screen,
+            and the dashboard updates the moment it does.
+          </motion.p>
         </div>
 
         <div className="webmcp-tools">
