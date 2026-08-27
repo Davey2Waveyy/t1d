@@ -109,6 +109,7 @@ export default function MoreInsulin() {
                 value={dose.units ?? 0}
                 unit="u"
                 time={formatTime(dose.logged_at ?? dose.created_at)}
+                source={dose.source}
               />
             ))}
           </div>

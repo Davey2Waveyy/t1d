@@ -7,6 +7,20 @@ const DEMO_DOSES_KEY = 'betatrace_demo_insulin_doses'
 const DEMO_GLUCOSE_KEY = 'betatrace_demo_glucose_readings'
 const DEMO_SETTINGS_KEY = 'betatrace_settings'
 
+// In-browser this is always window.localStorage. The in-memory fallback
+// keeps the demo store (and its tests) working in any environment without
+// a DOM, e.g. under plain `node --test`.
+const memoryStorage = new Map()
+const memoryStorageFallback = {
+  getItem: (key) => (memoryStorage.has(key) ? memoryStorage.get(key) : null),
+  setItem: (key, value) => { memoryStorage.set(key, String(value)) },
+  removeItem: (key) => { memoryStorage.delete(key) },
+}
+
+function getStorage() {
+  return typeof localStorage !== 'undefined' ? localStorage : memoryStorageFallback
+}
+
 async function getCurrentUser() {
   if (!supabase) return null
 
@@ -19,24 +33,301 @@ async function getCurrentUser() {
   }
 }
 
-function readDemoList(key, fallback = []) {
+// ============================================
+// DEMO DATA STORE
+//
+// Guest-only, browser-local synthetic data. This is the single source of
+// truth for reads, writes, and change notifications used by both the
+// manual log sheets and the WebMCP tools, so the two paths can never
+// diverge in validation or persistence behavior.
+// ============================================
+
+export class DemoValidationError extends Error {
+  constructor(message, field) {
+    super(message)
+    this.name = 'DemoValidationError'
+    this.field = field
+  }
+}
+
+const demoDataListeners = new Set()
+
+function notifyDemoDataChange(detail) {
+  for (const listener of demoDataListeners) {
+    try {
+      listener(detail)
+    } catch (err) {
+      console.error('Demo data change listener failed.', err)
+    }
+  }
+}
+
+/**
+ * Subscribe to demo data writes/resets. Returns an unsubscribe function.
+ */
+export function subscribeToDemoDataChanges(listener) {
+  demoDataListeners.add(listener)
+  return () => demoDataListeners.delete(listener)
+}
+
+function generateDemoId(prefix) {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`
+  }
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}${Math.random().toString(16).slice(2)}`
+}
+
+function readDemoList(key) {
   try {
-    const parsed = JSON.parse(localStorage.getItem(key) || '[]')
-    return Array.isArray(parsed) ? parsed : fallback
+    const parsed = JSON.parse(getStorage().getItem(key) || '[]')
+    return Array.isArray(parsed) ? parsed : []
   } catch {
-    return fallback
+    return []
   }
 }
 
 function writeDemoList(key, entries) {
-  localStorage.setItem(key, JSON.stringify(entries))
+  getStorage().setItem(key, JSON.stringify(entries))
 }
 
-function createDemoEntry(key, entry) {
-  const data = { ...entry, id: `demo-${Date.now()}-${Math.random().toString(16).slice(2)}` }
-  const entries = [data, ...readDemoList(key)]
-  writeDemoList(key, entries)
-  return { data, error: null }
+function toResultError(err) {
+  if (err instanceof DemoValidationError) {
+    return { message: err.message, field: err.field }
+  }
+  console.error('Demo data write failed.', err)
+  return { message: 'Could not save entry.' }
+}
+
+// ---- Validation ----------------------------------------------------------
+
+const GLUCOSE_MIN_MGDL = 20
+const GLUCOSE_MAX_MGDL = 600
+const GLUCOSE_MIN_MMOL = 1.1
+const GLUCOSE_MAX_MMOL = 33.3
+const CARBS_MIN = 0
+const CARBS_MAX = 500
+const INSULIN_MAX_UNITS = 100
+const MAX_FUTURE_SKEW_MS = 5 * 60 * 1000
+const NOTES_MAX_LENGTH = 500
+const FOOD_NAME_MAX_LENGTH = 120
+const BRAND_MAX_LENGTH = 60
+
+const MEAL_TYPES = new Set(['breakfast', 'lunch', 'dinner', 'snack'])
+const INSULIN_TYPES = new Set(['bolus', 'basal', 'correction'])
+const GLUCOSE_UNITS = new Set(['mg/dL', 'mmol/L'])
+
+function trimText(value, maxLength, field) {
+  if (value == null || value === '') return undefined
+  if (typeof value !== 'string') {
+    throw new DemoValidationError(`${field} must be text.`, field)
+  }
+  const trimmed = value.trim()
+  if (trimmed.length > maxLength) {
+    throw new DemoValidationError(`${field} must be ${maxLength} characters or fewer.`, field)
+  }
+  return trimmed || undefined
+}
+
+export function normalizeOccurredAt(occurredAt) {
+  if (occurredAt == null) return new Date().toISOString()
+  const date = new Date(occurredAt)
+  if (Number.isNaN(date.getTime())) {
+    throw new DemoValidationError('occurredAt must be a valid date-time.', 'occurredAt')
+  }
+  if (date.getTime() - Date.now() > MAX_FUTURE_SKEW_MS) {
+    throw new DemoValidationError('occurredAt cannot be more than 5 minutes in the future.', 'occurredAt')
+  }
+  return date.toISOString()
+}
+
+function toMgDlValue(value, unit) {
+  return unit === 'mmol/L' ? value * 18 : value
+}
+
+function validateGlucoseInput(glucose) {
+  if (glucose == null) return null
+  if (typeof glucose !== 'object' || Array.isArray(glucose)) {
+    throw new DemoValidationError('glucose must be an object.', 'glucose')
+  }
+
+  const unit = glucose.unit ?? 'mg/dL'
+  if (!GLUCOSE_UNITS.has(unit)) {
+    throw new DemoValidationError('glucose.unit must be "mg/dL" or "mmol/L".', 'glucose.unit')
+  }
+
+  const value = Number(glucose.value)
+  if (!Number.isFinite(value)) {
+    throw new DemoValidationError('glucose.value must be a number.', 'glucose.value')
+  }
+
+  const min = unit === 'mmol/L' ? GLUCOSE_MIN_MMOL : GLUCOSE_MIN_MGDL
+  const max = unit === 'mmol/L' ? GLUCOSE_MAX_MMOL : GLUCOSE_MAX_MGDL
+  if (value < min || value > max) {
+    throw new DemoValidationError(`glucose.value must be between ${min} and ${max} ${unit}.`, 'glucose.value')
+  }
+
+  const notes = trimText(glucose.notes, NOTES_MAX_LENGTH, 'glucose.notes')
+
+  return {
+    value: Math.round(toMgDlValue(value, unit) * 10) / 10,
+    notes,
+  }
+}
+
+function validateMealInput(meal) {
+  if (meal == null) return null
+  if (typeof meal !== 'object' || Array.isArray(meal)) {
+    throw new DemoValidationError('meal must be an object.', 'meal')
+  }
+
+  const foodName = trimText(meal.foodName, FOOD_NAME_MAX_LENGTH, 'meal.foodName')
+  if (!foodName) {
+    throw new DemoValidationError('meal.foodName is required.', 'meal.foodName')
+  }
+
+  const carbs = Number(meal.carbs)
+  if (!Number.isFinite(carbs) || carbs < CARBS_MIN || carbs > CARBS_MAX) {
+    throw new DemoValidationError(`meal.carbs must be between ${CARBS_MIN} and ${CARBS_MAX} g.`, 'meal.carbs')
+  }
+
+  const mealType = (meal.mealType ?? 'snack').toLowerCase()
+  if (!MEAL_TYPES.has(mealType)) {
+    throw new DemoValidationError('meal.mealType must be breakfast, lunch, dinner, or snack.', 'meal.mealType')
+  }
+
+  const notes = trimText(meal.notes, NOTES_MAX_LENGTH, 'meal.notes')
+
+  return { foodName, carbs, mealType, notes }
+}
+
+function validateInsulinInput(insulin) {
+  if (insulin == null) return null
+  if (typeof insulin !== 'object' || Array.isArray(insulin)) {
+    throw new DemoValidationError('insulin must be an object.', 'insulin')
+  }
+
+  const units = Number(insulin.units)
+  if (!Number.isFinite(units) || units <= 0 || units > INSULIN_MAX_UNITS) {
+    throw new DemoValidationError(`insulin.units must be greater than 0 and at most ${INSULIN_MAX_UNITS}.`, 'insulin.units')
+  }
+
+  const insulinType = (insulin.insulinType ?? 'bolus').toLowerCase()
+  if (!INSULIN_TYPES.has(insulinType)) {
+    throw new DemoValidationError('insulin.insulinType must be bolus, basal, or correction.', 'insulin.insulinType')
+  }
+
+  const brand = trimText(insulin.brand, BRAND_MAX_LENGTH, 'insulin.brand')
+  const notes = trimText(insulin.notes, NOTES_MAX_LENGTH, 'insulin.notes')
+
+  return { units, insulinType, brand, notes }
+}
+
+// ---- Reads -----------------------------------------------------------------
+
+/**
+ * The current synthetic glucose/meal/insulin records: locally added demo
+ * entries (manual or webmcp) layered over the seeded sample data, newest
+ * first. This is the one place both reads and the WebMCP `get_demo_state`
+ * tool pull from.
+ */
+export function getDemoSnapshot() {
+  return {
+    glucose: [...readDemoList(DEMO_GLUCOSE_KEY), ...mockGlucoseReadings],
+    meals: [...readDemoList(DEMO_MEALS_KEY), ...mockMeals],
+    insulin: [...readDemoList(DEMO_DOSES_KEY), ...mockDoses],
+  }
+}
+
+// ---- Writes ------------------------------------------------------------
+
+function buildGlucoseRecord(glucose, occurredAt, source) {
+  return {
+    id: generateDemoId('demo-glucose'),
+    value: glucose.value,
+    unit: 'mg/dL',
+    notes: glucose.notes,
+    recorded_at: occurredAt,
+    source,
+    user_id: 'guest-uid',
+  }
+}
+
+function buildMealRecord(meal, occurredAt, source) {
+  return {
+    id: generateDemoId('demo-meal'),
+    food_name: meal.foodName,
+    name: meal.foodName,
+    carbs: meal.carbs,
+    meal_type: meal.mealType,
+    notes: meal.notes,
+    logged_at: occurredAt,
+    source,
+    user_id: 'guest-uid',
+  }
+}
+
+function buildInsulinRecord(insulin, occurredAt, source) {
+  return {
+    id: generateDemoId('demo-insulin'),
+    units: insulin.units,
+    insulin_type: insulin.insulinType,
+    brand: insulin.brand,
+    notes: insulin.notes,
+    logged_at: occurredAt,
+    source,
+    user_id: 'guest-uid',
+  }
+}
+
+/**
+ * Validates a combined { occurredAt, glucose, meal, insulin } request in
+ * full before writing anything, then makes one atomic local write per
+ * included record type. Used by both the manual log sheets (source:
+ * "manual") and the WebMCP log_demo_entry tool (source: "webmcp").
+ */
+export function addDemoEntryBatch({ occurredAt, glucose, meal, insulin, source = 'manual' } = {}) {
+  if (glucose == null && meal == null && insulin == null) {
+    throw new DemoValidationError('At least one of glucose, meal, or insulin is required.', 'entries')
+  }
+
+  // Validate everything before any write happens.
+  const normalizedGlucose = validateGlucoseInput(glucose)
+  const normalizedMeal = validateMealInput(meal)
+  const normalizedInsulin = validateInsulinInput(insulin)
+  const normalizedOccurredAt = normalizeOccurredAt(occurredAt)
+
+  const created = {}
+
+  if (normalizedGlucose) {
+    const record = buildGlucoseRecord(normalizedGlucose, normalizedOccurredAt, source)
+    writeDemoList(DEMO_GLUCOSE_KEY, [record, ...readDemoList(DEMO_GLUCOSE_KEY)])
+    created.glucose = record
+  }
+  if (normalizedMeal) {
+    const record = buildMealRecord(normalizedMeal, normalizedOccurredAt, source)
+    writeDemoList(DEMO_MEALS_KEY, [record, ...readDemoList(DEMO_MEALS_KEY)])
+    created.meal = record
+  }
+  if (normalizedInsulin) {
+    const record = buildInsulinRecord(normalizedInsulin, normalizedOccurredAt, source)
+    writeDemoList(DEMO_DOSES_KEY, [record, ...readDemoList(DEMO_DOSES_KEY)])
+    created.insulin = record
+  }
+
+  notifyDemoDataChange({ type: 'write', source, created })
+  return created
+}
+
+/**
+ * Removes only locally-added demo glucose, meal, and insulin entries and
+ * restores the seeded sample display. Never touches settings, auth state,
+ * or the guest-notification-seen flag.
+ */
+export function resetDemoData() {
+  getStorage().removeItem(DEMO_MEALS_KEY)
+  getStorage().removeItem(DEMO_DOSES_KEY)
+  getStorage().removeItem(DEMO_GLUCOSE_KEY)
+  notifyDemoDataChange({ type: 'reset' })
 }
 
 // ============================================
@@ -46,8 +337,7 @@ function createDemoEntry(key, entry) {
 export async function getMeals(limit = 50) {
   const user = await getCurrentUser()
   if (!user) {
-    const demoMeals = readDemoList(DEMO_MEALS_KEY)
-    return { data: [...demoMeals, ...mockMeals].slice(0, limit), error: null }
+    return { data: getDemoSnapshot().meals.slice(0, limit), error: null }
   }
 
   const { data, error } = await supabase
@@ -60,7 +350,23 @@ export async function getMeals(limit = 50) {
 
 export async function addMeal(meal) {
   const user = await getCurrentUser()
-  if (!user) return createDemoEntry(DEMO_MEALS_KEY, meal)
+  if (!user) {
+    try {
+      const created = addDemoEntryBatch({
+        occurredAt: meal.logged_at,
+        meal: {
+          foodName: meal.food_name ?? meal.name,
+          carbs: meal.carbs,
+          mealType: meal.meal_type,
+          notes: meal.notes,
+        },
+        source: 'manual',
+      })
+      return { data: created.meal, error: null }
+    } catch (err) {
+      return { data: null, error: toResultError(err) }
+    }
+  }
 
   const { data, error } = await supabase
     .from('meals')
@@ -87,8 +393,7 @@ export async function deleteMeal(id) {
 export async function getInsulinDoses(limit = 50) {
   const user = await getCurrentUser()
   if (!user) {
-    const demoDoses = readDemoList(DEMO_DOSES_KEY)
-    return { data: [...demoDoses, ...mockDoses].slice(0, limit), error: null }
+    return { data: getDemoSnapshot().insulin.slice(0, limit), error: null }
   }
 
   const { data, error } = await supabase
@@ -101,7 +406,23 @@ export async function getInsulinDoses(limit = 50) {
 
 export async function addInsulinDose(dose) {
   const user = await getCurrentUser()
-  if (!user) return createDemoEntry(DEMO_DOSES_KEY, dose)
+  if (!user) {
+    try {
+      const created = addDemoEntryBatch({
+        occurredAt: dose.logged_at,
+        insulin: {
+          units: dose.units,
+          insulinType: dose.insulin_type,
+          brand: dose.brand,
+          notes: dose.notes,
+        },
+        source: 'manual',
+      })
+      return { data: created.insulin, error: null }
+    } catch (err) {
+      return { data: null, error: toResultError(err) }
+    }
+  }
 
   const { data, error } = await supabase
     .from('insulin_doses')
@@ -129,8 +450,7 @@ export async function getGlucoseReadings(hours = 24) {
   const user = await getCurrentUser()
   if (!user) {
     const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000)
-    const demoReadings = readDemoList(DEMO_GLUCOSE_KEY)
-    const filtered = [...demoReadings, ...mockGlucoseReadings].filter(r => new Date(r.recorded_at) >= cutoff)
+    const filtered = getDemoSnapshot().glucose.filter(r => new Date(r.recorded_at) >= cutoff)
     return { data: filtered, error: null }
   }
 
@@ -147,8 +467,7 @@ export async function getGlucoseReadings(hours = 24) {
 export async function getAllGlucoseReadings(limit = 500) {
   const user = await getCurrentUser()
   if (!user) {
-    const demoReadings = readDemoList(DEMO_GLUCOSE_KEY)
-    return { data: [...demoReadings, ...mockGlucoseReadings].slice(0, limit), error: null }
+    return { data: getDemoSnapshot().glucose.slice(0, limit), error: null }
   }
 
   const { data, error } = await supabase
@@ -161,7 +480,22 @@ export async function getAllGlucoseReadings(limit = 500) {
 
 export async function addGlucoseReading(reading) {
   const user = await getCurrentUser()
-  if (!user) return createDemoEntry(DEMO_GLUCOSE_KEY, reading)
+  if (!user) {
+    try {
+      const created = addDemoEntryBatch({
+        occurredAt: reading.recorded_at,
+        glucose: {
+          value: reading.value,
+          unit: 'mg/dL',
+          notes: reading.notes,
+        },
+        source: 'manual',
+      })
+      return { data: created.glucose, error: null }
+    } catch (err) {
+      return { data: null, error: toResultError(err) }
+    }
+  }
 
   const { data, error } = await supabase
     .from('glucose_readings')
@@ -179,7 +513,7 @@ export async function getUserSettings() {
   const user = await getCurrentUser()
   if (!user) {
     try {
-      const saved = JSON.parse(localStorage.getItem(DEMO_SETTINGS_KEY) || 'null')
+      const saved = JSON.parse(getStorage().getItem(DEMO_SETTINGS_KEY) || 'null')
       return { data: sanitizeStoredSettings(saved ?? mockSettings), error: null }
     } catch {
       return { data: sanitizeStoredSettings(mockSettings), error: null }
@@ -198,7 +532,7 @@ export async function updateUserSettings(settings) {
   const user = await getCurrentUser()
   if (!user) {
     const data = sanitizeStoredSettings(settings)
-    localStorage.setItem(DEMO_SETTINGS_KEY, JSON.stringify(data))
+    getStorage().setItem(DEMO_SETTINGS_KEY, JSON.stringify(data))
     return { data, error: null }
   }
 

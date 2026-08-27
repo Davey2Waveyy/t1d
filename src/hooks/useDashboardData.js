@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { getGlucoseReadings, getMeals, getInsulinDoses, calculateStats } from '../lib/dataService';
+import { getGlucoseReadings, getMeals, getInsulinDoses, calculateStats, subscribeToDemoDataChanges } from '../lib/dataService';
 import { useSettings } from '../contexts/SettingsContext';
 import { getThresholds, toDisplayGlucose } from '../lib/glucoseUnits';
 import { DEFAULT_SETTINGS } from '../lib/publishConfig';
@@ -13,6 +13,7 @@ function buildRecentActivity(meals, insulin, glucose, settings) {
     value: meal.carbs ?? 0,
     unit: 'g',
     occurredAt: meal.logged_at,
+    source: meal.source,
   }));
 
   const insulinItems = (insulin ?? []).slice(0, 4).map((dose) => ({
@@ -23,6 +24,7 @@ function buildRecentActivity(meals, insulin, glucose, settings) {
     value: dose.units ?? 0,
     unit: 'u',
     occurredAt: dose.logged_at,
+    source: dose.source,
   }));
 
   const glucoseItems = (glucose ?? []).slice(-4).map((reading) => ({
@@ -33,6 +35,7 @@ function buildRecentActivity(meals, insulin, glucose, settings) {
     value: toDisplayGlucose(reading.value ?? 0, settings.glucoseUnit),
     unit: ` ${settings.glucoseUnit}`,
     occurredAt: reading.recorded_at,
+    source: reading.source,
   }));
 
   return [...mealItems, ...insulinItems, ...glucoseItems]
@@ -43,9 +46,7 @@ function buildRecentActivity(meals, insulin, glucose, settings) {
 
 export function useDashboardData() {
   const { settings = DEFAULT_SETTINGS } = useSettings();
-  const glucoseUnit = settings.glucoseUnit;
-  const lowThreshold = settings.lowThreshold;
-  const highThreshold = settings.highThreshold;
+  const { glucoseUnit, lowThreshold, highThreshold } = settings;
   const [state, setState] = useState({
     loading: true,
     error: null,
@@ -62,6 +63,11 @@ export function useDashboardData() {
     let cancelled = false;
     setState((current) => ({ ...current, loading: true }));
 
+    // Only the primitives actually read below are in the dependency array;
+    // deriving this here (rather than reading the outer `settings` object)
+    // keeps the effect from re-running on every unrelated settings change.
+    const effectSettings = { glucoseUnit, lowThreshold, highThreshold };
+
     Promise.all([getGlucoseReadings(24), getMeals(50), getInsulinDoses(50)])
       .then(([glucoseResult, mealsResult, insulinResult]) => {
         if (cancelled) return;
@@ -73,8 +79,8 @@ export function useDashboardData() {
         setState({
           loading: false,
           error: glucoseResult.error ?? mealsResult.error ?? insulinResult.error ?? null,
-          stats: calculateStats(glucose, meals, insulin, getThresholds(settings)),
-          recentActivity: buildRecentActivity(meals, insulin, glucose, settings),
+          stats: calculateStats(glucose, meals, insulin, getThresholds(effectSettings)),
+          recentActivity: buildRecentActivity(meals, insulin, glucose, effectSettings),
           glucose,
           meals,
           insulin,
@@ -90,6 +96,12 @@ export function useDashboardData() {
       cancelled = true;
     };
   }, [refreshKey, glucoseUnit, lowThreshold, highThreshold]);
+
+  // Manual log sheets and WebMCP tools both write through the same demo
+  // data store; refresh immediately whenever either one succeeds.
+  useEffect(() => {
+    return subscribeToDemoDataChanges(() => refresh());
+  }, [refresh]);
 
   return { ...state, refresh };
 }

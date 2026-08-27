@@ -69,7 +69,7 @@ export default function MoreSettings() {
     getUserSettings()
       .then(({ data, error }) => {
         if (cancelled) return;
-        setForm(normalizeSettings({ ...settings, ...data }));
+        setForm((current) => normalizeSettings({ ...current, ...data }));
         setStatus(error && error.code !== 'PGRST116' ? 'Settings could not load. Defaults are shown.' : null);
       })
       .catch(() => {

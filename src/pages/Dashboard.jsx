@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useSettings } from '../contexts/SettingsContext';
+import { useWebMcpTools } from '../hooks/useWebMcpTools';
+import WebMcpStatusPill from '../components/v2/shell/WebMcpStatusPill';
 import AppContainer from '../components/v2/shell/AppContainer';
 import TopBar from '../components/v2/shell/TopBar';
 import BottomNav from '../components/v2/shell/BottomNav';
@@ -36,10 +39,20 @@ export default function Dashboard() {
     return localStorage.getItem('betatrace_guest_notifications_seen') === 'true';
   });
   const { user, isGuest } = useAuth();
+  const { settings } = useSettings();
   const online = useOnline();
   const location = useLocation();
   const reduced = useReducedMotion();
   const mainRef = useRef(null);
+
+  // Kept in a ref (not a hook dependency) so WebMCP tools always read the
+  // live settings without forcing the registration effect to re-run.
+  const settingsRef = useRef(settings);
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+  const getSettings = useCallback(() => settingsRef.current, []);
+  const webMcpStatus = useWebMcpTools({ enabled: isGuest, getSettings });
 
   const SheetComponent = SHEETS[location.pathname];
   const baseLocation = SheetComponent
@@ -64,6 +77,11 @@ export default function Dashboard() {
           }
         }}
       />
+      {isGuest && (
+        <div className="px-md pt-sm flex-shrink-0">
+          <WebMcpStatusPill status={webMcpStatus} />
+        </div>
+      )}
       <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.div
