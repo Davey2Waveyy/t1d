@@ -48,8 +48,13 @@ export default function GlucoseChart({ readings, meals = [], height = 180, unit 
     : new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', hour12: true });
 
   return (
-    <div className="bg-surface-raised border border-border-subtle rounded-2xl p-4 shadow-raise" style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="bg-surface-raised border border-border-subtle rounded-2xl p-4 shadow-raise" style={{ height, position: 'relative' }}>
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        minWidth={0}
+        initialDimension={{ width: 320, height: Math.max(1, height - 32) }}
+      >
         <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 4, left: 8 }}>
           <defs>
             <linearGradient id="glucoseFill" x1="0" y1="0" x2="0" y2="1">

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
-import { Bot, Eye, NotebookPen, RotateCcw, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Bot, Eye, NotebookPen, RotateCcw, ShieldCheck, Sparkles } from 'lucide-react';
+import GlucoseChart from '../v2/charts/GlucoseChart';
+import { mockGlucoseReadings, mockMeals } from '../../lib/mockData';
 
 const ease = [0.23, 1, 0.32, 1];
 
@@ -9,7 +11,7 @@ const TOOLS = [
     name: 'get_demo_state',
     badge: 'Read-only',
     badgeTone: 'read',
-    copy: 'Returns a factual snapshot of the synthetic demo — current glucose, time in range, today\'s totals, and recent entries — with a safety boundary attached to every response.',
+    copy: 'Returns the current synthetic snapshot or the complete chronological seven-day glucose history with every aligned meal, including timestamps and provenance for descriptive pattern review.',
   },
   {
     icon: NotebookPen,
@@ -27,6 +29,62 @@ const TOOLS = [
   },
 ];
 
+const SEVEN_DAY_SAMPLE_SIZE = 336;
+const PROOF_READINGS = Array.from({ length: SEVEN_DAY_SAMPLE_SIZE }, (_, index) => {
+  const sourceIndex = Math.round((index * (mockGlucoseReadings.length - 1)) / (SEVEN_DAY_SAMPLE_SIZE - 1));
+  return mockGlucoseReadings[sourceIndex];
+});
+const PROOF_STATS = `${PROOF_READINGS.length} readings · ${mockMeals.length} meals`;
+
+function WebMcpProof() {
+  return (
+    <motion.div
+      className="webmcp-proof"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-70px' }}
+      transition={{ delay: 0.18, duration: 0.7, ease }}
+    >
+      <div className="webmcp-proof-prompt">
+        <span className="webmcp-proof-label">
+          <Sparkles size={14} strokeWidth={1.8} />
+          Ask Betatrace
+        </span>
+        <blockquote>“Graph my last seven days and mark my meals.”</blockquote>
+        <p>
+          The agent reads the same synthetic guest demo that powers the dashboard,
+          then aligns every meal to the glucose timeline.
+        </p>
+        <code>get_demo_state({'{ range: "7d" }'})</code>
+      </div>
+
+      <div className="webmcp-proof-arrow" aria-hidden="true">
+        <ArrowRight size={20} strokeWidth={1.8} />
+      </div>
+
+      <div className="webmcp-proof-result">
+        <div className="webmcp-proof-result-head">
+          <div>
+            <span>Seven-day result</span>
+            <strong>Glucose + meals, aligned</strong>
+          </div>
+          <small>{PROOF_STATS}</small>
+        </div>
+        <div className="webmcp-proof-chart">
+          <GlucoseChart
+            readings={PROOF_READINGS}
+            meals={mockMeals}
+            height={250}
+          />
+        </div>
+        <p className="webmcp-proof-caption">
+          Meal markers stay attached to their exact timestamps as the week comes into view.
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function WebMcp({ onOpenDemo }) {
   return (
     <section className="webmcp" id="webmcp">
@@ -40,7 +98,7 @@ export default function WebMcp({ onOpenDemo }) {
             transition={{ duration: 0.55, ease }}
           >
             <Bot size={12} strokeWidth={1.8} />
-            Built for the WebMCP challenge
+            Browser-native agent tools
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 22 }}
@@ -48,8 +106,8 @@ export default function WebMcp({ onOpenDemo }) {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: 0.08, duration: 0.65, ease }}
           >
-            An agent can log alongside you,
-            <em> right in the browser.</em>
+            Ask for the week.
+            <em> See every meal in context.</em>
           </motion.h2>
           <motion.p
             className="webmcp-lede"
@@ -58,12 +116,27 @@ export default function WebMcp({ onOpenDemo }) {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ delay: 0.16, duration: 0.65, ease }}
           >
-            Betatrace registers three tools with the page itself, using the native{' '}
-            <code>document.modelContext.registerTool()</code> API — no server, no polyfill. A
-            WebMCP-aware agent can read and log to the exact same guest demo you see on screen,
-            and the dashboard updates the moment it does.
+            A WebMCP-aware agent can read and log to the exact same synthetic guest demo you see
+            on screen. Ask it to review the week, record what already happened, or restore the
+            sample data — and the dashboard reflects the result.
           </motion.p>
         </div>
+
+        <WebMcpProof />
+
+        <motion.div
+          className="webmcp-technical-head"
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-70px' }}
+          transition={{ duration: 0.6, ease }}
+        >
+          <p className="text-kicker">How it works in the browser</p>
+          <p>
+            Betatrace registers three page-native tools with{' '}
+            <code>document.modelContext.registerTool()</code> — no server and no polyfill.
+          </p>
+        </motion.div>
 
         <div className="webmcp-tools">
           {TOOLS.map((tool, i) => (
@@ -100,6 +173,8 @@ export default function WebMcp({ onOpenDemo }) {
             Try it in the live demo
           </button>
         </motion.div>
+
+        <p className="webmcp-challenge-note">Originally built for the WebMCP Challenge.</p>
       </div>
     </section>
   );
