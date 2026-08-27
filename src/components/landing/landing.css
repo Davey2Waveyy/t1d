@@ -1187,7 +1187,7 @@
 }
 
 .safety-note {
-  margin-top: clamp(2.75rem, 5vw, 3.75rem);
+  margin: clamp(2.75rem, 5vw, 3.75rem) auto 0;
   padding: 1.05rem 1.3rem;
   border-radius: 1.1rem;
   border: 1px solid rgba(199, 126, 31, 0.3);
